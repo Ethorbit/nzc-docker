@@ -11,15 +11,15 @@ SFTP_PORT=22
 SFTP_UID=6000
 SFTP_GID=6000
 
-GMOD_COUNT=2
+GMOD_COUNT=2 # Do not set this higher than the CPU thread count.
 GMOD_UID=7000 
 GMOD_GID=7000
 GMOD_DIR="/srv/gmod"
 ```
 
 ## Creating
-Instead of using `docker-compose`, execute compose.sh with the usual arguments. 
-compose.sh is a script that will automatically create several gmod servers (it was designed to avoid repetitive yaml properties)
+Instead of using `docker-compose`, execute `compose.sh` with the usual arguments. 
+`compose.sh` is a script that will automatically create several gmod servers (it was designed to avoid repetitive yaml properties)
 
 To start:
 `./compose.sh up -d`
