@@ -19,7 +19,7 @@ GMOD_DIR="/srv/gmod"
 
 ## Creating
 Instead of using `docker-compose`, execute `compose.sh` with the usual arguments. 
-`compose.sh` is a script that will automatically create several gmod servers (it was designed to avoid repetitive yaml properties)
+`compose.sh` is a wrapper script that will automatically create several gmod servers (it was designed to avoid repetitive yaml properties or commands)
 
 To start:
 `./compose.sh up -d`
