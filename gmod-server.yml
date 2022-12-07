@@ -1,0 +1,47 @@
+version: "3.9"
+services:
+  unionfs:
+    image: radpenguin/unionfs-mount:latest
+    container_name: nzc-unionfs-${SERVER_NUMBER}
+    privileged: true    
+    network_mode: none    
+    environment:    
+      TZ: ${TZ}    
+      PUID: ${GMOD_UID}    
+      PGID: ${SFTP_GID}    
+    volumes:    
+      - ${GMOD_DIR}/files/${SERVER_NUMBER}:/read-write:shared    
+      - ${GMOD_DIR}/files/shared:/read-only:shared    
+      - ${GMOD_DIR}/srcds/${SERVER_NUMBER}:/unionfs:shared    
+    cpuset: ${CPU}   
+    healthcheck:
+      test: ["CMD-SHELL", "findmnt ${GMOD_DIR}/srcds/${SERVER_NUMBER} | grep unionfs"]
+      interval: 1s
+      start_period: 2s
+      retries: 180
+    restart: always 
+  gmod:
+    image: ethorbit/srcds-server 
+    container_name: nzc-gmod-${SERVER_NUMBER}
+    environment:
+      SRCDS_APPID: 4020 
+      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh +maxplayers 12 +gamemode nzombies +map nz_kino_der_toten"
+      USER_ID: ${GMOD_UID} 
+      GROUP_ID: ${GMOD_GID}
+    ports:
+      - ${GMOD_PORT}:${GMOD_PORT}
+    volumes:
+      - ${GMOD_DIR}/srcds/${SERVER_NUMBER}:/home/srcds/server 
+    cpuset: ${CPU}
+    cpu_shares: 1024 
+    deploy:
+      resources:
+        limits:
+          memory: 512M 
+        reservations:
+          memory: 256M 
+    depends_on: 
+      unionfs:
+        condition: service_healthy 
+    restart: unless-stopped 
+
