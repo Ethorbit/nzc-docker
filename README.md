@@ -22,7 +22,9 @@ Instead of using `docker-compose`, execute `compose.sh` with the usual arguments
 `compose.sh` is a wrapper script that will automatically create several gmod servers (it was designed to avoid repetitive yaml properties or commands)
 
 To start:
-`./compose.sh up -d`
+`./compose.sh up`
+
+If it works, add a -d at the end to keep it in the background.
 
 To remove:
 `./compose.sh down`

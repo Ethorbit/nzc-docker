@@ -15,4 +15,8 @@ services:
         reservations:
           memory: 20M
     restart: unless-stopped
-
+    networks:
+      - discord 
+networks:    
+  discord:
+    name: discord-bots

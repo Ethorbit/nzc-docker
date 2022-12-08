@@ -14,11 +14,10 @@ services:
       - ${GMOD_DIR}/files/shared:/read-only:shared    
       - ${GMOD_DIR}/srcds/${SERVER_NUMBER}:/unionfs:shared    
     cpuset: ${CPU}   
-    healthcheck:
-      test: ["CMD-SHELL", "findmnt ${GMOD_DIR}/srcds/${SERVER_NUMBER} | grep unionfs"]
-      interval: 1s
-      start_period: 2s
-      retries: 180
+    deploy:
+      resources:
+        limits:
+          memory: 50M 
     restart: always 
   gmod:
     image: ethorbit/srcds-server 
@@ -29,7 +28,7 @@ services:
       USER_ID: ${GMOD_UID} 
       GROUP_ID: ${GMOD_GID}
     ports:
-      - ${GMOD_PORT}:${GMOD_PORT}
+      - ${GMOD_PORT}
     volumes:
       - ${GMOD_DIR}/srcds/${SERVER_NUMBER}:/home/srcds/server 
     cpuset: ${CPU}
@@ -42,6 +41,15 @@ services:
           memory: 256M 
     depends_on: 
       unionfs:
-        condition: service_healthy 
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "findmnt ${GMOD_DIR}/srcds/${SERVER_NUMBER} | grep unionfs"]
+      interval: 1s
+      start_period: 2s
+      retries: 180
     restart: unless-stopped 
-
+    networks: 
+      - gmod
+networks:
+  gmod:
+    name: gmod-${SERVER_NUMBER}
