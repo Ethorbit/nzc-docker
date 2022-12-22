@@ -1,23 +1,38 @@
 version: "3.9"
 services:
   unionfs:
-    image: radpenguin/unionfs-mount:latest
+    image: ethorbit/unionfs:latest
     container_name: nzc-unionfs-${SERVER_NUMBER}
+    user: ${GMOD_UID}:${SFTP_GID}
     privileged: true    
     network_mode: none    
     environment:    
       TZ: ${TZ}    
       PUID: ${GMOD_UID}    
-      PGID: ${SFTP_GID}    
+      PGID: ${SFTP_GID}
     volumes:    
-      - ${GMOD_DIR}/files/${SERVER_NUMBER}:/read-write:shared    
-      - ${GMOD_DIR}/files/shared:/read-only:shared    
-      - ${GMOD_DIR}/srcds/${SERVER_NUMBER}:/unionfs:shared    
+      - ${DATA_DIR}/files/${SERVER_NUMBER}:/top:shared    
+      - ${DATA_DIR}/files/shared:/bottom:shared    
+      - ${DATA_DIR}/srcds/${SERVER_NUMBER}:/merged:shared    
     cpuset: ${CPU}   
     deploy:
       resources:
         limits:
           memory: 50M 
+    blkio_config:
+      weight: 500
+      device_write_bps:
+        - path: ${DISK}
+          rate: 60000000
+      device_read_bps:
+        - path: ${DISK}
+          rate: 60000000
+      device_read_iops:
+        - path: ${DISK}
+          rate: 120
+      device_write_iops:
+        - path: ${DISK}
+          rate: 50
     restart: always 
   gmod:
     image: ethorbit/srcds-server 
@@ -30,7 +45,7 @@ services:
     ports:
       - ${GMOD_PORT}
     volumes:
-      - ${GMOD_DIR}/srcds/${SERVER_NUMBER}:/home/srcds/server 
+      - ${DATA_DIR}/srcds/${SERVER_NUMBER}/files:/home/srcds/server 
     cpuset: ${CPU}
     cpu_shares: 1024 
     deploy:
@@ -38,7 +53,7 @@ services:
         limits:
           memory: 512M 
         reservations:
-          memory: 256M 
+          memory: 256M  
     depends_on: 
       unionfs:
         condition: service_started

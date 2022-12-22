@@ -6,6 +6,8 @@ services:
     environment:
       STICKY_COOLDOWN: 600000
       BOT_TOKEN: ${DISCORD_STICKY_BOT_TOKEN}
+    volumes:
+      - ${DATA_DIR}/discord/stickybot:/botdb
     cpu_shares: 256 
     cpu_percent: 20
     deploy:
