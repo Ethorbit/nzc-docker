@@ -1,0 +1,37 @@
+version: "3.9"
+svencoop:
+  image: ethorbit/srcds-server 
+  container_name: nzc-svencoop
+  environment:
+    SRCDS_APPID: 276060 
+    SRCDS_RUN_BINARY: "svends_run"
+    SRCDS_RUN_ARGS: "-port ${SVENCOOP_PORT} +maxplayers 12 +map dynamic_mapvote"
+    USER_ID: ${SVENCOOP_UID} 
+    GROUP_ID: ${SVENCOOP_GID}
+  volumes:
+    - ${DATA_DIR}/svencoop:/home/srcds/server 
+  ports:
+    - ${SVENCOOP_PORT}
+  cpuset: ${SVENCOOP_CPU}   
+  cpu_shares: 512
+  deploy:
+    resources:
+      limits:
+        memory: 100M 
+      reservations:
+        memory: 60M  
+    blkio_config:
+      weight: 50
+      device_write_bps:
+        - path: ${DISK}
+          rate: 10000000
+      device_read_bps:
+        - path: ${DISK}
+          rate: 20000000
+      device_read_iops:
+        - path: ${DISK}
+          rate: 50
+      device_write_iops:
+        - path: ${DISK}
+          rate: 10
+    restart: unless-stopped 

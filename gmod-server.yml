@@ -11,9 +11,9 @@ services:
       PUID: ${GMOD_UID}    
       PGID: ${SFTP_GID}
     volumes:    
-      - ${DATA_DIR}/files/${SERVER_NUMBER}:/top:shared    
-      - ${DATA_DIR}/files/shared:/bottom:shared    
-      - ${DATA_DIR}/srcds/${SERVER_NUMBER}:/merged:shared    
+      - ${DATA_DIR}/gmod/files/${SERVER_NUMBER}:/top:shared    
+      - ${DATA_DIR}/gmod/files/shared:/bottom:shared    
+      - ${DATA_DIR}/gmod/srcds/${SERVER_NUMBER}:/merged:shared    
     cpuset: ${CPU}   
     deploy:
       resources:
@@ -39,13 +39,13 @@ services:
     container_name: nzc-gmod-${SERVER_NUMBER}
     environment:
       SRCDS_APPID: 4020 
-      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh +maxplayers 12 +gamemode nzombies +map nz_kino_der_toten"
+      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port ${GMOD_PORT} +maxplayers 12 +gamemode nzombies +map nz_kino_der_toten"
       USER_ID: ${GMOD_UID} 
       GROUP_ID: ${GMOD_GID}
     ports:
       - ${GMOD_PORT}
     volumes:
-      - ${DATA_DIR}/srcds/${SERVER_NUMBER}/files:/home/srcds/server 
+      - ${DATA_DIR}/gmod/srcds/${SERVER_NUMBER}/files:/home/srcds/server 
     cpuset: ${CPU}
     cpu_shares: 1024 
     deploy:
