@@ -1,11 +1,17 @@
 #!/bin/bash 
 source ".env"
+COMPOSING_ALL=0
 
 [ -z "$DATA_DIR" ] && export DATA_DIR="./data"
 [ ! -d "$DATA_DIR" ] && mkdir -p "$DATA_DIR/${gmod,discord}"
-mkdir "$DATA_DIR" 2> /dev/null
+mkdir "$DATA_DIR" 2> /dev/null 
 
 export DISK=$(df "$DATA_DIR" | tail -1 | cut -d " " -f 1)
+
+bg()
+{
+    $([ $COMPOSING_ALL -eq 1 ] && echo "&")
+}
 
 gmod()
 { 
@@ -17,21 +23,22 @@ gmod()
 
 svencoop()
 {
-    echo "Svencoop $@"
+    docker-compose -f "svencoop.yml" $@ $(bg)
 }
 
 discord()
 {
-    docker-compose -f "discord-bots.yml" $@ || exit 1 &
+    docker-compose -f "discord-bots.yml" $@ $(bg)
 }
 
 webserver()
 {
-    echo "Webserver $@"
+    docker-compose -f "nginx.yml" $@ $(bg)
 }
 
 all()
 {
+    COMPOSING_ALL=1
     gmod $@
     svencoop $@
     discord $@
