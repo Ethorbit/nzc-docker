@@ -2,17 +2,17 @@ version: "3.9"
 services:
   svencoop:
     image: ethorbit/svencoop-server:latest
-    container_name: nzc-svencoop
+    container_name: nzc-svencoop 
+    tty: true 
+    stdin_open: true
     environment:
       SRCDS_RUN_ARGS: "-port ${SVENCOOP_PORT} +maxplayers 12 +map uplink"
       USER_ID: ${SVENCOOP_UID} 
       GROUP_ID: ${SVENCOOP_GID}
     volumes:
       - svencoop:/home/srcds/server 
-    expose:
-      - ${SVENCOOP_PORT}:${SVENCOOP_PORT}
     ports:
-      - ${SVENCOOP_PORT}:${SVENCOOP_PORT}
+      - ${SVENCOOP_PORT}:${SVENCOOP_PORT}/udp
     networks:
       - svencoop
     cpuset: ${SVENCOOP_CPU}   
@@ -24,7 +24,7 @@ services:
         reservations:
           memory: 128M  
     blkio_config:
-      weight: 50
+      weight: 150
       device_write_bps:
         - path: ${DISK}
           rate: 10000000
@@ -33,10 +33,10 @@ services:
           rate: 20000000
       device_read_iops:
         - path: ${DISK}
-          rate: 60
+          rate: 120
       device_write_iops:
         - path: ${DISK}
-          rate: 50
+          rate: 100
     restart: unless-stopped 
 volumes:
   svencoop:

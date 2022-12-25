@@ -29,10 +29,10 @@ services:
           rate: 60000000
       device_read_iops:
         - path: ${DISK}
-          rate: 120
+          rate: 200
       device_write_iops:
         - path: ${DISK}
-          rate: 50
+          rate: 200
     restart: always 
   gmod:
     image: ethorbit/srcds-server 
@@ -43,7 +43,9 @@ services:
       USER_ID: ${GMOD_UID} 
       GROUP_ID: ${GMOD_GID}
     ports:
-      - ${GMOD_PORT}
+      - ${GMOD_PORT}/udp 
+    networks:
+      - gmod
     volumes:
       - ${DATA_DIR}/gmod/srcds/${SERVER_NUMBER}/files:/home/srcds/server 
     cpuset: ${CPU}
@@ -67,4 +69,4 @@ services:
       - gmod
 networks:
   gmod:
-    name: gmod-${SERVER_NUMBER}
+    driver: "bridge"
