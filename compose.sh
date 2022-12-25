@@ -2,11 +2,11 @@
 source ".env"
 COMPOSING_ALL=0
 
-[ -z "$DATA_DIR" ] && export DATA_DIR="./data"
-[ ! -d "$DATA_DIR" ] && mkdir -p "$DATA_DIR/${gmod,discord}"
-mkdir "$DATA_DIR" 2> /dev/null 
-
-export DISK=$(df "$DATA_DIR" | tail -1 | cut -d " " -f 1)
+if [ -z "$DISK" ]; then 
+    VOLUME_DIR=$(docker info | grep "Docker Root" | cut -d ":" -f2 | cut -c2-)
+    [ ! -d "$VOLUME_DIR" ] && VOLUME_DIR="/var/lib/docker"
+    export DISK=$(df "$VOLUME_DIR" | tail -1 | cut -d " " -f 1)
+fi 
 
 bg()
 {
