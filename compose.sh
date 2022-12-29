@@ -1,16 +1,19 @@
 #!/bin/bash 
 source ".env"
-COMPOSING_ALL=0
+COMPOSE_LIST=()
+COMPOSE_ARGS=()
+COMPOSE_COMMAND=
+COMPOSE_DETACHED=0
 
 if [ -z "$DISK" ]; then 
-    VOLUME_DIR=$(docker info | grep "Docker Root" | cut -d ":" -f2 | cut -c2-)
-    [ ! -d "$VOLUME_DIR" ] && VOLUME_DIR="/var/lib/docker"
+    export VOLUME_DIR=$(docker info | grep "Docker Root" | cut -d ":" -f2 | cut -c2-)
+    [ ! -d "$VOLUME_DIR" ] && export VOLUME_DIR="/var/lib/docker"
     export DISK=$(df "$VOLUME_DIR" | tail -1 | cut -d " " -f 1)
 fi 
 
 bg()
 {
-    $([ $COMPOSING_ALL -eq 1 ] && echo "&")
+    $([ $COMPOSE_DETACHED -eq 1 || ${#COMPOSE_LIST[@]} -ge 1 ] && echo "&")
 }
 
 gmod()
@@ -39,23 +42,50 @@ webserver()
 all()
 {
     COMPOSING_ALL=1
-    gmod $@
-    svencoop $@
-    discord $@
-    webserver $@
+    #gmod $@
+    #svencoop $@
+    #discord $@
+    #webserver $@
 }
 
-case "$1" in
-    gmod|svencoop|discord|webserver|all)
-        $@
-    ;;
-    *)
-        echo "First argument must be: 
+while [ $# -ge 1 ]; do 
+    case "$1" in 
+        all)
+            shift
+            exec "$0" gmod svencoop discord webserver $@
+        ;;
+        gmod|svencoop|discord|webserver)
+            COMPOSE_LIST+=$1
+        ;;
+        *)
+            if [ -z "$COMPOSE_COMMAND" ]; then 
+                if [ "$1" != "up" && "$1" != "down" ]; then 
+                    echo "You can only do up or down with this script."
+                    exit 1
+                fi 
+
+                [ "$COMPOSE_COMMAND" = "up" && "$1" = "-d" ] && COMPOSE_DETACHED=1
+
+                COMPOSE_COMMAND="$1"
+            fi 
+            
+            COMPOSE_ARGS+=$1
+        ;;
+    esac 
+
+    shift 1
+done 
+
+if [ ${#COMPOSE_LIST[@]} -ge 1 ]; then 
+    for i in ${COMPOSE_LIST[@]}; do 
+        $i $COMPOSE_ARGS
+    done 
+else 
+    echo "First argument must be: 
         gmod
         svencoop
         discord
         webserver
         all
         "
-    ;;
-esac 
+fi 

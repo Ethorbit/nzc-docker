@@ -1,0 +1,64 @@
+version: "3.9"
+x-defaults: &defaults 
+  blkio_config:
+    weight: 500
+    device_write_bps:
+      - path: ${DISK}
+        rate: 60000000
+    device_read_bps:
+      - path: ${DISK}
+        rate: 60000000
+    device_read_iops:
+      - path: ${DISK}
+        rate: 200
+    device_write_iops:
+      - path: ${DISK}
+        rate: 200      
+x-unionfs: &unionfs 
+  image: ethorbit/unionfs:latest
+  <<: *defaults 
+  user: ${GMOD_UID}:${SFTP_GID}
+  privileged: true    
+  network_mode: none    
+  environment:    
+    TZ: ${TZ}    
+    PUID: ${GMOD_UID}    
+    PGID: ${SFTP_GID}  
+  volumes:
+    - gmod_shared:/bottom:shared    
+  cpu_shares: 256
+  deploy:
+    resources:
+      limits:
+        memory: 50M 
+  restart: unless-stopped 
+x-gmod: &gmod
+  image: ethorbit/srcds-server  
+  <<: *defaults
+  environment:
+    SRCDS_APPID: 4020 
+    SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh +maxplayers 12 +gamemode nzombies +map nz_kino_der_toten"
+    USER_ID: ${GMOD_UID} 
+    GROUP_ID: ${GMOD_GID}    
+  cpu_count: 1
+  cpu_shares: 1024 
+  deploy:
+    resources:
+      limits:
+        memory: 512M
+      reservations:
+        memory: 256M
+  healthcheck: 
+    interval: 1s
+    start_period: 2s
+    retries: 180 
+  ports:
+    27015/udp
+  networks:
+    - gmod
+  restart: unless-stopped 
+volumes:
+  gmod_shared:
+networks:
+  gmod:
+    driver: "bridge"
