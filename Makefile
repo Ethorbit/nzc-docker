@@ -18,8 +18,7 @@ ifndef GMOD_COUNT
 endif 
 
 # Some stuff we want to do with docker-compose can only be done programatically
-# We'll combine the .build.yaml (static) files with the necessary strings from here.
-build:
+# We'll combine the .build.yaml (static) files with the necessary strings here.
 define gmod_seq
 	$(shell seq ${GMOD_COUNT})
 endef
@@ -29,11 +28,11 @@ $(file < ./gmod_servers.build.yml)
 services: $(foreach i,$(gmod_seq), \
 $(eval cpuset := $(shell test ! -z GMOD_$(i)_CPU && echo cpuset: $(GMOD_$(i)_CPU))) \
 $(newline)  unionfs-$i:
-  <<: *unionfs
-  $(cpuset)
-  volumes:
-    - gmod_$i:/top:shared
-    - gmod_$i_merged:/merged:shared
+    <<: *unionfs
+    $(cpuset)
+    volumes:
+      - gmod_$i:/top:shared
+      - gmod_$i_merged:/merged:shared
   gmod-$i:
     <<: *gmod
     $(cpuset)
@@ -50,16 +49,37 @@ volumes: $(foreach i,$(gmod_seq), \
 )
 endef
 
-$(file > ./gmod_servers.yml,$(gmod_yaml))
+build: gmod_servers.build.yml
+	$(file > ./gmod_servers.yml,$(gmod_yaml))
+	$(info $(build_warnings))
 
-$(info $(build_warnings))
+define yml_files
+$(shell ls *yml | sed "s/^/-f /")
+endef
+
+.PHONY: cmd up down help
+args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+
+cmd: build
+	docker-compose $(yml_files) $(args)
 
 up:
+	$(MAKE) cmd "up"
 
 down:
+	$(MAKE) cmd "down"
 
-start:
+define help_text 
+Usage: make [target]
 
-stop:
+Targets:
+   * build
+   * up
+   * down
+   * start
+   * stop 
+   * restart
+endef
 
-restart:
+help:
+	$(info $( qhelp_text))
