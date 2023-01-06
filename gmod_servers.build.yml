@@ -17,7 +17,6 @@ x-defaults: &defaults
 x-unionfs: &unionfs 
   image: ethorbit/unionfs:latest
   <<: *defaults 
-  user: ${GMOD_UID}:${SFTP_GID}
   privileged: true    
   network_mode: none    
   environment:    

@@ -26,7 +26,7 @@ endef
 define gmod_yaml 
 $(file < ./gmod_servers.build.yml)
 services: $(foreach i,$(gmod_seq), \
-$(eval cpuset := $(shell test ! -z GMOD_$(i)_CPU && echo cpuset: $(GMOD_$(i)_CPU))) \
+$(eval cpuset := $(shell test ! -z GMOD_$(i)_CPU && echo cpuset: \"$(GMOD_$(i)_CPU)\")) \
 $(newline)  unionfs-$i:
     <<: *unionfs
     $(cpuset)
@@ -39,11 +39,12 @@ $(newline)  unionfs-$i:
     volumes:
       - gmod_$i_merged:/home/srcds/server
     depends_on:
-      unionfs:
-      condition: service_started
-      healthcheck:
+      unionfs-$i:
+        condition: service_started
+    healthcheck:
       test: ["CMD-SHELL", "findmnt ${VOLUME_DIR} | grep gmod_$i_merged | grep unionfs"])
-volumes: $(foreach i,$(gmod_seq), \
+volumes:  
+  <<: *volumes $(foreach i,$(gmod_seq), \
     $(newline)  gmod_$i: \
     $(newline)  gmod_$i_merged: \
 )
@@ -57,28 +58,15 @@ define yml_files
 $(shell ls *.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /")
 endef
 
-.PHONY: cmd help # up down 
+.PHONY: cmd help 
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 cmd: build
 	DISK=$(DISK) docker-compose $(yml_files) $(args)
 
-#up:
-#	$(MAKE) cmd "up"
-
-#down:
-#	$(MAKE) cmd "down"
-
-define help_text 
-Usage: make [target]
-
-Targets:
-   * build
-   * up
-   * down
-   * start
-   * stop 
-   * restart
+define help_text
+	make build
+	make cmd "compose arguments here" - also calls build
 endef
 
 help:
