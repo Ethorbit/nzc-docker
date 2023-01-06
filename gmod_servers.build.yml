@@ -50,7 +50,7 @@ x-gmod: &gmod
     start_period: 2s
     retries: 180 
   ports:
-    - 27015/udp
+    - 27015-37015:27015/udp
   networks:
     - gmod
   restart: unless-stopped 
