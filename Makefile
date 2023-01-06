@@ -31,20 +31,21 @@ $(newline)  unionfs-$i:
     <<: *unionfs
     $(cpuset)
     volumes:
+      - gmod_shared:/bottom:shared
       - gmod_$i:/top:shared
       - gmod_$i_merged:/merged:shared
   gmod-$i:
     <<: *gmod
     $(cpuset)
     volumes:
-      - gmod_$i_merged:/home/srcds/server
+      - gmod_$i:/home/srcds/server
     depends_on:
       unionfs-$i:
         condition: service_started
     healthcheck:
       test: ["CMD-SHELL", "findmnt ${VOLUME_DIR} | grep gmod_$i_merged | grep unionfs"])
-volumes:  
-  <<: *volumes $(foreach i,$(gmod_seq), \
+volumes:
+  gmod_shared:  $(foreach i,$(gmod_seq), \
     $(newline)  gmod_$i: \
     $(newline)  gmod_$i_merged: \
 )

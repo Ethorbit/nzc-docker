@@ -23,8 +23,6 @@ x-unionfs: &unionfs
     TZ: ${TZ}    
     PUID: ${GMOD_UID}    
     PGID: ${SFTP_GID}  
-  volumes:
-    - gmod_shared:/bottom:shared    
   cpu_shares: 256
   deploy:
     resources:
@@ -56,8 +54,6 @@ x-gmod: &gmod
   networks:
     - gmod
   restart: unless-stopped 
-x-volumes: &volumes
-  gmod_shared:
 networks:
   gmod:
     driver: "bridge"
