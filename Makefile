@@ -54,20 +54,20 @@ build: gmod_servers.build.yml
 	$(info $(build_warnings))
 
 define yml_files
-$(shell ls *yml | sed "s/^/-f /")
+$(shell ls *.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /")
 endef
 
-.PHONY: cmd up down help
+.PHONY: cmd help # up down 
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 cmd: build
-	docker-compose $(yml_files) $(args)
+	DISK=$(DISK) docker-compose $(yml_files) $(args)
 
-up:
-	$(MAKE) cmd "up"
+#up:
+#	$(MAKE) cmd "up"
 
-down:
-	$(MAKE) cmd "down"
+#down:
+#	$(MAKE) cmd "down"
 
 define help_text 
 Usage: make [target]
@@ -82,4 +82,4 @@ Targets:
 endef
 
 help:
-	$(info $( qhelp_text))
+	$(info $(help_text))

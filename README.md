@@ -5,37 +5,39 @@ Docker infrastructure used by the nZombies Chronicles Garry's Mod servers.
 Create a .env file at the root of the project and add the contents:
 
 ```
-DATA_DIR="./data"
 TZ="America/Los_Angeles"
 
-SFTP_PORT=8822
-SFTP_UID=6000
-SFTP_GID=6000
+NGINX_UID=1200
+NGINX_GID=1200
+NGINX_PORT=8080
 
-GMOD_COUNT=2
-GMOD_1_CPU=1
+SFTP_UID=1300
+SFTP_GID=1300
+SFTP_PORT=8822
+
+GMOD_COUNT=3
+GMOD_1_CPU=0
 GMOD_2_CPU=2
-GMOD_UID=7000 
-GMOD_GID=7000
+GMOD_3_CPU=4
+GMOD_UID=2000 
+GMOD_GID=2000
 
 DISCORD_CPU=3
 DISCORD_STICKY_BOT_TOKEN="The token goes here"
 
 SVENCOOP_CPU=4
 SVENCOOP_PORT=1337
+SVENCOOP_UID=2100
+SVENCOOP_GID=2100
 ```
 
-## Creating
-Instead of using `docker-compose`, execute `compose.sh` 
-compose.sh is a wrapper script which takes 2 arguments:
-* 1. What you want to setup (gmod, svencoop, discord, webserver, or all) 
-* 2. Everything you'd pass to docker-compose
+Change as needed.
 
+## Creating
 To start:
-`./compose.sh all up`
+`make cmd "up"`
 
 If it works, add a -d at the end to keep it in the background.
 
 To remove:
-`./compose.sh all down`
-
+`make cmd "down"`
