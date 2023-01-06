@@ -2,7 +2,6 @@ version: "3.9"
 services:
   discord_sticky-bot:
     image: ethorbit/discord_sticky-message-bot:latest
-    container_name: discord_sticky-bot 
     environment:
       STICKY_COOLDOWN: 600000
       BOT_TOKEN: ${DISCORD_STICKY_BOT_TOKEN}

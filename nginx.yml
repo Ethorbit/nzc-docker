@@ -1,11 +1,11 @@
 version: "3.9"
-services:
-  nginx:
-    image: nginxinc/nginx-unprivileged:latest
-    args:
-      UID: ${NGINX_UID}
-      GID: ${NGINX_GID}
-    ports:
-      ${NGINX_PORT}:8080
-volumes:
-  nginx 
+#services:
+#  nginx:
+#    image: nginxinc/nginx-unprivileged:latest
+#    args:
+#      UID: ${NGINX_UID}
+#      GID: ${NGINX_GID}
+#    ports:
+#      ${NGINX_PORT}:8080
+#volumes:
+#  nginx 
