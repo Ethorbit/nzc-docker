@@ -9,7 +9,7 @@ services:
       USER_ID: ${SVENCOOP_UID} 
       GROUP_ID: ${SVENCOOP_GID}
     volumes:
-      - svencoop:/home/srcds/server 
+      - svencoop:/home/srcds/server
     ports:
       - ${SVENCOOP_PORT}:${SVENCOOP_PORT}/udp
     networks:

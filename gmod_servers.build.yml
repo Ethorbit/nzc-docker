@@ -29,14 +29,17 @@ x-unionfs: &unionfs
       limits:
         memory: 50M 
   restart: unless-stopped 
+x-gmod-environment: &gmod-environment
+  SRCDS_APPID: 4020 
+  USER_ID: ${GMOD_UID} 
+  GROUP_ID: ${GMOD_GID}    
 x-gmod: &gmod
   image: ethorbit/srcds-server  
   <<: *defaults
+  stdin_open: true
+  tty: true
   environment:
-    SRCDS_APPID: 4020 
-    SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh +maxplayers 12 +gamemode nzombies +map nz_kino_der_toten"
-    USER_ID: ${GMOD_UID} 
-    GROUP_ID: ${GMOD_GID}    
+    <<: *gmod-environment
   cpu_count: 1
   cpu_shares: 1024 
   deploy:
@@ -49,8 +52,6 @@ x-gmod: &gmod
     interval: 1s
     start_period: 2s
     retries: 180 
-  ports:
-    - 27015-37015:27015/udp
   networks:
     - gmod
   restart: unless-stopped 

@@ -23,10 +23,12 @@ define gmod_seq
 	$(shell seq ${GMOD_COUNT})
 endef
 
-define gmod_yaml 
+define gmod_yaml
 $(file < ./gmod_servers.build.yml)
 services: $(foreach i,$(gmod_seq), \
 $(eval cpuset := $(shell test ! -z GMOD_$(i)_CPU && echo cpuset: \"$(GMOD_$(i)_CPU)\")) \
+$(eval start_port := $(shell echo "$(GMOD_START_PORT) - 1" | bc)) \
+$(eval port := $(shell echo "$(start_port) + $(i)" | bc)) \
 $(newline)  unionfs-$i:
     <<: *unionfs
     $(cpuset)
@@ -37,11 +39,16 @@ $(newline)  unionfs-$i:
   gmod-$i:
     <<: *gmod
     $(cpuset)
+    environment:
+      <<: *gmod-environment
+      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port $(port) +maxplayers 12 +gamemode sandbox +map gm_flatgrass"
     volumes:
       - gmod_$i:/home/srcds/server
+    ports:
+      - $(port):$(port)/udp
     depends_on:
       unionfs-$i:
-        condition: service_started
+        condition: service_started 
     healthcheck:
       test: ["CMD-SHELL", "findmnt ${VOLUME_DIR} | grep gmod_$i_merged | grep unionfs"])
 volumes:
