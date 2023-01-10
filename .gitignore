@@ -1,4 +1,2 @@
 *.env
-settings.yml
-gmod_servers.yml
-
+./compose/gmod_servers.yml

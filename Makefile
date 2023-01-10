@@ -1,4 +1,4 @@
-include .env 
+include ./compose/.env 
 SHELL := /bin/bash 
 
 define newline 
@@ -24,7 +24,7 @@ define gmod_seq
 endef
 
 define gmod_yaml
-$(file < ./gmod_servers.build.yml)
+$(file < ./compose/gmod_servers.build.yml)
 services: $(foreach i,$(gmod_seq), \
 $(eval cpuset := $(shell test ! -z GMOD_$(i)_CPU && echo cpuset: \"$(GMOD_$(i)_CPU)\")) \
 $(eval start_port := $(shell echo "$(GMOD_START_PORT) - 1" | bc)) \
@@ -41,7 +41,7 @@ $(newline)  unionfs-$i:
     $(cpuset)
     environment:
       <<: *gmod-environment
-      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port $(port) +maxplayers 12 +gamemode sandbox +map gm_flatgrass"
+      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port $(port) +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
     volumes:
       - gmod_$i:/home/srcds/server
     ports:
@@ -58,16 +58,16 @@ volumes:
 )
 endef
 
-build: gmod_servers.build.yml
-	$(file > ./gmod_servers.yml,$(gmod_yaml))
+build: ./compose/gmod_servers.build.yml
+	$(file > ./compose/gmod_servers.yml,$(gmod_yaml))
 	$(info $(build_warnings))
-
-define yml_files
-$(shell ls *.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /")
-endef
 
 .PHONY: cmd help 
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+
+define yml_files
+$(shell ls ./compose/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /")
+endef
 
 cmd: build
 	DISK=$(DISK) docker-compose $(yml_files) $(args)
