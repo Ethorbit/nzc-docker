@@ -71,11 +71,11 @@ services:
     cpuset: "0"
     environment:
       <<: *gmod-environment
-      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port 27015 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
+      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port 0 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
     volumes:
       - gmod_1:/home/srcds/server
     ports:
-      - 27015:27015/udp
+      - 0:0/udp
     depends_on:
       unionfs-1:
         condition: service_started 
@@ -93,11 +93,11 @@ services:
     cpuset: "2"
     environment:
       <<: *gmod-environment
-      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port 27016 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
+      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port 1 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
     volumes:
       - gmod_2:/home/srcds/server
     ports:
-      - 27016:27016/udp
+      - 1:1/udp
     depends_on:
       unionfs-2:
         condition: service_started 
@@ -115,11 +115,11 @@ services:
     cpuset: "4"
     environment:
       <<: *gmod-environment
-      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port 27017 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
+      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port 2 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
     volumes:
       - gmod_3:/home/srcds/server
     ports:
-      - 27017:27017/udp
+      - 2:2/udp
     depends_on:
       unionfs-3:
         condition: service_started 

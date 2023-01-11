@@ -1,9 +1,9 @@
 version: "3.9"
 services:
   nginx:
-    #image: nginxinc/nginx-unprivileged:latest
+    user: "${NGINX_UID}:${NZC_GID}"
     build:
-      context: nginxinc/nginx-unprivileged:latest
+      context: ./build/nginx/
       args:
         UID: ${NGINX_UID}
         GID: ${NGINX_GID} 

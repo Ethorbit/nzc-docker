@@ -1,4 +1,4 @@
-include ./compose/.env 
+include .env 
 SHELL := /bin/bash 
 
 define newline 
@@ -70,7 +70,7 @@ $(shell ls ./compose/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /")
 endef
 
 cmd: build
-	DISK=$(DISK) docker-compose $(yml_files) $(args)
+	DISK=$(DISK) docker-compose --env-file .env -p nzc $(yml_files) $(args)
 
 define help_text
 	make build
