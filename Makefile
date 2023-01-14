@@ -1,12 +1,19 @@
 include .env 
 SHELL := /bin/bash 
+compose_dir := ./compose
+build_dir := $(compose_dir)/build
 
+# Used to add newlines into other defines
 define newline 
 
 
 endef
 
-ifndef DISK 
+bs := $(strip \)
+
+# We need to save the disk that named docker volumes get created on,
+# this is so that the compose file can set IO limits for containers
+ifndef DISK
 	VOLUME_DIR := $(shell docker info | grep "Docker Root" | cut -d ":" -f2 | cut -c2-)
 	VOLUME_DIR := $(shell test ! -d "$(VOLUME_DIR)" && echo "/var/lib/docker" || echo "$(VOLUME_DIR)")
 	DISK := $(shell df "$(VOLUME_DIR)" | tail -1 | cut -d " " -f 1)
@@ -18,13 +25,13 @@ ifndef GMOD_COUNT
 endif 
 
 # Some stuff we want to do with docker-compose can only be done programatically
-# We'll combine the .build.yaml (static) files with the necessary strings here.
+# We'll combine the .build.yaml (static) files with the necessary programatic strings here.
 define gmod_seq
 	$(shell seq ${GMOD_COUNT})
 endef
 
 define gmod_yaml
-$(file < ./compose/gmod_servers.build.yml)
+$(file < $(compose_dir)/gmod_servers.build.yml)
 services: $(foreach i,$(gmod_seq), \
 $(eval cpuset := $(shell test ! -z GMOD_$(i)_CPU && echo cpuset: \"$(GMOD_$(i)_CPU)\")) \
 $(eval start_port := $(shell echo "$(GMOD_START_PORT) - 1" | bc)) \
@@ -58,19 +65,51 @@ volumes:
 )
 endef
 
-build: ./compose/gmod_servers.build.yml
-	$(file > ./compose/gmod_servers.yml,$(gmod_yaml))
-	$(info $(build_warnings))
-
-.PHONY: cmd help 
-args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-
-define yml_files
-$(shell ls ./compose/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /")
+# We're also going to generate the server dockerfiles, as they are all mostly identical 
+# (This isn't necessary, but complies with the DRY rule)
+define srcds_base_dockerfile
+ARG PUID
+ARG PGID
+ARG TZ
+ENV TZ=$${TZ}
+USER root
+RUN usermod -u "$$PUID" srcds &&$(bs)
+   groupmod -g "$$PGID" srcds &&$(bs)
+   chown srcds:srcds -R /home/srcds &&$(bs)
+   ln -snf "/usr/share/zoneinfo/$$TZ" /etc/localtime &&$(bs)
+   echo "/usr/share/zoneinfo/$$TZ" > /etc/timezone &&$(bs)
+   dpkg-reconfigure -f noninteractive tzdata
+USER srcds
 endef
 
+define srcds_dockerfile
+FROM ethorbit/srcds-server:latest
+$(srcds_base_dockerfile)
+endef
+
+define svencoop_dockerfile
+FROM ethorbit/svencoop-server:latest
+$(srcds_base_dockerfile)
+endef
+
+define yml_files
+$(shell ls $(compose_dir)/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /")
+endef
+
+command := DISK=$(DISK) docker-compose --env-file .env -p nzc $(yml_files)
+
+build: $(compose_dir)/gmod_servers.build.yml $(build_dir)/srcds-server/Dockerfile $(build_dir)/svencoop-server/Dockerfile
+	$(file > $(compose_dir)/gmod_servers.yml,$(gmod_yaml))
+	$(file > $(build_dir)/srcds-server/Dockerfile,$(srcds_dockerfile))
+	$(file > $(build_dir)/svencoop-server/Dockerfile,$(svencoop_dockerfile))
+	$(command) build
+	$(info $(build_warnings))
+
+.PHONY: cmd help
+	
+args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 cmd: build
-	DISK=$(DISK) docker-compose --env-file .env -p nzc $(yml_files) $(args)
+	$(command) $(args)
 
 define help_text
 	make build

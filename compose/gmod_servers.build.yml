@@ -22,7 +22,7 @@ x-unionfs: &unionfs
   environment:    
     TZ: ${TZ}    
     PUID: ${GMOD_UID}    
-    PGID: ${SFTP_GID}  
+    PGID: ${NZC_GID}  
   cpu_shares: 256
   deploy:
     resources:
@@ -31,13 +31,15 @@ x-unionfs: &unionfs
   restart: unless-stopped 
 x-gmod-environment: &gmod-environment
   SRCDS_APPID: 4020 
-  USER_ID: ${GMOD_UID} 
-  GROUP_ID: ${GMOD_GID}    
+  
+#USER_ID: ${GMOD_UID} 
+#GROUP_ID: ${GMOD_GID}    
 x-gmod: &gmod
   image: ethorbit/srcds-server  
   <<: *defaults
   stdin_open: true
-  tty: true
+  tty: true 
+  user: "${GMOD_UID}:${NZC_GID}"
   environment:
     <<: *gmod-environment
   cpu_count: 1

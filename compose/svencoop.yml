@@ -1,13 +1,16 @@
 version: "3.9"
 services:
   svencoop:
-    image: ethorbit/svencoop-server:latest
+    build:
+      context: ./build/svencoop-server
+      args:
+        PUID: ${SVENCOOP_UID}
+        PGID: ${NZC_GID}
+        TZ: ${TZ}
     tty: true 
     stdin_open: true
     environment:
       SRCDS_RUN_ARGS: "-port ${SVENCOOP_PORT} +maxplayers 12 +map uplink"
-      USER_ID: ${SVENCOOP_UID} 
-      GROUP_ID: ${NZC_GID}
     volumes:
       - svencoop:/home/srcds/server
     ports:
