@@ -1,5 +1,5 @@
 version: "3.9"
-x-defaults: &defaults 
+x-defaults: &defaults
   blkio_config:
     weight: 500
     device_write_bps:
@@ -13,50 +13,54 @@ x-defaults: &defaults
         rate: 200
     device_write_iops:
       - path: ${DISK}
-        rate: 200      
-x-unionfs: &unionfs 
+        rate: 200
+x-unionfs: &unionfs
   image: ethorbit/unionfs:latest
-  <<: *defaults 
-  privileged: true    
-  network_mode: none    
-  environment:    
-    TZ: ${TZ}    
-    PUID: ${GMOD_UID}    
-    PGID: ${NZC_GID}  
+  <<: *defaults
+  privileged: true
+  network_mode: none
+  environment:
+    PUID: ${GMOD_UID}
+    PGID: ${NZC_GID}
+    TZ: ${TZ}
   cpu_shares: 256
   deploy:
     resources:
       limits:
-        memory: 50M 
-  restart: unless-stopped 
+        memory: 50M
+  restart: unless-stopped
 x-gmod-environment: &gmod-environment
-  SRCDS_APPID: 4020 
-  
-#USER_ID: ${GMOD_UID} 
-#GROUP_ID: ${GMOD_GID}    
+  SRCDS_APPID: 4020
+
 x-gmod: &gmod
-  image: ethorbit/srcds-server  
+  #image: ethorbit/srcds-server
+  build:
+    context: ./build/srcds-server
+    args:
+      PUID: ${GMOD_UID}
+      PGID: ${NZC_GID}
+      TZ: ${TZ}
   <<: *defaults
   stdin_open: true
-  tty: true 
+  tty: true
   user: "${GMOD_UID}:${NZC_GID}"
   environment:
     <<: *gmod-environment
   cpu_count: 1
-  cpu_shares: 1024 
+  cpu_shares: 1024
   deploy:
     resources:
       limits:
         memory: 512M
       reservations:
         memory: 256M
-  healthcheck: 
+  healthcheck:
     interval: 1s
     start_period: 2s
-    retries: 180 
+    retries: 180
   networks:
     - gmod
-  restart: unless-stopped 
+  restart: unless-stopped
 networks:
   gmod:
     driver: "bridge"

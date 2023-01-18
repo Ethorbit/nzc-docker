@@ -1,17 +1,25 @@
 version: "3.9"
 services:
+#  nginx_permissions:
+#    image: alpine:latest
+#    volumes:
+#      - nginx_websites:/mnt
+#    command: >
+#      /bin/sh -c "chown ${NGINX_UID}:${NZC_GID} /mnt/svencoop"
   nginx:
-    image: nginxinc/nginx-unprivileged:latest
-    user: "${NGINX_UID}:${NZC_GID}"
+    build:
+      context: ./build/nginx
+      args:
+        UID: ${NGINX_UID}
+        GID: ${NZC_GID}
     volumes:
+      - nginx_websites:/usr/share/nginx
       - svencoop:/usr/share/nginx/svencoop:ro
     ports:
       - ${NGINX_PORT}:8080
+    # depends_on:
+    #      nginx_permissions:
+    #         condition: service_completed_successfully
+    restart: unless-stopped
 volumes:
-  nginx:
-
-#build:
-#context: ./build/nginx/
-#args:
-#UID: ${NGINX_UID}
-#GID: ${NGINX_GID} 
+  nginx_websites:
