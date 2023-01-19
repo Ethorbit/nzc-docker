@@ -10,11 +10,11 @@ services:
     tty: true 
     stdin_open: true
     environment:
-      SRCDS_RUN_ARGS: "-port ${SVENCOOP_PORT} +maxplayers 12 +map uplink"
+      SRCDS_RUN_ARGS: "-port ${SVENCOOP_PORT:-28015} +maxplayers 12 +map uplink"
     volumes:
       - svencoop:/home/srcds/server
     ports:
-      - ${SVENCOOP_PORT}:${SVENCOOP_PORT}/udp
+      - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT}/udp
     networks:
       - svencoop
     cpuset: ${SVENCOOP_CPU}   

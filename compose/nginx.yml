@@ -1,11 +1,13 @@
 version: "3.9"
 services:
-#  nginx_permissions:
-#    image: alpine:latest
-#    volumes:
-#      - nginx_websites:/mnt
-#    command: >
-#      /bin/sh -c "chown ${NGINX_UID}:${NZC_GID} /mnt/svencoop"
+  #certbot:
+  #  image: certbot/certbot:latest
+  nginx_permissions:
+    image: alpine:latest
+    volumes:
+      - ./data/nginx/conf.d:/mnt
+    command: "chown -R root:root /mnt/"
+    restart: on-failure
   nginx:
     build:
       context: ./build/nginx
@@ -13,13 +15,17 @@ services:
         UID: ${NGINX_UID}
         GID: ${NZC_GID}
     volumes:
-      - nginx_websites:/usr/share/nginx
-      - svencoop:/usr/share/nginx/svencoop:ro
+      - nginx_websites:/usr/share/nginx/html
+      - ./data/nginx/conf.d:/etc/nginx/conf.d
+      - svencoop:/usr/share/nginx/html/svencoop:ro
     ports:
-      - ${NGINX_PORT}:8080
-    # depends_on:
-    #      nginx_permissions:
-    #         condition: service_completed_successfully
+      - ${NGINX_HTTP_PORT:-80}:80
+      - ${NGINX_HTTPS_PORT:-443}:443
+    depends_on:
+      nginx_permissions:
+        condition: service_completed_successfully
+      #certbot:
+        #condition: service_completed_successfully
     restart: unless-stopped
 volumes:
   nginx_websites:
