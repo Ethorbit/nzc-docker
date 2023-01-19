@@ -1,2 +1,3 @@
 *.env
 ./compose/gmod_servers.yml
+./compose/data/nginx/conf.d/*
