@@ -54,15 +54,14 @@ services:
       certbot:
         condition: service_started
  
-  # Development nginx because Let's Encrypt only works on the actual domain
-  # in /etc/hosts, add: 127.0.0.1 chronicles.local 
+  # Development nginx because Let's Encrypt only works on the actual domain.
+  # In /etc/hosts, add: 127.0.0.1 chronicles.local 
   mkcert:
     image: ethorbit/mkcert:latest
     profiles:
       - development
     volumes:
-      - ${SSL_SYSTEM_DIR:-/etc/ssl/certs}:/etc/ssl/certs
-      - ${PRIVATE_SSL_SYSTEM_DIR:-/etc/ssl/private}:/etc/ssl/private
+      - ${SSL_CERT_SYSTEM_DIR:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates
       - mkcert:/mnt
     command: > 
       /bin/sh -c 'mkcert -install &&\
