@@ -1,31 +1,95 @@
 version: "3.9"
-services:
-  #certbot:
-  #  image: certbot/certbot:latest
+
+# TODO: add a healthcheck that ensures a website connection can be made
+x-nginx: &nginx
+  build:
+    context: ./build/nginx
+    args:
+      UID: ${NGINX_UID}
+      GID: ${NZC_GID}
+  networks:
+    - nginx
+  ports:
+    - ${NGINX_HTTP_PORT:-80}:80
+    - ${NGINX_HTTPS_PORT:-443}:443
+  restart: unless-stopped
+
+services: 
   nginx_permissions:
     image: alpine:latest
     volumes:
-      - ./data/nginx/conf.d:/mnt
-    command: "chown -R root:root /mnt/"
-    restart: on-failure
-  nginx:
-    build:
-      context: ./build/nginx
-      args:
-        UID: ${NGINX_UID}
-        GID: ${NZC_GID}
+      - ./data/nginx/conf.d:/mnt/nginx_conf
+    command: "chown -R root:root /mnt/" 
+    network_mode: none
+    cap_drop:
+      - ALL 
+    cap_add:
+      - CHOWN
+    restart: on-failure      
+
+  certbot:
+    image: certbot/certbot:latest
+    profiles:
+      - production
     volumes:
+      - certbot_conf:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    networks:
+      - nginx
+    restart: unless-stopped       
+  nginx_production: 
+    <<: *nginx  
+    profiles:
+      - production
+    volumes: 
       - nginx_websites:/usr/share/nginx/html
-      - ./data/nginx/conf.d:/etc/nginx/conf.d
       - svencoop:/usr/share/nginx/html/svencoop:ro
-    ports:
-      - ${NGINX_HTTP_PORT:-80}:80
-      - ${NGINX_HTTPS_PORT:-443}:443
-    depends_on:
+      - ./data/nginx/conf.d:/etc/nginx/conf.d
+      - ./data/nginx/snippets/production:/etc/nginx/snippets/profile
+      - certbot_conf:/etc/letsencrypt    
+      - certbot_www:/var/www/certbot
+    depends_on:  
       nginx_permissions:
         condition: service_completed_successfully
-      #certbot:
-        #condition: service_completed_successfully
-    restart: unless-stopped
+      certbot:
+        condition: service_started
+ 
+  # Development nginx because Let's Encrypt only works on the actual domain
+  # in /etc/hosts, add: 127.0.0.1 chronicles.local 
+  mkcert:
+    image: ethorbit/mkcert:latest
+    profiles:
+      - development
+    volumes:
+      - ${SSL_SYSTEM_DIR:-/etc/ssl/certs}:/etc/ssl/certs
+      - ${PRIVATE_SSL_SYSTEM_DIR:-/etc/ssl/private}:/etc/ssl/private
+      - mkcert:/mnt
+    command: > 
+      /bin/sh -c 'mkcert -install &&\
+              [[ ! -f /mnt/mkcert.pem ]] &&\
+              mkcert -cert-file /mnt/mkcert.pem \
+              -key-file /mnt/mkcert.key \
+              chronicles.local' 
+    network_mode: none
+  nginx_development:
+    <<: *nginx
+    profiles:
+      - development
+    volumes:   
+      - nginx_websites:/usr/share/nginx/html
+      - svencoop:/usr/share/nginx/html/svencoop:ro
+      - ./data/nginx/conf.d:/etc/nginx/conf.d
+      - ./data/nginx/snippets/development:/etc/nginx/snippets/profile
+      - mkcert:/etc/mkcert
+    depends_on:  
+      nginx_permissions:
+        condition: service_completed_successfully
+      mkcert:
+        condition: service_completed_successfully
 volumes:
   nginx_websites:
+  certbot_conf:
+  certbot_www:
+  mkcert:
+networks:
+  nginx:

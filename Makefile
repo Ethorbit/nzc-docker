@@ -97,7 +97,8 @@ define yml_files
 $(shell ls $(compose_dir)/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /")
 endef
 
-command := DISK=$(DISK) docker-compose --env-file .env -p nzc $(yml_files)
+profile := $(shell [[ "$(DEVELOPING)" -ge 1 ]] && echo "development" || echo "production")
+command := DISK=$(DISK) docker-compose --env-file .env --profile $(profile) -p nzc $(yml_files)
 
 build: $(compose_dir)/gmod_servers.build.yml $(build_dir)/srcds-server/Dockerfile $(build_dir)/svencoop-server/Dockerfile
 	$(file > $(compose_dir)/gmod_servers.yml,$(gmod_yaml))
