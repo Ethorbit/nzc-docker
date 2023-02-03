@@ -110,7 +110,7 @@ build: $(compose_dir)/gmod_servers.build.yml $(build_dir)/srcds-server/Dockerfil
 
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-.PHONY: cmd cmd_empty help
+.PHONY: cmd help
 cmd: build
 	$(command) $(args)
 
