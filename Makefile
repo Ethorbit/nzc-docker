@@ -94,28 +94,32 @@ $(srcds_base_dockerfile)
 endef
 
 define yml_files
-$(shell ls $(compose_dir)/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /")
+$(shell [[ "$(nofiles)" -ne 1 ]] && ls $(compose_dir)/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /")
 endef
 
 profile := $(shell [[ "$(DEVELOPING)" -ge 1 ]] && echo "development" || echo "production")
 command := DISK=$(DISK) docker-compose --env-file .env --profile $(profile) -p nzc $(yml_files)
-
+	
 build: $(compose_dir)/gmod_servers.build.yml $(build_dir)/srcds-server/Dockerfile $(build_dir)/svencoop-server/Dockerfile
 	$(file > $(compose_dir)/gmod_servers.yml,$(gmod_yaml))
 	$(file > $(build_dir)/srcds-server/Dockerfile,$(srcds_dockerfile))
 	$(file > $(build_dir)/svencoop-server/Dockerfile,$(svencoop_dockerfile))
 	$(command) build
 	$(info $(build_warnings))
+	touch $@ 
 
-.PHONY: cmd help
-	
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+
+.PHONY: cmd cmd_empty help
 cmd: build
 	$(command) $(args)
 
 define help_text
 	make build
 	make cmd "compose arguments here" - also calls build
+		Examples:
+			make cmd "up"
+			nofiles=1 make cmd -- "-f ./compose/nginx.yml down"
 endef
 
 help:
