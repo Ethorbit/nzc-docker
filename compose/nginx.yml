@@ -1,5 +1,4 @@
 version: "3.9"
-
 # TODO: add a healthcheck that ensures a website connection can be made
 x-nginx: &nginx
   build:
@@ -13,20 +12,36 @@ x-nginx: &nginx
     - ${NGINX_HTTP_PORT:-80}:80
     - ${NGINX_HTTPS_PORT:-443}:443
   restart: unless-stopped
-
 services: 
   nginx_permissions:
     image: alpine:latest
     volumes:
-      - ./data/nginx/conf.d:/mnt/nginx_conf
-    command: "chown -R root:root /mnt/" 
+      - ./data/nginx/conf.d:/mnt/nginx_conf 
+      - mkcert:/mnt/mkcert
+      - certbot_conf:/mnt/certbot_conf
+      - certbot_www:/mnt/certbot_www
+    command: >
+      /bin/sh -c "chown -R root:root /mnt/nginx_conf/ &&\
+        chown -fR ${NGINX_UID}:root /mnt/mkcert/ &&\
+        if [ -f '/mnt/certbot_conf/ssl-dhparams.pem' ]; then \
+        chown -f ${NGINX_UID}:root /mnt/certbot_conf/ssl-dhparams.pem \
+        fi &&\ 
+        if [ -d '/mnt/certbot_conf/live/' ]; then \
+        chown -fR ${NGINX_UID}:root /mnt/certbot_conf/live/ \
+        fi"
     network_mode: none
     cap_drop:
       - ALL 
     cap_add:
       - CHOWN
-    restart: on-failure      
-
+    depends_on:
+      certbot:
+        condition: service_started
+      mkcert:
+        condition: service_completed_successfully
+    restart: on-failure
+  
+  # Production nginx, for use only on the machine the desired domain is on.
   certbot:
     image: certbot/certbot:latest
     profiles:
@@ -51,24 +66,23 @@ services:
     depends_on:  
       nginx_permissions:
         condition: service_completed_successfully
-      certbot:
-        condition: service_started
- 
-  # Development nginx because Let's Encrypt only works on the actual domain.
-  # In /etc/hosts, add: 127.0.0.1 chronicles.local 
+          
+  # Development nginx (because Let's Encrypt only works on the actual domain)
+  # In your /etc/hosts, add: 127.0.0.1 chronicles.local
+  # After running, add the .crt file in CA_TRUST_STORE_DIR to your browser.
   mkcert:
     image: ethorbit/mkcert:latest
     profiles:
       - development
     volumes:
-      - ${SSL_CERT_SYSTEM_DIR:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates
+      - ${CA_TRUST_STORE_DIR:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates
       - mkcert:/mnt
     command: > 
-      /bin/sh -c 'mkcert -install &&\
-              [[ ! -f /mnt/mkcert.pem ]] &&\
+      /bin/sh -c '[[ ! -f /mnt/mkcert.pem ]] &&\
+              mkcert -install &&\
               mkcert -cert-file /mnt/mkcert.pem \
               -key-file /mnt/mkcert.key \
-              chronicles.local' 
+              chronicles.local || exit 0' 
     network_mode: none
   nginx_development:
     <<: *nginx
@@ -80,10 +94,10 @@ services:
       - ./data/nginx/conf.d:/etc/nginx/conf.d
       - ./data/nginx/snippets/development:/etc/nginx/snippets/profile
       - mkcert:/etc/mkcert
+    extra_hosts:
+      - "chronicles.local:127.0.0.1"
     depends_on:  
       nginx_permissions:
-        condition: service_completed_successfully
-      mkcert:
         condition: service_completed_successfully
 volumes:
   nginx_websites:

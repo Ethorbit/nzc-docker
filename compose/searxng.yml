@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  searxng:
+    image: searxng/searxng:latest
+    networks:
+      - nginx
+        #- searxng
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/searxng:/etc/searxng:rw
+    environment:
+      - SEARXNG_BASE_URL=http://${SEARXNG_HOSTNAME:-localhost}/
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+    cpuset: ${SEARXNG_CPU}
+      #networks:
+      #searxng:
+      #ipam:
+      # driver: default
+

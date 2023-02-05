@@ -1,0 +1,64 @@
+# see https://docs.searxng.org/admin/engines/settings.html#use-default-settings
+use_default_settings:
+  engines:
+    remove:
+      - artic
+      - ccc-tv
+      - unsplash
+      - library of congress
+      - frinkiac
+      - openverse
+      - mediathekviewweb
+      - ina
+      - wiby
+      - curlie
+      - currency
+      - ddg definitions
+      - dictzone
+      - lingva
+      - wikibooks
+      - wikiversity
+      - wikivoyage
+      - wikidata
+      - wikipedia
+      - wikimini
+search:
+  autocomplete: google
+engines:
+  - name: google
+    engine: google
+    shortcut: go  
+    use_mobile_ui: true
+  - name: brave
+    disabled: false
+  - name: duckduckgo
+    disabled: true
+  - name: qwant
+    disabled: true
+  - name: currency
+    disabled: true
+  - name: unsplash
+    disabled: true
+  - name: tineye
+    disabled: true
+  - name: sepiasearch
+    disabled: true
+general:
+  debug: false
+  enable_metrics: false
+  donation_url: false
+server:
+  # base_url is defined in the SEARXNG_BASE_URL environment variable, see .env and docker-compose.yml
+  secret_key: "c2c60b0d0b963577f64424afe830768585224906cdfd89152f593aed35815930"  # change this!
+  limiter: false  # can be disabled for a private instance
+  image_proxy: false
+outgoing:
+  pool_connections: 300
+  pool_maxsize: 20
+ui:
+  use_mobile_ui: true
+  static_use_hash: true
+  theme_args:
+    simple_style: dark
+redis:
+  url: redis://redis:6379/0
