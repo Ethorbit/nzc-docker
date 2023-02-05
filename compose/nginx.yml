@@ -59,7 +59,8 @@ services:
     volumes: 
       - nginx_websites:/usr/share/nginx/html
       - svencoop:/usr/share/nginx/html/svencoop:ro
-      - ./data/nginx/conf.d:/etc/nginx/conf.d
+      - ./data/nginx/conf.d:/etc/nginx/conf.d 
+      - ./data/nginx/snippets:/etc/nginx/snippets
       - ./data/nginx/snippets/production:/etc/nginx/snippets/profile
       - certbot_conf:/etc/letsencrypt    
       - certbot_www:/var/www/certbot
@@ -68,8 +69,9 @@ services:
         condition: service_completed_successfully
           
   # Development nginx (because Let's Encrypt only works on the actual domain)
-  # In your /etc/hosts, add: 127.0.0.1 chronicles.local
-  # After running, add the .crt file in CA_TRUST_STORE_DIR to your browser.
+  # In your host's /etc/hosts, add: 127.0.0.1 chronicles.local
+  # After running, add the .crt file located in the host's 
+  # CA_TRUST_STORE_DIR into your browser.
   mkcert:
     image: ethorbit/mkcert:latest
     profiles:
@@ -92,6 +94,7 @@ services:
       - nginx_websites:/usr/share/nginx/html
       - svencoop:/usr/share/nginx/html/svencoop:ro
       - ./data/nginx/conf.d:/etc/nginx/conf.d
+      - ./data/nginx/snippets:/etc/nginx/snippets
       - ./data/nginx/snippets/development:/etc/nginx/snippets/profile
       - mkcert:/etc/mkcert
     extra_hosts:
