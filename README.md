@@ -7,12 +7,18 @@ Create a .env file at the root of the project and add the contents:
 ```
 DEVELOPING=0
 
+# Dev vars
+CA_TRUST_STORE_DIR="/etc/ca-certificates/trust-source"
+
+# Dev / Production vars
 TZ="America/Los_Angeles"
 
 NZC_GID=9000
 
 NGINX_UID=1200
 #NGINX_GID=1200
+
+SEARXNG_CPU=4
 
 SFTP_UID=1300
 #SFTP_GID=1300
