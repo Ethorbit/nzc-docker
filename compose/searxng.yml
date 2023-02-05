@@ -1,10 +1,47 @@
 version: "3.9"
+x-io-limits: &io-limits 
+  blkio_config:
+    weight: 25
+    device_write_bps:
+      - path: ${DISK}
+        rate: 10000000
+    device_read_bps:
+      - path: ${DISK}
+        rate: 10000000
+    device_read_iops:
+      - path: ${DISK}
+        rate: 50
+    device_write_iops:
+      - path: ${DISK}
+        rate: 50  
 services:
+  redis:
+    image: "redis:alpine"
+    command: redis-server --save "" --appendonly "no"
+    networks:
+      - searxng
+    tmpfs:
+      - /var/lib/redis
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+    cpuset: ${SEARXNG_CPU}    
+    cpu_shares: 20
+    deploy:
+      resources:
+        limits:
+          memory: 64M 
+        reservations:
+          memory: 32M
+    <<: *io-limits
   searxng:
     image: searxng/searxng:latest
     networks:
+      - searxng
       - nginx
-        #- searxng
     ports:
       - "8080:8080"
     volumes:
@@ -22,9 +59,16 @@ services:
       options:
         max-size: "1m"
         max-file: "1"
-    cpuset: ${SEARXNG_CPU}
-      #networks:
-      #searxng:
-      #ipam:
-      # driver: default
-
+    cpuset: ${SEARXNG_CPU}  
+    cpu_shares: 40
+    deploy:
+      resources:
+        limits:
+          memory: 156M 
+        reservations:
+          memory: 128M  
+    <<: *io-limits
+networks:
+  searxng:
+    ipam:
+      driver: default
