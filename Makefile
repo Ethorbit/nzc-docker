@@ -100,7 +100,7 @@ endef
 profile := $(shell [[ "$(DEVELOPING)" -ge 1 ]] && echo "development" || echo "production")
 command := DISK=$(DISK) docker-compose --env-file .env --profile $(profile) -p nzc $(yml_files)
 	
-build: $(compose_dir)/gmod_servers.build.yml $(build_dir)/srcds-server/Dockerfile $(build_dir)/svencoop-server/Dockerfile
+build: $(compose_dir)/gmod_servers.build.yml $(dir $(wildcard $(build_dir)/*/Dockerfile))
 	$(file > $(compose_dir)/gmod_servers.yml,$(gmod_yaml))
 	$(file > $(build_dir)/srcds-server/Dockerfile,$(srcds_dockerfile))
 	$(file > $(build_dir)/svencoop-server/Dockerfile,$(svencoop_dockerfile))
