@@ -5,7 +5,7 @@ Docker infrastructure used by the nZombies Chronicles Garry's Mod servers.
 Create a .env file at the root of the project and add the contents:
 
 ```
-DEVELOPING=0
+DEVELOPING=1
 
 # Dev vars
 CA_TRUST_STORE_DIR="/etc/ca-certificates/trust-source"
@@ -14,6 +14,8 @@ CA_TRUST_STORE_DIR="/etc/ca-certificates/trust-source"
 TZ="America/Los_Angeles"
 
 NZC_GID=9000
+
+DOMAIN_NAME="chronicles.local"
 
 NGINX_UID=1200
 #NGINX_GID=1200
