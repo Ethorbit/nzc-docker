@@ -16,10 +16,8 @@ x-io-limits: &io-limits
         rate: 50  
 x-depends_on: &depends_on
   depends_on:
-    nginx_production:
-      condition: service_started 
-    nginx_development:
-      condition: service_started
+    - nginx_production
+    - nginx_development
 services:
   redis:
     image: "redis:alpine"

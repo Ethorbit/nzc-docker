@@ -11,6 +11,28 @@ x-nginx: &nginx
   ports:
     - ${NGINX_HTTP_PORT:-80}:80
     - ${NGINX_HTTPS_PORT:-443}:443
+  cpuset: ${NGINX_CPU}
+  cpu_shares: 2048
+  deploy:
+    resources:
+      limits:
+        memory: 1024M
+      reservations:
+        memory: 512M
+  blkio_config:
+    weight: 800
+    device_write_bps:
+      - path: ${DISK}
+        rate: 50000000
+    device_read_bps:
+      - path: ${DISK}
+        rate: 50000000
+    device_read_iops:
+      - path: ${DISK}
+        rate: 100
+    device_write_iops:
+      - path: ${DISK}
+        rate: 100
   restart: unless-stopped
 x-nginx_envsubst: &nginx_envsubst
   build:
@@ -30,12 +52,15 @@ services:
   nginx_permissions:
     image: alpine:latest
     volumes:
+      - nginx_websites:/mnt/nginx_websites
       - ./data/nginx:/mnt/nginx_conf
       - mkcert:/mnt/mkcert
       - certbot_conf:/mnt/certbot_conf
       - certbot_www:/mnt/certbot_www
     command: >
-      /bin/sh -c "chown -R root:root /mnt/nginx_conf/
+      /bin/sh -c "mkdir -p /mnt/nginx_websites/fastdl
+      && chown ${NGINX_UID}:${NGINX_GID} /mnt/nginx_websites/fastdl
+      && chown -R root:root /mnt/nginx_conf/
       && chown -fR ${NGINX_UID}:root /mnt/mkcert/
       && if [ -f '/mnt/certbot_conf/ssl-dhparams.pem' ]; then
         chown -f ${NGINX_UID}:root /mnt/certbot_conf/ssl-dhparams.pem
@@ -84,7 +109,7 @@ services:
       - nginx_websites:/usr/share/nginx/html  
       - ./data/nginx/snippets:/etc/nginx/snippets
       - ./data/nginx/conf.d:/etc/nginx/conf.d
-      - svencoop:/usr/share/nginx/html/svencoop:ro
+      #- svencoop:/usr/share/nginx/html/svencoop:ro
       - certbot_conf:/etc/letsencrypt    
       - certbot_www:/var/www/certbot 
     depends_on:
@@ -137,7 +162,7 @@ services:
       - nginx_websites:/usr/share/nginx/html 
       - ./data/nginx/snippets:/etc/nginx/snippets
       - ./data/nginx/conf.d:/etc/nginx/conf.d
-      - svencoop:/usr/share/nginx/html/svencoop:ro
+        #- svencoop:/usr/share/nginx/html/fastdl/svencoop:ro
       - mkcert:/etc/mkcert
     extra_hosts:
       - "${DOMAIN_NAME}:127.0.0.1" 
