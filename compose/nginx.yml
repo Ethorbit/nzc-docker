@@ -106,7 +106,8 @@ services:
     profiles:
       - production
     volumes: 
-      - nginx_websites:/usr/share/nginx/html  
+      - nginx_websites:/usr/share/nginx/html   
+      - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./data/nginx/snippets:/etc/nginx/snippets
       - ./data/nginx/conf.d:/etc/nginx/conf.d
       #- svencoop:/usr/share/nginx/html/svencoop:ro
@@ -160,6 +161,7 @@ services:
       - development
     volumes:   
       - nginx_websites:/usr/share/nginx/html 
+      - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./data/nginx/snippets:/etc/nginx/snippets
       - ./data/nginx/conf.d:/etc/nginx/conf.d
         #- svencoop:/usr/share/nginx/html/fastdl/svencoop:ro
