@@ -52,7 +52,7 @@ services:
     volumes:
       - ./data/searxng:/etc/searxng:rw
     environment:
-      - SEARXNG_BASE_URL=http://${DOMAIN_NAME:-localhost}/
+      - SEARXNG_BASE_URL="http://${DOMAIN_NAME:-localhost}/"
     cap_drop:
       - ALL
     cap_add:

@@ -35,8 +35,7 @@ x-nginx: &nginx
         rate: 100
   restart: unless-stopped
 x-nginx_envsubst: &nginx_envsubst
-  build:
-    context: ./build/envsubst
+  image: ethorbit/envsubst:latest
   volumes:
     - ./data/nginx/snippets.template:/mnt/nginx_snippet_templates
     - ./data/nginx/snippets:/mnt/nginx_snippets
@@ -53,12 +52,14 @@ services:
     image: alpine:latest
     volumes:
       - nginx_websites:/mnt/nginx_websites
+      - nginx_cpu:/mnt/nginx_cpu
       - ./data/nginx:/mnt/nginx_conf
       - mkcert:/mnt/mkcert
       - certbot_conf:/mnt/certbot_conf
       - certbot_www:/mnt/certbot_www
     command: >
-      /bin/sh -c "mkdir -p /mnt/nginx_websites/fastdl
+      /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
+      && mkdir -p /mnt/nginx_websites/fastdl
       && chown ${NGINX_UID}:${NGINX_GID} /mnt/nginx_websites/fastdl
       && chown -R root:root /mnt/nginx_conf/
       && chown -fR ${NGINX_UID}:root /mnt/mkcert/
@@ -105,7 +106,8 @@ services:
     <<: *nginx  
     profiles:
       - production
-    volumes: 
+    volumes:  
+      - nginx_cpu:/sys/devices/system/cpu:ro
       - nginx_websites:/usr/share/nginx/html   
       - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./data/nginx/snippets:/etc/nginx/snippets
@@ -160,6 +162,7 @@ services:
     profiles:
       - development
     volumes:   
+      - nginx_cpu:/sys/devices/system/cpu:ro
       - nginx_websites:/usr/share/nginx/html 
       - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./data/nginx/snippets:/etc/nginx/snippets
@@ -174,6 +177,7 @@ services:
       nginx_permissions:
         condition: service_completed_successfully
 volumes:
+  nginx_cpu:
   nginx_websites:
   certbot_conf:
   certbot_www:
