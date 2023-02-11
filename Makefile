@@ -93,18 +93,26 @@ FROM ethorbit/svencoop-server:latest
 $(srcds_base_dockerfile)
 endef
 
+list_yml_command := ls $(compose_dir)/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /"
+
 define yml_files
-$(shell [[ "$(nofiles)" -ne 1 ]] && ls $(compose_dir)/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /")
+$(shell [[ "$(nofiles)" -ne 1 ]] && $(list_yml_command))
+endef
+
+define yml_files_build
+$(shell $(list_yml_command))
 endef
 
 profile := $(shell [[ "$(DEVELOPING)" -ge 1 ]] && echo "development" || echo "production")
-command := DISK=$(DISK) docker-compose --env-file .env --profile $(profile) -p nzc $(yml_files)
-	
-build: $(compose_dir)/gmod_servers.build.yml $(dir $(wildcard $(build_dir)/*/Dockerfile))
+command_base := nofiles=$(nofiles) DISK=$(DISK) docker-compose --env-file .env --profile $(profile) -p nzc
+command := $(command_base) $(yml_files)
+command_build := $(command_base) $(yml_files_build) build
+
+build: $(compose_dir)/gmod_servers.build.yml $(wildcard $(build_dir)/**/*)
 	$(file > $(compose_dir)/gmod_servers.yml,$(gmod_yaml))
 	$(file > $(build_dir)/srcds-server/Dockerfile,$(srcds_dockerfile))
 	$(file > $(build_dir)/svencoop-server/Dockerfile,$(svencoop_dockerfile))
-	$(shell no_files=0 $(command) build)
+	$(command_build)
 	$(info $(build_warnings))
 	touch $@ 
 
