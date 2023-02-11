@@ -13,8 +13,6 @@ services:
       SRCDS_RUN_ARGS: "-port ${SVENCOOP_PORT:-28015} +maxplayers 12 +map uplink"
     volumes:
       - svencoop:/home/srcds/server
-      - nginx_websites:/mnt/nginx_websites
-      - svencoop:/mnt/nginx_websites/fastdl:ro
     depends_on:
       - nginx_development
       - nginx_production

@@ -104,7 +104,7 @@ build: $(compose_dir)/gmod_servers.build.yml $(dir $(wildcard $(build_dir)/*/Doc
 	$(file > $(compose_dir)/gmod_servers.yml,$(gmod_yaml))
 	$(file > $(build_dir)/srcds-server/Dockerfile,$(srcds_dockerfile))
 	$(file > $(build_dir)/svencoop-server/Dockerfile,$(svencoop_dockerfile))
-	$(command) build
+	$(shell no_files=0 $(command) build)
 	$(info $(build_warnings))
 	touch $@ 
 

@@ -59,8 +59,9 @@ services:
       - certbot_www:/mnt/certbot_www
     command: >
       /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
-      && mkdir -p /mnt/nginx_websites/fastdl
-      && chown ${NGINX_UID}:${NGINX_GID} /mnt/nginx_websites/fastdl
+      && mkdir -p /mnt/nginx_websites/fastdl/svencoop
+      && chown ${NGINX_UID}:${NZC_GID} /mnt/nginx_websites/fastdl 
+      /mnt/nginx_websites/fastdl/svencoop
       && chown -R root:root /mnt/nginx_conf/
       && chown -fR ${NGINX_UID}:root /mnt/mkcert/
       && if [ -f '/mnt/certbot_conf/ssl-dhparams.pem' ]; then
@@ -111,8 +112,8 @@ services:
       - nginx_websites:/usr/share/nginx/html   
       - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./data/nginx/snippets:/etc/nginx/snippets
-      - ./data/nginx/conf.d:/etc/nginx/conf.d
-      #- svencoop:/usr/share/nginx/html/svencoop:ro
+      - ./data/nginx/conf.d:/etc/nginx/conf.d 
+      - svencoop:/usr/share/nginx/html/fastdl/svencoop:ro
       - certbot_conf:/etc/letsencrypt    
       - certbot_www:/var/www/certbot 
     depends_on:
@@ -167,7 +168,7 @@ services:
       - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./data/nginx/snippets:/etc/nginx/snippets
       - ./data/nginx/conf.d:/etc/nginx/conf.d
-        #- svencoop:/usr/share/nginx/html/fastdl/svencoop:ro
+      - svencoop:/usr/share/nginx/html/fastdl/svencoop:ro
       - mkcert:/etc/mkcert
     extra_hosts:
       - "${DOMAIN_NAME}:127.0.0.1" 
