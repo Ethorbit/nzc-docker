@@ -33,20 +33,41 @@ x-nginx: &nginx
     device_write_iops:
       - path: ${DISK}
         rate: 100
-  restart: unless-stopped
-x-nginx_envsubst: &nginx_envsubst
-  image: ethorbit/envsubst:latest
+  restart: unless-stopped    
+x-nginx_envsubst_conf: &nginx_envsubst_conf
+  build:
+    context: ./build/nginx_envsubst
   volumes:
-    - ./data/nginx/snippets.template:/mnt/nginx_snippet_templates
-    - ./data/nginx/snippets:/mnt/nginx_snippets
-  command: >
-    /bin/sh -c "find /mnt/nginx_snippet_templates
-    -type f
-    -name \"*.conf\"
-    -exec /bin/sh -c 'envsubst < \"$0\" > /mnt/nginx_snippets/$(basename \"$0\")' {} \\;"
+    - ./data/nginx/conf.d.template:/mnt/input
+    - ./data/nginx/conf.d:/mnt/output
   network_mode: none
   cap_drop:
     - ALL
+x-nginx_envsubst_snippets: &nginx_envsubst_snippets
+  build:
+    context: ./build/nginx_envsubst
+  volumes:
+    - ./data/nginx/snippets.template:/mnt/input
+    - ./data/nginx/snippets:/mnt/output
+  network_mode: none
+  cap_drop:
+    - ALL
+x-nginx_envsubst_production: &nginx_envsubst_production
+  profiles:
+    - production
+  environment:  
+    - DOMAIN_NAME=${DOMAIN_NAME}
+    - NGINX_SSL_CERT="/etc/letsencrypt/live/chronicles.local/cert.pem"
+    - NGINX_SSL_CERT_KEY="/etc/letsencrypt/live/chronicles.local/privkey.pem"
+    - NGINX_SSL_DHPARAM="/etc/letsencrypt/ssl-dhparams.pem" 
+x-nginx_envsubst_development: &nginx_envsubst_development
+  profiles:
+    - development
+  environment:
+    - DOMAIN_NAME=${DOMAIN_NAME}
+    - NGINX_SSL_CERT="/etc/mkcert/mkcert.pem"
+    - NGINX_SSL_CERT_KEY="/etc/mkcert/mkcert.key"
+    - NGINX_SSL_DHPARAM="/etc/mkcert/mkcert.dh"
 services:
   nginx_permissions:
     image: alpine:latest
@@ -59,9 +80,13 @@ services:
       - certbot_www:/mnt/certbot_www
     command: >
       /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
-      && mkdir -p /mnt/nginx_websites/fastdl/svencoop
-      && chown ${NGINX_UID}:${NZC_GID} /mnt/nginx_websites/fastdl 
-      /mnt/nginx_websites/fastdl/svencoop
+      && mkdir -p /mnt/nginx_websites/fastdl/nzc/svencoop
+      && mkdir -p /mnt/nginx_websites/fastdl/nzc/gmod
+      && chown ${NGINX_UID}:${NZC_GID} 
+      /mnt/nginx_websites/fastdl 
+      /mnt/nginx_websites/fastdl/nzc 
+      /mnt/nginx_websites/fastdl/nzc/svencoop 
+      /mnt/nginx_websites/fastdl/nzc/gmod
       && chown -R root:root /mnt/nginx_conf/
       && chown -fR ${NGINX_UID}:root /mnt/mkcert/
       && if [ -f '/mnt/certbot_conf/ssl-dhparams.pem' ]; then
@@ -74,6 +99,7 @@ services:
     cap_drop:
       - ALL 
     cap_add:
+      - CAP_DAC_OVERRIDE
       - CHOWN
     depends_on:
       certbot:
@@ -94,15 +120,16 @@ services:
     networks:
       - nginx
     restart: unless-stopped       
-  nginx_envsubst_production:
-    <<: *nginx_envsubst
+  nginx_envsubst_conf_production:
+    <<: *nginx_envsubst_conf
     profiles:
-      - production
-    environment:  
-      - DOMAIN_NAME="${DOMAIN_NAME}"
-      - NGINX_SSL_CERT="/etc/letsencrypt/live/chronicles.local/cert.pem"
-      - NGINX_SSL_CERT_KEY="/etc/letsencrypt/live/chronicles.local/privkey.pem"
-      - NGINX_SSL_DHPARAM="/etc/letsencrypt/ssl-dhparams.pem"
+      - production 
+  nginx_envsubst_conf_production:
+    <<: *nginx_envsubst_conf
+    <<: *nginx_envsubst_production
+  nginx_envsubst_snippets_production:
+    <<: *nginx_envsubst_snippets
+    <<: *nginx_envsubst_production
   nginx_production: 
     <<: *nginx  
     profiles:
@@ -117,14 +144,13 @@ services:
       - certbot_conf:/etc/letsencrypt    
       - certbot_www:/var/www/certbot 
     depends_on:
-      nginx_envsubst_production:
+      nginx_envsubst_conf_production:
+        condition: service_completed_successfully 
+      nginx_envsubst_snippets_production:
         condition: service_completed_successfully
       nginx_permissions:
         condition: service_completed_successfully
   # Development nginx (because Let's Encrypt only works on the actual domain)
-  # In your host's /etc/hosts, add: 127.0.0.1 chronicles.local
-  # After running, add the .crt file located in the host's 
-  # CA_TRUST_STORE_DIR into your browser.
   mkcert:
     image: ethorbit/mkcert:latest
     profiles:
@@ -136,7 +162,7 @@ services:
       /bin/sh -c "[[ ! -s /mnt/mkcert.pem || ! -s /mnt/mkcert.key ]]
       && mkcert -install
       && mkcert -cert-file /mnt/mkcert.pem -key-file /mnt/mkcert.key
-      ${DOMAIN_NAME} 
+      *.${DOMAIN_NAME} 
       || exit 0" 
     network_mode: none 
   openssl:
@@ -147,17 +173,14 @@ services:
       - mkcert:/mnt
     command: >
       /bin/sh -c "[[ ! -s /mnt/mkcert.dh ]]
-      && openssl dhparam -out /mnt/mkcert.dh 4096
-      || exit 0"
-  nginx_envsubst_development:
-    <<: *nginx_envsubst
-    profiles:
-      - development
-    environment:
-      - DOMAIN_NAME="${DOMAIN_NAME}"
-      - NGINX_SSL_CERT="/etc/mkcert/mkcert.pem"
-      - NGINX_SSL_CERT_KEY="/etc/mkcert/mkcert.key"
-      - NGINX_SSL_DHPARAM="/etc/mkcert/mkcert.dh"
+      && openssl dhparam -out /mnt/mkcert.dh 2048
+      || exit 0" 
+  nginx_envsubst_conf_development:
+    <<: *nginx_envsubst_conf
+    <<: *nginx_envsubst_development
+  nginx_envsubst_snippets_development:
+    <<: *nginx_envsubst_snippets
+    <<: *nginx_envsubst_development
   nginx_development:
     <<: *nginx
     profiles:
@@ -173,7 +196,9 @@ services:
     extra_hosts:
       - "${DOMAIN_NAME}:127.0.0.1" 
     depends_on:
-      nginx_envsubst_development:
+      nginx_envsubst_conf_development:
+        condition: service_completed_successfully 
+      nginx_envsubst_snippets_development:
         condition: service_completed_successfully
       nginx_permissions:
         condition: service_completed_successfully
