@@ -64,4 +64,4 @@ In your host's /etc/hosts, add:
 
 In .env set DOMAIN_NAME to "chronicles.local"
 
-After bringing the containers up, restart your browser and then set the mkcert certificate to be trusted inside the browser.
+After bringing the containers up, restart your browser and then inside set the mkcert certificate to be trusted.
