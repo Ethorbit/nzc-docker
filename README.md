@@ -53,7 +53,7 @@ If it works, add a -d at the end to keep it in the background.
 To remove:
 `make cmd "down"`
 
-# Local Testing
+## Local Testing
 In .env set DEVELOPING to 1
 
 In your host's /etc/hosts, add: 
