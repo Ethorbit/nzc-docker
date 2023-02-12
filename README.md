@@ -57,9 +57,11 @@ To remove:
 In .env set DEVELOPING to 1
 
 In your host's /etc/hosts, add: 
-`127.0.0.1 chronicles.local`
-`127.0.0.1 site.chronicles.local`
-`127.0.0.1 fastdl.chronicles.local`
-`127.0.0.1 search.chronicles.local`
+* `127.0.0.1 chronicles.local`
+* `127.0.0.1 site.chronicles.local`
+* `127.0.0.1 fastdl.chronicles.local`
+* `127.0.0.1 search.chronicles.local`
 
-After bringing the containers up, restart your browser and then inside, set the listed mkcert certificate to trusted.
+In .env set DOMAIN_NAME to "chronicles.local"
+
+After bringing the containers up, restart your browser and then set the mkcert certificate to be trusted inside the browser.
