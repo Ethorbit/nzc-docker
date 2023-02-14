@@ -14,8 +14,10 @@ services:
     volumes:
       - svencoop:/home/srcds/server
     depends_on:
-      - nginx_development
-      - nginx_production
+      nginx_production: 
+        condition: service_healthy
+      nginx_development:
+        condition: service_healthy
     ports:
       - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT}/udp
     networks:

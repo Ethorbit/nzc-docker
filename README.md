@@ -54,14 +54,9 @@ To remove:
 `make cmd "down"`
 
 ## Local Testing
-In .env set DEVELOPING to 1
+* In .env set DEVELOPING to 1
+* In .env set DOMAIN_NAME to "chronicles.local"
+* In your host, either add `address=/chronicles.local/127.0.0.1` inside /etc/dnsmasq.conf OR add an /etc/hosts entry `127.0.0.1 chronicles.local` as well as each subdomain
+* After bringing the containers up, restart your browser and then inside set the mkcert certificate to be trusted
 
-In your host's /etc/hosts, add: 
-* `127.0.0.1 chronicles.local`
-* `127.0.0.1 site.chronicles.local`
-* `127.0.0.1 fastdl.chronicles.local`
-* `127.0.0.1 search.chronicles.local`
 
-In .env set DOMAIN_NAME to "chronicles.local"
-
-After bringing the containers up, restart your browser and then inside set the mkcert certificate to be trusted.

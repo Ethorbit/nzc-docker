@@ -14,10 +14,6 @@ x-io-limits: &io-limits
     device_write_iops:
       - path: ${DISK}
         rate: 50  
-x-depends_on: &depends_on
-  depends_on:
-    - nginx_production
-    - nginx_development
 services:
   redis:
     image: "redis:alpine"
@@ -32,7 +28,6 @@ services:
       - SETGID
       - SETUID
       - DAC_OVERRIDE
-    <<: *depends_on
     cpuset: ${SEARXNG_CPU}
     cpu_shares: 20
     deploy:
@@ -61,7 +56,6 @@ services:
       - SETUID
     logging:
       driver: "none"
-    <<: *depends_on
     cpuset: ${SEARXNG_CPU}  
     cpu_shares: 40
     deploy:

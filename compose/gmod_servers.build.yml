@@ -1,5 +1,10 @@
 version: "3.9"
 x-defaults: &defaults
+  depends_on:
+    nginx_production: 
+      condition: service_healthy
+    nginx_development:
+      condition: service_healthy
   blkio_config:
     weight: 500
     device_write_bps:

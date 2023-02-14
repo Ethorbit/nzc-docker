@@ -1,5 +1,5 @@
+# TODO: switch to dnsmasq over editing hosts so LAN can search with subdomains
 version: "3.9"
-# TODO: add a healthcheck that ensures a website connection can be made
 x-nginx: &nginx
   build:
     context: ./build/nginx
@@ -11,6 +11,12 @@ x-nginx: &nginx
   ports:
     - ${NGINX_HTTP_PORT:-80}:80
     - ${NGINX_HTTPS_PORT:-443}:443
+  healthcheck:
+    test: "curl -f http://localhost || exit 1"
+    start_period: 5s
+    interval: 10s
+    timeout: 10s
+    retries: 3
   cpuset: ${NGINX_CPU}
   cpu_shares: 2048
   deploy:
@@ -33,7 +39,7 @@ x-nginx: &nginx
     device_write_iops:
       - path: ${DISK}
         rate: 100
-  restart: unless-stopped    
+  restart: unless-stopped
 x-nginx_envsubst_conf: &nginx_envsubst_conf
   build:
     context: ./build/nginx_envsubst
