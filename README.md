@@ -55,7 +55,7 @@ To remove:
 
 ## Local Testing
 * In .env set DEVELOPING to 1 and set DOMAIN_NAME to "chronicles.local"
-* In your host, either add `address=/chronicles.local/127.0.0.1` inside /etc/dnsmasq.conf OR add an /etc/hosts entry `127.0.0.1 chronicles.local` as well as each subdomain
+* In your host, either use dnsmasq and add `address=/chronicles.local/127.0.0.1` to /etc/dnsmasq.conf OR add an /etc/hosts entry `127.0.0.1 chronicles.local` for each subdomain
 * After bringing the containers up, restart your browser and then inside set the mkcert certificate to be trusted
 
 
