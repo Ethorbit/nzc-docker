@@ -19,6 +19,7 @@ x-nginx: &nginx
   environment:
     - DOMAIN_NAME=${DOMAIN_NAME}
   cpuset: ${NGINX_CPU}
+  cpu_percent: 30
   cpu_shares: 2048
   deploy:
     resources:

@@ -22,8 +22,10 @@ services:
       - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT}/udp
     networks:
       - svencoop
-    cpuset: ${SVENCOOP_CPU}   
-    cpu_shares: 512
+    cpuset: ${SVENCOOP_CPU}
+    cpu_count: 1
+    cpu_percent: 10
+    cpu_shares: 256
     deploy:
       resources:
         limits:

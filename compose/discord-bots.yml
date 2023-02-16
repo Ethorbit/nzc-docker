@@ -7,8 +7,8 @@ services:
       BOT_TOKEN: ${DISCORD_STICKY_BOT_TOKEN}
     volumes:
       - discord_sticky_bot:/botdb
-    cpu_shares: 256 
-    cpu_percent: 20
+    cpu_shares: 256
+    cpu_percent: 10
     deploy:
       resources:
         limits:

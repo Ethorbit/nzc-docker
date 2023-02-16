@@ -1,4 +1,8 @@
 version: "3.9"
+x-cpu-limits: &cpu-limits
+  cpuset: ${SEARXNG_CPU}
+  cpu_percent: 5
+  cpu_shares: 20
 x-io-limits: &io-limits 
   blkio_config:
     weight: 25
@@ -28,8 +32,7 @@ services:
       - SETGID
       - SETUID
       - DAC_OVERRIDE
-    cpuset: ${SEARXNG_CPU}
-    cpu_shares: 20
+    <<: *cpu-limits
     deploy:
       resources:
         limits:
@@ -46,8 +49,6 @@ services:
       - "8080:8080"
     volumes:
       - ./data/searxng:/etc/searxng:rw
-    environment:
-      - SEARXNG_BASE_URL="http://${DOMAIN_NAME:-localhost}/"
     cap_drop:
       - ALL
     cap_add:
@@ -56,8 +57,7 @@ services:
       - SETUID
     logging:
       driver: "none"
-    cpuset: ${SEARXNG_CPU}  
-    cpu_shares: 40
+    <<: *cpu-limits
     deploy:
       resources:
         limits:
