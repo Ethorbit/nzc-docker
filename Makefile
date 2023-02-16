@@ -123,7 +123,6 @@ build_templates: #$(compose_dir)/gmod_servers.build.yml
 	$(info $(build_warnings))
 
 build_docker: $(dir $(wildcard $(build_dir)/**/*))
-	$(info WTF $(wildcard $(build_dir)/*/*))
 	$(command_build)
 	touch $@
 
