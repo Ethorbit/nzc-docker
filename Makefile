@@ -1,6 +1,7 @@
 include .env 
 SHELL := /bin/bash 
 compose_dir := ./compose
+data_dir := $(compose_dir)/data
 build_dir := $(compose_dir)/build
 
 # Used to add newlines into other defines
@@ -47,6 +48,9 @@ $(newline)  unionfs-$i:
     <<: *unionfs
     $(cpuset)
     volumes:
+      - ./data/users/passwd:/etc/passwd:ro
+      - ./data/users/group:/etc/group:ro
+      - ./data/users/shadow:/etc/shadow:ro
       - gmod_shared:/bottom:shared
       - gmod_$i:/top:shared
       - gmod_$i_merged:/merged:shared
@@ -59,10 +63,15 @@ $(newline)  unionfs-$i:
       <<: *gmod-environment
       SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port $(port) +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
     volumes:
+      - ./data/users/passwd:/etc/passwd:ro
+      - ./data/users/group:/etc/group:ro
+      - ./data/users/shadow:/etc/shadow:ro
       - gmod_$i:/home/srcds/server
     ports:
       - $(port):$(port)/udp
     depends_on:
+      users_and_groups:
+        condition: service_completed_successfully
       unionfs-$i:
         condition: service_started 
     healthcheck:
@@ -112,9 +121,13 @@ $(shell $(list_yml_command))
 endef
 
 profile := $(shell [[ "$(DEVELOPING)" -ge 1 ]] && echo "development" || echo "production")
-command_base := nofiles=$(nofiles) DISK=$(DISK) docker-compose --env-file .env --profile $(profile) -p nzc
-command := $(command_base) $(yml_files)
-command_build := $(command_base) $(yml_files_build) build
+command_base := nofiles=$(nofiles) \
+				DISK=$(DISK) HUID=$(shell id -u) HGID=$(shell id -g) \
+				docker-compose --env-file .env --profile $(profile) -p nzc
+
+command_build := $(command_base) --profile setup_users $(yml_files_build) build
+command_setup_users := $(command_base) --profile setup_users -f $(compose_dir)/users_and_groups.yml up
+command := $(command_base) $(yml_files) --env-file $(data_dir)/users/env
 
 build_templates: #$(compose_dir)/gmod_servers.build.yml
 	$(file > $(compose_dir)/gmod_servers.yml,$(gmod_yaml))
@@ -126,10 +139,18 @@ build_docker: $(dir $(wildcard $(build_dir)/**/*))
 	$(command_build)
 	touch $@
 
+# The containers' users and groups are managed by a service and isolated from the host
+# because it generates a dependency .env file that other containers use to specify users and groups, 
+# we will run this separately
+setup_users: $(compose_dir)/users_and_groups.yml 
+	$(info We must configure users and groups first) # on the HOST first, this requires root.)
+	$(command_setup_users)
+	touch $@
+
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 .PHONY: cmd help
-cmd: build_templates build_docker
+cmd: setup_users build_templates build_docker
 	$(command) $(args)
 
 define help_text

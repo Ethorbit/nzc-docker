@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+  users_and_groups:
+    build:
+      context: ./build/users_and_groups
+    environment:
+      - HUID=${HUID}
+      - HGID=${HGID}
+    profiles:
+      - setup_users
+    volumes:
+      - ./data/users:/mnt
+      - home:/home
+      - pam:/etc/pam.d
+    network_mode: none
+
+#  users_and_groups:
+#    image: alpine:3.17.2
+#    profiles:
+#      - setup_users
+#    command: >
+#      /bin/sh -c "echo '' > /mnt/passwd
+#      && echo '' > /mnt/group
+#      && echo '' > /mnt/shadow
+#      && echo '' > /mnt/users.env
+#      && chown -R root:root /mnt
+#      && chmod 644 /mnt/passwd /mnt/group /mnt/users.env
+#      && chmod 640 /mnt/shadow
+#      && addgroup -g ${HGID} owner
+#      && adduser -D -G owner -u ${HUID} owner
+#      && adduser -DH nginx
+#      && adduser -DH srcds
+#      && addgroup websites
+#      && addgroup fastdl
+#      && addgroup gmod
+#      && addgroup svencoop
+#      && addgroup srcds fastdl
+#      && addgroup nginx websites
+#      && addgroup nginx fastdl
+#      && addgroup owner websites
+#      && addgroup owner fastdl
+#      && addgroup owner gmod
+#      && addgroup owner svencoop
+#      && getent passwd > /mnt/passwd
+#      && getent group > /mnt/group
+#      && getent shadow > /mnt/shadow
+#      && getent passwd | IFS=: while -r user _ uid gid _; do printf '%s_u=%i\n%s_g=%i' >> /mnt/users.env; done"
+#    volumes:
+#      - ./data/users:/mnt
+#      - home:/home
+#      - pam:/etc/pam.d
+#    network_mode: none
+volumes:
+  home:
+  pam:

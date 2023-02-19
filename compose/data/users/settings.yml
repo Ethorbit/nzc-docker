@@ -1,0 +1,26 @@
+groups:
+  owner:
+    id: ${HGID}
+  websites:
+  fastdl:
+  gmod:
+  svencoop:
+
+users:
+  owner:
+    id: ${HUID}
+    groups:
+      - websites
+      - fastdl
+      - srcds
+      - nginx
+      - gmod
+      - svencoop
+  nginx:
+    groups:
+      - websites
+      - fastdl
+  srcds:
+    groups:
+      - fastdl
+

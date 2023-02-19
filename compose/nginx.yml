@@ -2,9 +2,10 @@ version: "3.9"
 x-nginx: &nginx
   build:
     context: ./build/nginx
-    args:
-      UID: ${NGINX_UID}
-      GID: ${NZC_GID}
+      #args:
+      #UID: ${NGINX_UID}
+      #GID: ${NZC_GID}
+  user: nginx
   networks:
     - nginx
   ports:
@@ -79,9 +80,12 @@ x-nginx_envsubst_development: &nginx_envsubst_development
 services:
   nginx_permissions:
     image: alpine:latest
-    volumes:
+    volumes: 
+      - ./data/users/passwd:/etc/passwd:ro
+      - ./data/users/group:/etc/group:ro
+      - ./data/users/shadow:/etc/shadow:ro
       - nginx_websites:/mnt/nginx_websites
-      - nginx_cpu:/mnt/nginx_cpu
+      - ./data/nginx/cpu:/mnt/nginx_cpu
       - ./data/nginx:/mnt/nginx_conf
       - mkcert:/mnt/mkcert
       - certbot_conf:/mnt/certbot_conf
@@ -90,18 +94,19 @@ services:
       /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
       && mkdir -p /mnt/nginx_websites/fastdl/nzc/svencoop
       && mkdir -p /mnt/nginx_websites/fastdl/nzc/gmod
-      && chown ${NGINX_UID}:${NZC_GID} 
+      && chown nginx:fastdl 
       /mnt/nginx_websites/fastdl 
       /mnt/nginx_websites/fastdl/nzc 
       /mnt/nginx_websites/fastdl/nzc/svencoop 
       /mnt/nginx_websites/fastdl/nzc/gmod
-      && chown -R root:root /mnt/nginx_conf/
-      && chown -fR ${NGINX_UID}:root /mnt/mkcert/
+      && chown -R root:owner /mnt/nginx_conf/
+      && chmod -R 775 /mnt/nginx_conf/
+      && chown -fR nginx:root /mnt/mkcert/
       && if [ -f '/mnt/certbot_conf/ssl-dhparams.pem' ]; then
-        chown -f ${NGINX_UID}:root /mnt/certbot_conf/ssl-dhparams.pem
+        chown -f nginx:owner /mnt/certbot_conf/ssl-dhparams.pem
       fi
       && if [ -d '/mnt/certbot_conf/live/' ]; then
-        chown -fR ${NGINX_UID}:root /mnt/certbot_conf/live/
+        chown -fR nginx:owner /mnt/certbot_conf/live/
       fi"
     network_mode: none
     cap_drop:
@@ -109,7 +114,9 @@ services:
     cap_add:
       - CAP_DAC_OVERRIDE
       - CHOWN
-    depends_on:
+    depends_on: 
+      users_and_groups:
+        condition: service_completed_successfully
       certbot:
         condition: service_started
       mkcert:
@@ -142,15 +149,18 @@ services:
     <<: *nginx  
     profiles:
       - production
-    volumes:  
-      - nginx_cpu:/sys/devices/system/cpu:ro
-      - nginx_websites:/usr/share/nginx/html   
-      - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./data/nginx/snippets:/etc/nginx/snippets
-      - ./data/nginx/conf.d:/etc/nginx/conf.d 
-      - svencoop:/usr/share/nginx/html/fastdl/svencoop:ro
-      - certbot_conf:/etc/letsencrypt    
-      - certbot_www:/var/www/certbot 
+    volumes:
+      - ./data/users/passwd:/etc/passwd:ro
+      - ./data/users/group:/etc/group:ro
+      - ./data/users/shadow:/etc/shadow:ro
+      - ./data/nginx/cpu/online:/sys/devices/system/cpu/online:ro
+      - nginx_websites:/usr/share/nginx/html
+      - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./data/nginx/snippets:/etc/nginx/snippets:ro
+      - ./data/nginx/conf.d:/etc/nginx/conf.d:ro
+      - svencoop:/usr/share/nginx/html/fastdl/nzc/svencoop:ro
+      - certbot_conf:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
     depends_on:
       nginx_envsubst_conf_production:
         condition: service_completed_successfully 
@@ -216,13 +226,16 @@ services:
     <<: *nginx
     profiles:
       - development
-    volumes:   
-      - nginx_cpu:/sys/devices/system/cpu:ro
-      - nginx_websites:/usr/share/nginx/html 
-      - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./data/nginx/snippets:/etc/nginx/snippets
-      - ./data/nginx/conf.d:/etc/nginx/conf.d
-      - svencoop:/usr/share/nginx/html/fastdl/svencoop:ro
+    volumes:    
+      - ./data/users/passwd:/etc/passwd:ro
+      - ./data/users/group:/etc/group:ro
+      - ./data/users/shadow:/etc/shadow:ro
+      - ./data/nginx/cpu/online:/sys/devices/system/cpu/online:ro
+      - nginx_websites:/usr/share/nginx/html
+      - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./data/nginx/snippets:/etc/nginx/snippets:ro
+      - ./data/nginx/conf.d:/etc/nginx/conf.d:ro
+      - svencoop:/usr/share/nginx/html/fastdl/nzc/svencoop:ro
       - mkcert:/etc/mkcert
     dns:
       - 172.10.1.1
@@ -236,7 +249,6 @@ services:
       nginx_dnsmasq:
         condition: service_started
 volumes:
-  nginx_cpu:
   nginx_websites:
   certbot_conf:
   certbot_www:
