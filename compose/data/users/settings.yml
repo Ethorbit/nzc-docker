@@ -1,5 +1,5 @@
 groups:
-  owner:
+  admin:
     id: ${HGID}
   websites:
   fastdl:
@@ -7,7 +7,7 @@ groups:
   svencoop:
 
 users:
-  owner:
+  admin:
     id: ${HUID}
     groups:
       - websites
@@ -16,11 +16,33 @@ users:
       - nginx
       - gmod
       - svencoop
+    password: ${ADMIN_PASSWORD}
   nginx:
+    home: false
     groups:
       - websites
       - fastdl
   srcds:
+    home: false
     groups:
       - fastdl
+  # Custom users below, replace with your own.
+  blunto:
+    groups:
+      - fastdl
+      - gmod
+    password: ${BLUNTO_PASSWORD}
+  berb:
+    groups:
+      - fastdl
+      - gmod
+    password: ${BERB_PASSWORD}
+  pepe:
+    groups:
+      - svencoop
+    password: ${PEPE_PASSWORD}
+  freeman:
+    groups:
+      - svencoop
+    password: ${FREEMAN_PASSWORD}
 
