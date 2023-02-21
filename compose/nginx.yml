@@ -5,7 +5,7 @@ x-nginx: &nginx
       #args:
       #UID: ${NGINX_UID}
       #GID: ${NZC_GID}
-  user: nginx
+  user: "${nginx_u}:${nginx_g}"
   networks:
     - nginx
   ports:
@@ -94,19 +94,19 @@ services:
       /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
       && mkdir -p /mnt/nginx_websites/fastdl/nzc/svencoop
       && mkdir -p /mnt/nginx_websites/fastdl/nzc/gmod
-      && chown nginx:fastdl 
+      && chown \"${nginx_u}\":\"${fastdl_g}\"
       /mnt/nginx_websites/fastdl 
       /mnt/nginx_websites/fastdl/nzc 
       /mnt/nginx_websites/fastdl/nzc/svencoop 
       /mnt/nginx_websites/fastdl/nzc/gmod
-      && chown -R root:owner /mnt/nginx_conf/
+      && chown -R root:${admin_g} /mnt/nginx_conf/
       && chmod -R 775 /mnt/nginx_conf/
-      && chown -fR nginx:root /mnt/mkcert/
+      && chown -fR ${nginx_u}:root /mnt/mkcert/
       && if [ -f '/mnt/certbot_conf/ssl-dhparams.pem' ]; then
-        chown -f nginx:owner /mnt/certbot_conf/ssl-dhparams.pem
+        chown -f nginx:${admin_g} /mnt/certbot_conf/ssl-dhparams.pem
       fi
       && if [ -d '/mnt/certbot_conf/live/' ]; then
-        chown -fR nginx:owner /mnt/certbot_conf/live/
+        chown -fR nginx:${admin_g} /mnt/certbot_conf/live/
       fi"
     network_mode: none
     cap_drop:
@@ -115,8 +115,6 @@ services:
       - CAP_DAC_OVERRIDE
       - CHOWN
     depends_on: 
-      users_and_groups:
-        condition: service_completed_successfully
       certbot:
         condition: service_started
       mkcert:

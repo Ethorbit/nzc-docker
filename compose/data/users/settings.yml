@@ -3,8 +3,8 @@ groups:
     id: ${HGID}
   websites:
   fastdl:
-  gmod:
-  svencoop:
+    #gmod:
+    #svencoop:
 
 users:
   admin:
@@ -22,7 +22,11 @@ users:
     groups:
       - websites
       - fastdl
-  srcds:
+  gmod:
+    home: false
+    groups:
+      - fastdl
+  svencoop:
     home: false
     groups:
       - fastdl
@@ -45,4 +49,5 @@ users:
     groups:
       - svencoop
     password: ${FREEMAN_PASSWORD}
+  test:
 

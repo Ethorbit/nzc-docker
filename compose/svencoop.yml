@@ -4,9 +4,12 @@ services:
     build:
       context: ./build/svencoop-server
       args:
-        PUID: ${SVENCOOP_UID}
-        PGID: ${NZC_GID}
         TZ: ${TZ}
+          #PUID: ${svencoop_u} #${SVENCOOP_UID}
+          #PGID: ${svencoop_g} #${NZC_GID}
+    user: "${svencoop_u}:${svencoop_g}"
+    command: >
+      /bin/sh -c "echo \"It worked! I'm a container user! Look who I am: `id`\""
     tty: true 
     stdin_open: true
     environment:
@@ -17,14 +20,12 @@ services:
       - ./data/users/shadow:/etc/shadow:ro
       - svencoop:/home/srcds/server
     depends_on:
-      users_and_groups:
-        condition: service_completed_successfully
       nginx_production: 
         condition: service_healthy
       nginx_development:
         condition: service_healthy
     ports:
-      - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT}/udp
+      - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/udp
     networks:
       - svencoop
     cpuset: ${SVENCOOP_CPU}

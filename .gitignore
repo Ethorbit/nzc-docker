@@ -1,4 +1,4 @@
 *.env
-./build
-./compose/gmod_servers.yml
-./compose/data/nginx/conf.d/*
+#build/
+compose/gmod_servers.yml
+compose/data/nginx/conf.d/*

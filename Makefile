@@ -86,18 +86,18 @@ endef
 # We're also going to generate the server dockerfiles, as they are all mostly identical 
 # (This isn't necessary, but complies with the DRY rule)
 define srcds_base_dockerfile
-ARG PUID
-ARG PGID
+#ARG PUID
+#ARG PGID
 ARG TZ
 ENV TZ=$${TZ}
 USER root
-RUN usermod -u "$$PUID" srcds &&$(bs)
-   groupmod -g "$$PGID" srcds &&$(bs)
-   chown srcds:srcds -R /home/srcds &&$(bs)
+#usermod -u "$$PUID" srcds &&$(bs)
+#groupmod -g "$$PGID" srcds &&$(bs)
+RUN chown srcds:srcds -R /home/srcds &&$(bs)
    ln -snf "/usr/share/zoneinfo/$$TZ" /etc/localtime &&$(bs)
    echo "/usr/share/zoneinfo/$$TZ" > /etc/timezone &&$(bs)
    dpkg-reconfigure -f noninteractive tzdata
-USER srcds
+#USER srcds
 endef
 
 define srcds_dockerfile
@@ -127,7 +127,7 @@ command_base := nofiles=$(nofiles) \
 
 command_build := $(command_base) --profile setup_users $(yml_files_build) build
 command_setup_users := $(command_base) --profile setup_users -f $(compose_dir)/users_and_groups.yml up
-command := $(command_base) $(yml_files) --env-file $(data_dir)/users/env
+command := printf "export '%s' " `cat "./compose/data/users/env" | xargs` && $(command_base) $(yml_files) && echo "HELLO??? $$svencoop_u $$svencoop_g"
 
 build_templates: #$(compose_dir)/gmod_servers.build.yml
 	$(file > $(compose_dir)/gmod_servers.yml,$(gmod_yaml))
@@ -142,7 +142,7 @@ build_docker: $(dir $(wildcard $(build_dir)/**/*))
 # The containers' users and groups are managed by a service and isolated from the host
 # because it generates a dependency .env file that other containers use to specify users and groups, 
 # we will run this separately
-setup_users: $(compose_dir)/users_and_groups.yml 
+setup_users: $(compose_dir)/users_and_groups.yml $(data_dir)/users/settings.yml
 	$(info We must configure users and groups first) # on the HOST first, this requires root.)
 	$(command_setup_users)
 	touch $@
