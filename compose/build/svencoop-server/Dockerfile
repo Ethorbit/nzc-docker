@@ -1,8 +1,10 @@
 FROM ethorbit/svencoop-server:latest
 ARG PUID
 ARG PGID
+ARG UMASK
 ARG TZ
 ENV TZ=${TZ}
+ENV UMASK=${UMASK}
 USER root
 RUN usermod -u "$PUID" srcds &&\ 
    groupmod -g "$PGID" srcds &&\ 

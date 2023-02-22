@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  users_and_groups:
+    image: ethorbit/user-manager:latest
+    environment:
+      - HUID=${HUID}
+      - HGID=${HGID}
+    profiles:
+      - setup_users
+    volumes:
+      - ./data/users:/mnt
+      - home:/home
+      - pam:/etc/pam.d
+    network_mode: none
+volumes:
+  home:
+  pam:
+

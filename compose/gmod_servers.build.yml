@@ -38,17 +38,16 @@ x-gmod-environment: &gmod-environment
   SRCDS_APPID: 4020
 
 x-gmod: &gmod
-  #image: ethorbit/srcds-server
   build:
     context: ./build/srcds-server
     args:
-      PUID: ${GMOD_UID}
-      PGID: ${NZC_GID}
+      PUID: ${srcds_u}
+      PGID: ${gmod_g}
+      UMASK: "0007"
       TZ: ${TZ}
   <<: *defaults
   stdin_open: true
   tty: true
-  user: "${GMOD_UID}:${NZC_GID}"
   environment:
     <<: *gmod-environment
   cpu_count: 1

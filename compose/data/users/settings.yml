@@ -1,0 +1,47 @@
+groups:
+  admin:
+    id: ${HGID}
+  websites:
+  gmod:
+  svencoop:
+
+users:
+  admin:
+    id: ${HUID}
+    groups:
+      - websites
+      - srcds
+      - nginx
+      - gmod
+      - svencoop
+    password: ${ADMIN_PASSWORD}
+  nginx:
+    home: false
+    groups:
+      - websites
+      - gmod
+      - svencoop
+  srcds:
+    home: false
+    groups:
+      - gmod
+      - svencoop
+  # Custom users below, replace with your own.
+  blunto:
+    groups:
+      - gmod
+    password: ${BLUNTO_PASSWORD}
+  berb:
+    groups:
+      - gmod
+    password: ${BERB_PASSWORD}
+  pepe:
+    groups:
+      - svencoop
+    password: ${PEPE_PASSWORD}
+  freeman:
+    groups:
+      - svencoop
+    password: ${FREEMAN_PASSWORD}
+  test:
+

@@ -4,14 +4,19 @@ services:
     build:
       context: ./build/svencoop-server
       args:
-        PUID: ${SVENCOOP_UID}
-        PGID: ${NZC_GID}
         TZ: ${TZ}
-    tty: true 
+        PUID: ${srcds_u}
+        PGID: ${svencoop_g} 
+        UMASK: "0007"
+    tty: true
     stdin_open: true
     environment:
       SRCDS_RUN_ARGS: "-port ${SVENCOOP_PORT:-28015} +maxplayers 12 +map uplink"
-    volumes:
+    volumes: 
+      - ./data/users/passwd:/etc/passwd:ro
+      - ./data/users/group:/etc/group:ro
+      - ./data/users/shadow:/etc/shadow:ro
+      - ./data/users/gshadow:/etc/gshadow:ro
       - svencoop:/home/srcds/server
     depends_on:
       nginx_production: 
@@ -19,7 +24,7 @@ services:
       nginx_development:
         condition: service_healthy
     ports:
-      - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT}/udp
+      - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/udp
     networks:
       - svencoop
     cpuset: ${SVENCOOP_CPU}
