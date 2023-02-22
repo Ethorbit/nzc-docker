@@ -1,4 +1,4 @@
-include .env 
+include .env
 SHELL := /bin/bash 
 compose_dir := ./compose
 data_dir := $(compose_dir)/data
@@ -66,12 +66,11 @@ $(newline)  unionfs-$i:
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
+      - ./data/users/gshadow:/etc/gshadow:ro
       - gmod_$i:/home/srcds/server
     ports:
       - $(port):$(port)/udp
     depends_on:
-      users_and_groups:
-        condition: service_completed_successfully
       unionfs-$i:
         condition: service_started 
     healthcheck:
@@ -81,33 +80,6 @@ volumes:
     $(newline)  gmod_$i: \
     $(newline)  gmod_$i_merged: \
 )
-endef
-
-# We're also going to generate the server dockerfiles, as they are all mostly identical 
-# (This isn't necessary, but complies with the DRY rule)
-define srcds_base_dockerfile
-#ARG PUID
-#ARG PGID
-ARG TZ
-ENV TZ=$${TZ}
-USER root
-#usermod -u "$$PUID" srcds &&$(bs)
-#groupmod -g "$$PGID" srcds &&$(bs)
-RUN chown srcds:srcds -R /home/srcds &&$(bs)
-   ln -snf "/usr/share/zoneinfo/$$TZ" /etc/localtime &&$(bs)
-   echo "/usr/share/zoneinfo/$$TZ" > /etc/timezone &&$(bs)
-   dpkg-reconfigure -f noninteractive tzdata
-#USER srcds
-endef
-
-define srcds_dockerfile
-FROM ethorbit/srcds-server:latest
-$(srcds_base_dockerfile)
-endef
-
-define svencoop_dockerfile
-FROM ethorbit/svencoop-server:latest
-$(srcds_base_dockerfile)
 endef
 
 list_yml_command := ls $(compose_dir)/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /"
@@ -121,18 +93,17 @@ $(shell $(list_yml_command))
 endef
 
 profile := $(shell [[ "$(DEVELOPING)" -ge 1 ]] && echo "development" || echo "production")
-command_base := nofiles=$(nofiles) \
+export_ids := set -a && source "$(compose_dir)/data/users/env" > /dev/null 2>&1
+command_base := $(export_ids) &&\
+				nofiles=$(nofiles) \
 				DISK=$(DISK) HUID=$(shell id -u) HGID=$(shell id -g) \
 				docker-compose --env-file .env --profile $(profile) -p nzc
-
 command_build := $(command_base) --profile setup_users $(yml_files_build) build
 command_setup_users := $(command_base) --profile setup_users -f $(compose_dir)/users_and_groups.yml up
-command := printf "export '%s' " `cat "./compose/data/users/env" | xargs` && $(command_base) $(yml_files) && echo "HELLO??? $$svencoop_u $$svencoop_g"
+command := $(command_base) $(yml_files)
 
-build_templates: #$(compose_dir)/gmod_servers.build.yml
+build_templates:
 	$(file > $(compose_dir)/gmod_servers.yml,$(gmod_yaml))
-	$(file > $(build_dir)/srcds-server/Dockerfile,$(srcds_dockerfile))
-	$(file > $(build_dir)/svencoop-server/Dockerfile,$(svencoop_dockerfile))
 	$(info $(build_warnings))
 
 build_docker: $(dir $(wildcard $(build_dir)/**/*))

@@ -2,10 +2,13 @@ version: "3.9"
 x-nginx: &nginx
   build:
     context: ./build/nginx
-      #args:
-      #UID: ${NGINX_UID}
-      #GID: ${NZC_GID}
+    args:
+      UID: ${nginx_u}
+      GID: ${nginx_g}
   user: "${nginx_u}:${nginx_g}"
+  group_add:
+    - ${gmod_g}
+    - ${svencoop_g}
   networks:
     - nginx
   ports:
@@ -84,6 +87,7 @@ services:
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
+      - ./data/users/gshadow:/etc/gshadow:ro
       - nginx_websites:/mnt/nginx_websites
       - ./data/nginx/cpu:/mnt/nginx_cpu
       - ./data/nginx:/mnt/nginx_conf
@@ -94,7 +98,7 @@ services:
       /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
       && mkdir -p /mnt/nginx_websites/fastdl/nzc/svencoop
       && mkdir -p /mnt/nginx_websites/fastdl/nzc/gmod
-      && chown \"${nginx_u}\":\"${fastdl_g}\"
+      && chown \"${nginx_u}\":\"${websites_g}\"
       /mnt/nginx_websites/fastdl 
       /mnt/nginx_websites/fastdl/nzc 
       /mnt/nginx_websites/fastdl/nzc/svencoop 
@@ -150,7 +154,8 @@ services:
     volumes:
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
+      - ./data/users/shadow:/etc/shadow:ro 
+      - ./data/users/gshadow:/etc/gshadow:ro
       - ./data/nginx/cpu/online:/sys/devices/system/cpu/online:ro
       - nginx_websites:/usr/share/nginx/html
       - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
@@ -227,7 +232,8 @@ services:
     volumes:    
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
+      - ./data/users/shadow:/etc/shadow:ro 
+      - ./data/users/gshadow:/etc/gshadow:ro
       - ./data/nginx/cpu/online:/sys/devices/system/cpu/online:ro
       - nginx_websites:/usr/share/nginx/html
       - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf:ro

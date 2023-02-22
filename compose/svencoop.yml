@@ -5,12 +5,10 @@ services:
       context: ./build/svencoop-server
       args:
         TZ: ${TZ}
-          #PUID: ${svencoop_u} #${SVENCOOP_UID}
-          #PGID: ${svencoop_g} #${NZC_GID}
-    user: "${svencoop_u}:${svencoop_g}"
-    command: >
-      /bin/sh -c "echo \"It worked! I'm a container user! Look who I am: `id`\""
-    tty: true 
+        PUID: ${srcds_u}
+        PGID: ${svencoop_g} 
+        UMASK: "0007"
+    tty: true
     stdin_open: true
     environment:
       SRCDS_RUN_ARGS: "-port ${SVENCOOP_PORT:-28015} +maxplayers 12 +map uplink"
@@ -18,6 +16,7 @@ services:
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
+      - ./data/users/gshadow:/etc/gshadow:ro
       - svencoop:/home/srcds/server
     depends_on:
       nginx_production: 
