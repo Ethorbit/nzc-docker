@@ -82,7 +82,7 @@ x-nginx_envsubst_development: &nginx_envsubst_development
     - NGINX_SSL_DHPARAM="/etc/mkcert/mkcert.dh"
 services:
   nginx_permissions:
-    image: alpine:latest
+    image: alpine:3.17.2
     volumes: 
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
@@ -128,7 +128,7 @@ services:
     restart: on-failure
   # Production nginx, for use only on a machine the real domain is pointing to.
   certbot:
-    image: certbot/certbot:latest
+    image: certbot/certbot:v2.3.0
     profiles:
       - production
     volumes:

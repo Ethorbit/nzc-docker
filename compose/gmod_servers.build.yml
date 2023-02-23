@@ -25,8 +25,8 @@ x-unionfs: &unionfs
   privileged: true
   network_mode: none
   environment:
-    PUID: ${GMOD_UID}
-    PGID: ${NZC_GID}
+    PUID: ${srcds_u}
+    PGID: ${gmod_g}
     TZ: ${TZ}
   cpu_shares: 256
   deploy:

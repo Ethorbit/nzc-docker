@@ -97,6 +97,7 @@ export_ids := set -a && source "$(compose_dir)/data/users/env" > /dev/null 2>&1 
 command_base := nofiles=$(nofiles) \
 				DISK=$(DISK) HUID=$(shell id -u) HGID=$(shell id -g) \
 				docker-compose --env-file .env --profile $(profile) -p nzc
+command_update := $(command_base) --profile update -f $(compose_dir)/update.yml up
 command_setup_users := $(command_base) --profile setup_users -f $(compose_dir)/users_and_groups.yml up
 command_build := $(export_ids) $(command_base) --profile setup_users $(yml_files_build) build
 command := $(export_ids) $(command_base) $(yml_files)
@@ -119,13 +120,16 @@ setup_users: $(compose_dir)/users_and_groups.yml $(data_dir)/users/settings.yml
 
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-.PHONY: cmd help
+.PHONY: update cmd help
 cmd: setup_users build_templates build_docker
 	$(command) $(args)
 
+update:
+	$(command_update)
+
 define help_text
-	make build
-	make cmd "compose arguments here" - also calls build
+	make update - Updates and restarts effected containers
+	make cmd "compose arguments here"
 		Examples:
 			make cmd "up"
 			nofiles=1 make cmd -- "-f ./compose/nginx.yml down"

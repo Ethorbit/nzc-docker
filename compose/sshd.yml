@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  sshd:
+    build:
+      context: ./build/sshd
+    networks:
+      - ssh
+    ports:
+      - ${SSH_PORT:-22}:${SSH_PORT:-22}
+    volumes:
+      - home:/home
+      - pam:/etc/pam.d
+      - ./data/users/passwd:/etc/passwd:ro
+      - ./data/users/group:/etc/group:ro
+      - ./data/users/shadow:/etc/shadow:ro
+      - ./data/users/gshadow:/etc/gshadow:ro
+      - ./data/ssh/sshd_config:/etc/ssh/sshd_config
+    healthcheck:
+      test: "curl -f telnet://127.0.0.1:${SSH_PORT} || exit 1"
+      start_period: 5s
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+networks:
+  ssh:
+volumes:
+  home:
+  pam:
