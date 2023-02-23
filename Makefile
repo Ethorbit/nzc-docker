@@ -93,14 +93,13 @@ $(shell $(list_yml_command))
 endef
 
 profile := $(shell [[ "$(DEVELOPING)" -ge 1 ]] && echo "development" || echo "production")
-export_ids := set -a && source "$(compose_dir)/data/users/env" > /dev/null 2>&1
-command_base := $(export_ids) &&\
-				nofiles=$(nofiles) \
+export_ids := set -a && source "$(compose_dir)/data/users/env" > /dev/null 2>&1 &&
+command_base := nofiles=$(nofiles) \
 				DISK=$(DISK) HUID=$(shell id -u) HGID=$(shell id -g) \
 				docker-compose --env-file .env --profile $(profile) -p nzc
-command_build := $(command_base) --profile setup_users $(yml_files_build) build
 command_setup_users := $(command_base) --profile setup_users -f $(compose_dir)/users_and_groups.yml up
-command := $(command_base) $(yml_files)
+command_build := $(export_ids) $(command_base) --profile setup_users $(yml_files_build) build
+command := $(export_ids) $(command_base) $(yml_files)
 
 build_templates:
 	$(file > $(compose_dir)/gmod_servers.yml,$(gmod_yaml))
@@ -114,7 +113,7 @@ build_docker: $(dir $(wildcard $(build_dir)/**/*))
 # because it generates a dependency .env file that other containers use to specify users and groups, 
 # we will run this separately
 setup_users: $(compose_dir)/users_and_groups.yml $(data_dir)/users/settings.yml
-	$(info We must configure users and groups first) # on the HOST first, this requires root.)
+	$(info We must configure users and groups first)
 	$(command_setup_users)
 	touch $@
 

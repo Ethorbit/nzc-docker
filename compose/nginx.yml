@@ -207,6 +207,9 @@ services:
     networks:
       nginx:
         ipv4_address: 172.10.1.1
+    depends_on:
+      nginx_envsubst_dnsmasq_development:
+        condition: service_completed_successfully
   nginx_envsubst_conf_development:
     <<: *nginx_envsubst_conf
     <<: *nginx_envsubst_development
