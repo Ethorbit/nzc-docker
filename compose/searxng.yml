@@ -33,6 +33,7 @@ services:
       - SETUID
       - DAC_OVERRIDE
     <<: *cpu-limits
+    restart: unless-stopped
     deploy:
       resources:
         limits:
@@ -65,6 +66,7 @@ services:
         reservations:
           memory: 128M
     <<: *io-limits
+    restart: unless-stopped
 networks:
   searxng:
     ipam:

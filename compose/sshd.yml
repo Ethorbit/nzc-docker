@@ -1,5 +1,15 @@
 version: "3.9"
 services:
+  sshd_envsubst:
+    image: ethorbit/envsubst:latest
+    volumes:
+      - ./data/ssh:/mnt
+    command: >
+      /bin/sh -c "envsubst `printf '$${%s}\n' SSH_PORT` 
+      < /mnt/sshd_config.template > /mnt/sshd_config"
+    environment:
+      - SSH_PORT=${SSH_PORT}
+    network_mode: none
   sshd:
     build:
       context: ./build/sshd
@@ -16,14 +26,19 @@ services:
       - ./data/users/gshadow:/etc/gshadow:ro
       - ./data/ssh/sshd_config:/etc/ssh/sshd_config
     healthcheck:
-      test: "curl -f telnet://127.0.0.1:${SSH_PORT} || exit 1"
+      test: "curl -f telnet://localhost:${SSH_PORT} || exit 1"
       start_period: 5s
       interval: 10s
       timeout: 10s
       retries: 3
-    restart: on-failure
+    depends_on:
+      sshd_envsubst:
+        condition: 
+          service_completed_successfully
+    restart: unless-stopped
 networks:
   ssh:
 volumes:
   home:
   pam:
+

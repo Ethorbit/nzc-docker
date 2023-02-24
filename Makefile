@@ -113,26 +113,32 @@ build_docker: $(dir $(wildcard $(build_dir)/**/*))
 # The containers' users and groups are managed by a service and isolated from the host
 # because it generates a dependency .env file that other containers use to specify users and groups, 
 # we will run this separately
-setup_users: $(compose_dir)/users_and_groups.yml $(data_dir)/users/settings.yml
+
+setup_users: $(compose_dir)/users_and_groups.yml $(shell find $(data_dir)/users/ -type f)
 	$(info We must configure users and groups first)
 	$(command_setup_users)
 	touch $@
 
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-.PHONY: update cmd help
+.PHONY: update-containers update-users cmd help
+
 cmd: setup_users build_templates build_docker
 	$(command) $(args)
 
-update:
+update-containers:
 	$(command_update)
 
+update-users:
+	$(command_setup_users)
+
 define help_text
-	make update - Updates and restarts effected containers
 	make cmd "compose arguments here"
 		Examples:
 			make cmd "up"
 			nofiles=1 make cmd -- "-f ./compose/nginx.yml down"
+	make update-containers - Updates containers and then restarts those effected.
+	make update-users - Re-creates users and groups. This automatically happens on cmd after user-related files are modified.
 endef
 
 help:

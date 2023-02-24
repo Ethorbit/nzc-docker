@@ -43,5 +43,3 @@ users:
     groups:
       - svencoop
     password: ${FREEMAN_PASSWORD}
-  test:
-
