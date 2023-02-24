@@ -39,6 +39,8 @@ SVENCOOP_CPU=1
 SVENCOOP_PORT=1337
 
 DEVELOPING=1
+
+ADMIN_PASSWORD="admin password here"
 ```
 
 Change as needed.
