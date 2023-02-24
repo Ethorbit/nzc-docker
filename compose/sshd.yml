@@ -1,5 +1,18 @@
 version: "3.9"
 services:
+  sshd_permissions: 
+    image: alpine:3.17.2
+    volumes:
+      - sftp:/mnt
+    command: >
+      /bin/sh -c 'for d in 1 2 testing; do 
+      mkdir -p "/mnt/game_servers/gmod/$d" 
+      chmod 751 "/mnt/game_servers/gmod/$d"; 
+      done
+      && mkdir -p /mnt/game_servers/svencoop
+      && chmod 751 /mnt/game_servers/svencoop'
+    network_mode: none
+    restart: on-failure
   sshd_envsubst:
     image: ethorbit/envsubst:latest
     volumes:
@@ -25,13 +38,16 @@ services:
       - ./data/users/shadow:/etc/shadow:ro
       - ./data/users/gshadow:/etc/gshadow:ro
       - ./data/ssh/sshd_config:/etc/ssh/sshd_config
-    healthcheck:
-      test: "curl -f telnet://localhost:${SSH_PORT} || exit 1"
-      start_period: 5s
-      interval: 10s
-      timeout: 10s
-      retries: 3
+      - sftp:/mnt
+      - svencoop:/mnt/game_servers/svencoop
+      - gmod_shared:/mnt/game_servers/gmod/shared
+      - gmod_1:/mnt/game_servers/gmod/1
+      - gmod_2:/mnt/game_servers/gmod/2
+      - gmod_3:/mnt/game_servers/gmod/testing
     depends_on:
+      sshd_permissions:
+        condition:
+          service_completed_successfully
       sshd_envsubst:
         condition: 
           service_completed_successfully
@@ -39,6 +55,12 @@ services:
 networks:
   ssh:
 volumes:
+  svencoop:
+  gmod_1:
+  gmod_2:
+  gmod_3:
+  gmod_shared:
+  sftp:
   home:
   pam:
 
