@@ -44,8 +44,9 @@ services:
   searxng:
     image: searxng/searxng:latest
     networks:
-      - searxng
-      - nginx
+      searxng:
+        ipv4_address: 172.50.10.1
+      nginx:
     ports:
       - "8080:8080"
     volumes:
@@ -67,7 +68,3 @@ services:
           memory: 128M
     <<: *io-limits
     restart: unless-stopped
-networks:
-  searxng:
-    ipam:
-      driver: default

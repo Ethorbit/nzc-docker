@@ -11,9 +11,12 @@ x-nginx: &nginx
     - ${svencoop_g}
   networks:
     - nginx
+    - searxng
   ports:
     - ${NGINX_HTTP_PORT:-80}:80
     - ${NGINX_HTTPS_PORT:-443}:443
+  extra_hosts:
+    - "searxng:172.50.10.1"
   healthcheck:
     test: "curl -f http://${DOMAIN_NAME} || exit 1"
     start_period: 5s
@@ -266,3 +269,8 @@ networks:
       driver: default
       config:
         - subnet: 172.10.0.0/23
+  searxng:
+    ipam:
+      driver: default 
+      config:
+        - subnet: 172.50.10.0/22
