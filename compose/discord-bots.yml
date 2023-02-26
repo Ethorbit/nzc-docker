@@ -1,14 +1,31 @@
 version: "3.9"
 services:
-  discord_sticky-bot:
-    image: ethorbit/discord_sticky-message-bot:latest
-    environment:
-      STICKY_COOLDOWN: 600000
-      BOT_TOKEN: ${DISCORD_STICKY_BOT_TOKEN}
+  discord_permissions:
+    image: alpine:3.17.2
     volumes:
+      - discord_sticky_bot:/mnt/discord_sticky_bot
+    command: >
+      /bin/sh -c 'chown -R ${stickybot_u}:${discord_g} /mnt/discord_sticky_bot/
+      && chmod 770 -R /mnt/discord_sticky_bot/'
+    network_mode: none
+    restart: on-failure
+  discord_sticky-bot:
+    build:
+      context: ./build/discord_sticky-message-bot
+      args:
+        PUID: ${stickybot_u}
+        PGID: ${discord_g}
+    environment:
+      - STICKY_COOLDOWN=600000
+      - BOT_TOKEN=${DISCORD_STICKY_BOT_TOKEN}
+    volumes:
+      - ./data/users/passwd:/etc/passwd:ro
+      - ./data/users/group:/etc/group:ro
+      - ./data/users/shadow:/etc/shadow:ro
+      - ./data/users/gshadow:/etc/gshadow:ro
       - discord_sticky_bot:/botdb
     cpu_shares: 256
-    cpu_percent: 10
+    #cpu_percent: 10
     deploy:
       resources:
         limits:
@@ -29,6 +46,9 @@ services:
       device_write_iops:
         - path: ${DISK}
           rate: 100
+    depends_on:
+      discord_permissions:
+        condition: service_completed_successfully
     restart: unless-stopped
     networks:
       - discord 

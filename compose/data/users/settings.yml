@@ -2,6 +2,7 @@ groups:
   admin:
     id: ${HGID}
   websites:
+  discord:
   gmod:
   svencoop:
 
@@ -14,6 +15,7 @@ users:
       - nginx
       - gmod
       - svencoop
+      - discord
     password: ${ADMIN_PASSWORD}
   nginx:
     home: false
@@ -26,6 +28,10 @@ users:
     groups:
       - gmod
       - svencoop
+  stickybot:
+    home: false
+    groups:
+      - discord
   # Custom users below, replace with your own.
   blunto:
     groups:
