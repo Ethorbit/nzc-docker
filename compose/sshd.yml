@@ -5,12 +5,24 @@ services:
     volumes:
       - sftp:/mnt
     command: >
-      /bin/sh -c 'for d in 1 2 testing; do 
-      mkdir -p "/mnt/game_servers/gmod/$d" 
-      chmod 751 "/mnt/game_servers/gmod/$d"; 
+      /bin/sh -c 'for d in game_servers discord_bots websites fastdl; do 
+      mkdir -p "/mnt/$$d" 
+      chmod 751 "/mnt/$$d" 
+      chown root:root "/mnt/$$d"; 
+      done
+      && for d in discord_bots/stickies; do 
+      mkdir -p "/mnt/$$d" 
+      chmod 751 "/mnt/$$d" 
+      chown root:root "/mnt/$$d"; 
+      done
+      && for d in 1 2 3; do 
+      mkdir -p "/mnt/game_servers/gmod/$$d" 
+      chmod 751 "/mnt/game_servers/gmod/$$d" 
+      chown root:root /mnt/game_servers/gmod/$$d; 
       done
       && mkdir -p /mnt/game_servers/svencoop
-      && chmod 751 /mnt/game_servers/svencoop'
+      && chmod 751 /mnt/game_servers/svencoop
+      && chown root:root /mnt/game_servers/svencoop'
     network_mode: none
     restart: on-failure
   sshd_envsubst:
@@ -23,6 +35,7 @@ services:
     environment:
       - SSH_PORT=${SSH_PORT}
     network_mode: none
+    restart: on-failure
   sshd:
     build:
       context: ./build/sshd
@@ -43,7 +56,10 @@ services:
       - gmod_shared:/mnt/game_servers/gmod/shared
       - gmod_1:/mnt/game_servers/gmod/1
       - gmod_2:/mnt/game_servers/gmod/2
-      - gmod_3:/mnt/game_servers/gmod/testing
+      - gmod_3:/mnt/game_servers/gmod/3
+      - nginx_fastdl:/mnt/fastdl
+      - nginx_websites:/mnt/websites
+      - discord_sticky_bot:/mnt/discord_bots/stickies
     depends_on:
       sshd_permissions:
         condition:
@@ -55,12 +71,14 @@ services:
 networks:
   ssh:
 volumes:
+  sftp:
+  nginx_websites:
+  nginx_fastdl:
   svencoop:
   gmod_1:
   gmod_2:
   gmod_3:
   gmod_shared:
-  sftp:
   home:
   pam:
 

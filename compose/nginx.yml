@@ -92,6 +92,7 @@ services:
       - ./data/users/shadow:/etc/shadow:ro
       - ./data/users/gshadow:/etc/gshadow:ro
       - nginx_websites:/mnt/nginx_websites
+      - nginx_fastdl:/mnt/nginx_fastdl
       - ./data/nginx/cpu:/mnt/nginx_cpu
       - ./data/nginx:/mnt/nginx_conf
       - mkcert:/mnt/mkcert
@@ -99,13 +100,11 @@ services:
       - certbot_www:/mnt/certbot_www
     command: >
       /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
-      && mkdir -p /mnt/nginx_websites/fastdl/nzc/svencoop
-      && mkdir -p /mnt/nginx_websites/fastdl/nzc/gmod
-      && chown \"${nginx_u}\":\"${websites_g}\"
-      /mnt/nginx_websites/fastdl 
-      /mnt/nginx_websites/fastdl/nzc 
-      /mnt/nginx_websites/fastdl/nzc/svencoop 
-      /mnt/nginx_websites/fastdl/nzc/gmod
+      && mkdir -p /mnt/nginx_fastdl/svencoop
+      && mkdir -p /mnt/nginx_fastdl/gmod
+      && chown \"${nginx_u}\":\"${websites_g}\" 
+      /mnt/nginx_fastdl/svencoop 
+      /mnt/nginx_fastdl/gmod
       && chown -R root:${admin_g} /mnt/nginx_conf/
       && chmod -R 775 /mnt/nginx_conf/
       && chown -fR ${nginx_u}:root /mnt/mkcert/
@@ -160,11 +159,12 @@ services:
       - ./data/users/shadow:/etc/shadow:ro 
       - ./data/users/gshadow:/etc/gshadow:ro
       - ./data/nginx/cpu/online:/sys/devices/system/cpu/online:ro
-      - nginx_websites:/usr/share/nginx/html
+      - nginx_fastdl:/mnt/fastdl
+      - nginx_websites:/mnt/websites
       - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/nginx/snippets:/etc/nginx/snippets:ro
       - ./data/nginx/conf.d:/etc/nginx/conf.d:ro
-      - svencoop:/usr/share/nginx/html/fastdl/nzc/svencoop:ro
+      - svencoop:/mnt/fastdl/svencoop:ro
       - certbot_conf:/etc/letsencrypt
       - certbot_www:/var/www/certbot
     depends_on:
@@ -245,7 +245,7 @@ services:
       - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/nginx/snippets:/etc/nginx/snippets:ro
       - ./data/nginx/conf.d:/etc/nginx/conf.d:ro
-      - svencoop:/usr/share/nginx/html/fastdl/nzc/svencoop:ro
+      - svencoop:/usr/share/nginx/html/fastdl/svencoop:ro
       - mkcert:/etc/mkcert
     dns:
       - 172.10.1.1
@@ -260,6 +260,7 @@ services:
         condition: service_started
 volumes:
   nginx_websites:
+  nginx_fastdl:
   certbot_conf:
   certbot_www:
   mkcert:

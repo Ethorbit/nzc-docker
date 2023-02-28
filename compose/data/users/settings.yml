@@ -1,15 +1,17 @@
 groups:
   admin:
     id: ${HGID}
+  staff:
   websites:
   discord:
   gmod:
   svencoop:
-
+  
 users:
   admin:
     id: ${HUID}
     groups:
+      - staff
       - websites
       - srcds
       - nginx
@@ -34,18 +36,22 @@ users:
       - discord
   # Custom users below, replace with your own.
   blunto:
+    primarygroup: staff
     groups:
       - gmod
     password: ${BLUNTO_PASSWORD}
   berb:
+    primarygroup: staff
     groups:
       - gmod
     password: ${BERB_PASSWORD}
   pepe:
+    primarygroup: staff
     groups:
       - svencoop
     password: ${PEPE_PASSWORD}
   freeman:
+    primarygroup: staff
     groups:
       - svencoop
     password: ${FREEMAN_PASSWORD}
