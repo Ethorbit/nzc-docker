@@ -15,11 +15,6 @@ services:
       chmod 751 "/mnt/$$d" 
       chown root:root "/mnt/$$d"; 
       done
-      && for d in 1 2 3; do 
-      mkdir -p "/mnt/game_servers/gmod/$$d" 
-      chmod 751 "/mnt/game_servers/gmod/$$d" 
-      chown root:root /mnt/game_servers/gmod/$$d; 
-      done
       && mkdir -p /mnt/game_servers/svencoop
       && chmod 751 /mnt/game_servers/svencoop
       && chown root:root /mnt/game_servers/svencoop'

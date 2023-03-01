@@ -5,6 +5,8 @@ x-defaults: &defaults
       condition: service_healthy
     nginx_development:
       condition: service_healthy
+    gmod_permissions:
+      condition: service_completed_successfully
   blkio_config:
     weight: 500
     device_write_bps:
@@ -43,7 +45,7 @@ x-gmod: &gmod
     args:
       PUID: ${srcds_u}
       PGID: ${gmod_g}
-      UMASK: "0007"
+      UMASK: "007"
       TZ: ${TZ}
   <<: *defaults
   stdin_open: true
@@ -64,7 +66,17 @@ x-gmod: &gmod
 networks:
   gmod:
     driver: "bridge"
-services:     
+services:
+  gmod_permissions:
+    image: alpine:3.17.2
+    volumes:
+      - gmod_shared:/mnt/shared
+    command: >
+      /bin/sh -c 'chmod 770 /mnt/shared
+      && chown "${srcds_u}":"${gmod_g}" /mnt/shared
+      && chmod g+s /mnt/shared'
+    network_mode: none
+    restart: on-failure
   unionfs-1:
     <<: *unionfs
     cpuset: "0"

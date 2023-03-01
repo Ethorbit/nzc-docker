@@ -7,7 +7,7 @@ services:
         TZ: ${TZ}
         PUID: ${srcds_u}
         PGID: ${svencoop_g} 
-        UMASK: "0007"
+        UMASK: "007"
     tty: true
     stdin_open: true
     environment:
@@ -29,7 +29,6 @@ services:
       - svencoop
     cpuset: ${SVENCOOP_CPU}
     cpu_count: 1
-    cpu_percent: 10
     cpu_shares: 256
     deploy:
       resources:
