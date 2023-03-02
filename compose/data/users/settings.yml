@@ -6,10 +6,17 @@ groups:
   discord:
   gmod:
   svencoop:
-  
+
+x-staff-defaults: &staff-defaults
+  primarygroup: staff
+  keys:
+    - UMASK=027
+  comment: "umask=007"
 users:
   admin:
+    <<: *staff-defaults
     id: ${HUID}
+    primarygroup: admin
     groups:
       - staff
       - websites
@@ -36,22 +43,23 @@ users:
       - discord
   # Custom users below, replace with your own.
   blunto:
-    primarygroup: staff
+    <<: *staff-defaults
     groups:
       - gmod
     password: ${BLUNTO_PASSWORD}
   berb:
-    primarygroup: staff
+    <<: *staff-defaults
     groups:
       - gmod
     password: ${BERB_PASSWORD}
   pepe:
-    primarygroup: staff
+    <<: *staff-defaults
     groups:
       - svencoop
     password: ${PEPE_PASSWORD}
   freeman:
-    primarygroup: staff
+    <<: *staff-defaults
     groups:
       - svencoop
     password: ${FREEMAN_PASSWORD}
+

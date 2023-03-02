@@ -62,8 +62,8 @@ cmd: setup_users build_docker
 update-containers:
 	$(command_update)
 
-#update-users:
-#	$(command_setup_users)
+update-users:
+	$(command_setup_users)
 
 define help_text
 	make cmd "compose arguments here"
@@ -71,6 +71,7 @@ define help_text
 			make cmd "up"
 			nofiles=1 make cmd -- "-f ./compose/nginx.yml down"
 	make update-containers - Updates containers and then restarts those effected.
+	make update-users - Re-creates users, automatically called when calling cmd
 endef
 
 help:
