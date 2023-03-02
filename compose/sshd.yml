@@ -34,13 +34,14 @@ services:
   sshd:
     build:
       context: ./build/sshd
+      args:
+        - UMASK=0007
     networks:
       - ssh
     ports:
       - ${SSH_PORT:-22}:${SSH_PORT:-22}
     volumes:
       - home:/home
-      - pam:/etc/pam.d
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
@@ -75,5 +76,4 @@ volumes:
   gmod_3:
   gmod_shared:
   home:
-  pam:
 

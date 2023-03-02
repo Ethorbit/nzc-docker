@@ -109,6 +109,9 @@ X11Forwarding no
 # override default of no subsystems
 Subsystem	sftp	internal-sftp
 
+Match Group staff
+	ForceCommand internal-sftp -d /mnt -u 007
+
 # Example of overriding settings on a per-user basis
 #Match User anoncvs
 #	X11Forwarding no
