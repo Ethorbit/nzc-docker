@@ -1,6 +1,5 @@
 FROM alpine:latest
 ARG TZ
-ARG UMASK="0027"
 ENV TZ=${TZ}
 RUN apk add --no-cache openssh linux-pam shadow tzdata &&\
     ssh-keygen -A

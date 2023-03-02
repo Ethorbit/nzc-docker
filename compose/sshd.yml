@@ -34,8 +34,6 @@ services:
   sshd:
     build:
       context: ./build/sshd
-      args:
-        - UMASK=0007
     networks:
       - ssh
     ports:
