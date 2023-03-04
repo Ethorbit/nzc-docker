@@ -26,7 +26,6 @@ x-nginx: &nginx
   environment:
     - DOMAIN_NAME=${DOMAIN_NAME}
   cpuset: ${NGINX_CPU}
-  cpu_percent: 30
   cpu_shares: 2048
   deploy:
     resources:
@@ -72,6 +71,8 @@ x-nginx_envsubst_production: &nginx_envsubst_production
     - production
   environment:  
     - DOMAIN_NAME=${DOMAIN_NAME}
+    - WEBSITES_ROOT="/mnt/websites"
+    - FASTDL_ROOT="/mnt/fastdl"
     - NGINX_SSL_CERT="/etc/letsencrypt/live/chronicles.local/cert.pem"
     - NGINX_SSL_CERT_KEY="/etc/letsencrypt/live/chronicles.local/privkey.pem"
     - NGINX_SSL_DHPARAM="/etc/letsencrypt/ssl-dhparams.pem" 
@@ -80,10 +81,26 @@ x-nginx_envsubst_development: &nginx_envsubst_development
     - development
   environment:
     - DOMAIN_NAME=${DOMAIN_NAME}
+    - WEBSITES_ROOT="/mnt/websites"
+    - FASTDL_ROOT="/mnt/fastdl"
     - NGINX_SSL_CERT="/etc/mkcert/mkcert.pem"
     - NGINX_SSL_CERT_KEY="/etc/mkcert/mkcert.key"
     - NGINX_SSL_DHPARAM="/etc/mkcert/mkcert.dh"
 services:
+  nginx_links:
+    image: alpine:3.17.2
+    volumes:
+      - nginx_fastdl:/mnt/fastdl
+    command: >
+      /bin/sh -c "mkdir -p /mnt/links/svencoop/svencoop
+      && rm /mnt/fastdl/svencoop
+      && ln -sf /mnt/links/svencoop/svencoop /mnt/fastdl/svencoop"
+    cap_drop:
+      - ALL 
+    cap_add:
+      - CAP_DAC_OVERRIDE
+    network_mode: none
+    restart: on-failure
   nginx_permissions:
     image: alpine:3.17.2
     volumes: 
@@ -100,11 +117,12 @@ services:
       - certbot_www:/mnt/certbot_www
     command: >
       /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
-      && mkdir -p /mnt/nginx_fastdl/svencoop
-      && mkdir -p /mnt/nginx_fastdl/gmod
-      && chown \"${nginx_u}\":\"${websites_g}\" 
-      /mnt/nginx_fastdl/svencoop 
-      /mnt/nginx_fastdl/gmod
+      && chown ${nginx_u}:${websites_g} 
+      /mnt/nginx_websites 
+      /mnt/nginx_fastdl
+      && chmod 3770 
+      /mnt/nginx_websites 
+      /mnt/nginx_fastdl
       && chown -R root:${admin_g} /mnt/nginx_conf/
       && chmod -R 775 /mnt/nginx_conf/
       && chown -fR ${nginx_u}:root /mnt/mkcert/
@@ -118,9 +136,11 @@ services:
     cap_drop:
       - ALL 
     cap_add:
-      - CAP_DAC_OVERRIDE
       - CHOWN
+      - CAP_FOWNER
     depends_on: 
+      nginx_links:
+        condition: service_completed_successfully
       certbot:
         condition: service_started
       mkcert:
@@ -159,12 +179,12 @@ services:
       - ./data/users/shadow:/etc/shadow:ro 
       - ./data/users/gshadow:/etc/gshadow:ro
       - ./data/nginx/cpu/online:/sys/devices/system/cpu/online:ro
-      - nginx_fastdl:/mnt/fastdl
       - nginx_websites:/mnt/websites
+      - nginx_fastdl:/mnt/fastdl
+      - svencoop:/mnt/links/svencoop:ro
       - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/nginx/snippets:/etc/nginx/snippets:ro
       - ./data/nginx/conf.d:/etc/nginx/conf.d:ro
-      - svencoop:/mnt/fastdl/svencoop:ro
       - certbot_conf:/etc/letsencrypt
       - certbot_www:/var/www/certbot
     depends_on:
@@ -241,11 +261,12 @@ services:
       - ./data/users/shadow:/etc/shadow:ro 
       - ./data/users/gshadow:/etc/gshadow:ro
       - ./data/nginx/cpu/online:/sys/devices/system/cpu/online:ro
-      - nginx_websites:/usr/share/nginx/html
+      - nginx_websites:/mnt/websites
+      - nginx_fastdl:/mnt/fastdl
+      - svencoop:/mnt/links/svencoop:ro
       - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/nginx/snippets:/etc/nginx/snippets:ro
       - ./data/nginx/conf.d:/etc/nginx/conf.d:ro
-      - svencoop:/usr/share/nginx/html/fastdl/svencoop:ro
       - mkcert:/etc/mkcert
     dns:
       - 172.10.1.1

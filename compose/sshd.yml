@@ -5,20 +5,25 @@ services:
     volumes:
       - sftp:/mnt
     command: >
-      /bin/sh -c 'for d in game_servers discord_bots websites fastdl; do 
+      /bin/sh -c 'for d in game_servers discord_bots; do 
       mkdir -p "/mnt/$$d" 
-      chmod 751 "/mnt/$$d" 
-      chown root:root "/mnt/$$d"; 
+      chown root:root "/mnt/$$d" 
+      chmod 3751 "/mnt/$$d"; 
       done
       && for d in discord_bots/stickies; do 
       mkdir -p "/mnt/$$d" 
-      chmod 751 "/mnt/$$d" 
-      chown root:root "/mnt/$$d"; 
+      chown root:root "/mnt/$$d" 
+      chmod 3751 "/mnt/$$d"; 
       done
       && mkdir -p /mnt/game_servers/svencoop
-      && chmod 751 /mnt/game_servers/svencoop
-      && chown root:root /mnt/game_servers/svencoop'
+      && chown root:root /mnt/game_servers/svencoop
+      && chmod 3751 /mnt/game_servers/svencoop'
     network_mode: none
+    cap_drop:
+      - ALL 
+    cap_add:
+      - CHOWN
+      - CAP_FOWNER
     restart: on-failure
   sshd_envsubst:
     image: ethorbit/envsubst:latest
