@@ -2,6 +2,7 @@ groups:
   admin:
     id: ${HGID}
   staff:
+  fastdl:
   websites:
   discord:
   gmod:
@@ -19,6 +20,7 @@ users:
     groups:
       - staff
       - websites
+      - fastdl
       - srcds
       - nginx
       - gmod
@@ -28,6 +30,7 @@ users:
   nginx:
     home: false
     groups:
+      - fastdl
       - websites
       - gmod
       - svencoop
@@ -44,11 +47,13 @@ users:
   blunto:
     <<: *staff-defaults
     groups:
+      - fastdl
       - gmod
     password: ${BLUNTO_PASSWORD}
   berb:
     <<: *staff-defaults
     groups:
+      - fastdl
       - gmod
     password: ${BERB_PASSWORD}
   pepe:

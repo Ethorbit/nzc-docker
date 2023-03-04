@@ -110,7 +110,7 @@ X11Forwarding no
 Subsystem	sftp	internal-sftp
 
 Match Group staff
-	ForceCommand internal-sftp -d /mnt -u 007
+    ForceCommand sh -c 'cd /mnt && umask 007 && [ "$SSH_ORIGINAL_COMMAND" ] && exec /usr/lib/ssh/sftp-server || exec /bin/sh'
 
 # Example of overriding settings on a per-user basis
 #Match User anoncvs

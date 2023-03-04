@@ -117,11 +117,9 @@ services:
       - certbot_www:/mnt/certbot_www
     command: >
       /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
-      && chown ${nginx_u}:${websites_g} 
-      /mnt/nginx_websites 
-      /mnt/nginx_fastdl
-      && chmod 3771 
-      /mnt/nginx_websites 
+      && chown ${nginx_u}:${websites_g} /mnt/nginx_websites
+      && chown ${nginx_u}:${fastdl_g} /mnt/nginx_fastdl
+      && chmod 3771 /mnt/nginx_websites 
       /mnt/nginx_fastdl
       && mkdir -p /mnt/nginx_fastdl/gmod
       && chown ${nginx_u}:${gmod_g} /mnt/nginx_fastdl/gmod

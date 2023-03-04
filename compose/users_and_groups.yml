@@ -14,7 +14,7 @@ services:
       - setup_users
     volumes:
       - ./data/users:/mnt
-      - ./data/users/skel:/etc/skel
+        #- ./data/users/skel:/etc/skel
       - home:/home
         #- pam:/etc/pam.d
     network_mode: none
