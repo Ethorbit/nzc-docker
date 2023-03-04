@@ -75,6 +75,13 @@ services:
       /bin/sh -c 'chmod 770 /mnt/shared
       && chown "${srcds_u}":"${gmod_g}" /mnt/shared
       && chmod g+s /mnt/shared'
+    cap_drop:
+      - ALL 
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CHOWN
+      - CAP_FOWNER
+      - CAP_FSETID
     network_mode: none
     restart: on-failure
   unionfs-1:

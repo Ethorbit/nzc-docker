@@ -120,9 +120,12 @@ services:
       && chown ${nginx_u}:${websites_g} 
       /mnt/nginx_websites 
       /mnt/nginx_fastdl
-      && chmod 3770 
+      && chmod 3771 
       /mnt/nginx_websites 
       /mnt/nginx_fastdl
+      && mkdir -p /mnt/nginx_fastdl/gmod
+      && chown ${nginx_u}:${gmod_g} /mnt/nginx_fastdl/gmod
+      && chmod 3771 /mnt/nginx_fastdl/gmod
       && chown -R root:${admin_g} /mnt/nginx_conf/
       && chmod -R 775 /mnt/nginx_conf/
       && chown -fR ${nginx_u}:root /mnt/mkcert/
@@ -132,12 +135,14 @@ services:
       && if [ -d '/mnt/certbot_conf/live/' ]; then
         chown -fR nginx:${admin_g} /mnt/certbot_conf/live/
       fi"
-    network_mode: none
     cap_drop:
       - ALL 
     cap_add:
+      - CAP_DAC_OVERRIDE
       - CHOWN
       - CAP_FOWNER
+      - CAP_FSETID
+    network_mode: none
     depends_on: 
       nginx_links:
         condition: service_completed_successfully

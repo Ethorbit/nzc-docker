@@ -8,22 +8,24 @@ services:
       /bin/sh -c 'for d in game_servers discord_bots; do 
       mkdir -p "/mnt/$$d" 
       chown root:root "/mnt/$$d" 
-      chmod 3751 "/mnt/$$d"; 
+      chmod 751 "/mnt/$$d"; 
       done
       && for d in discord_bots/stickies; do 
       mkdir -p "/mnt/$$d" 
       chown root:root "/mnt/$$d" 
-      chmod 3751 "/mnt/$$d"; 
+      chmod 750 "/mnt/$$d"; 
       done
       && mkdir -p /mnt/game_servers/svencoop
       && chown root:root /mnt/game_servers/svencoop
       && chmod 3751 /mnt/game_servers/svencoop'
-    network_mode: none
     cap_drop:
       - ALL 
     cap_add:
+      - CAP_DAC_OVERRIDE
       - CHOWN
       - CAP_FOWNER
+      - CAP_FSETID
+    network_mode: none
     restart: on-failure
   sshd_envsubst:
     image: ethorbit/envsubst:latest
