@@ -211,7 +211,7 @@ services:
       /bin/sh -c "[[ ! -s /mnt/mkcert.pem || ! -s /mnt/mkcert.key ]]
       && mkcert -install
       && mkcert -cert-file /mnt/mkcert.pem -key-file /mnt/mkcert.key
-      *.${DOMAIN_NAME} 
+      ${DOMAIN_NAME} *.${DOMAIN_NAME} 
       || exit 0" 
     network_mode: none 
   openssl:
