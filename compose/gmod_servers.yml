@@ -83,7 +83,7 @@ services:
       - ALL
     cap_add:
       - CAP_DAC_OVERRIDE
-      - CHOWN
+      - CAP_CHOWN
       - CAP_FOWNER
       - CAP_FSETID
     network_mode: none
@@ -110,7 +110,7 @@ services:
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
       - ./data/users/gshadow:/etc/gshadow:ro
-      - gmod_1:/home/srcds/server
+      - gmod_1_merged:/home/srcds/server
     ports:
       - 27015:27015/udp
     depends_on:
@@ -138,7 +138,7 @@ services:
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
       - ./data/users/gshadow:/etc/gshadow:ro
-      - gmod_2:/home/srcds/server
+      - gmod_2_merged:/home/srcds/server
     ports:
       - 27016:27016/udp
     depends_on:
@@ -166,7 +166,7 @@ services:
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
       - ./data/users/gshadow:/etc/gshadow:ro
-      - gmod_3:/home/srcds/server
+      - gmod_3_merged:/home/srcds/server
     ports:
       - 27017:27017/udp
     depends_on:

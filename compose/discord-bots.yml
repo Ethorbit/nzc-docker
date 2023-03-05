@@ -11,7 +11,7 @@ services:
       - ALL 
     cap_add:
       - CAP_DAC_OVERRIDE
-      - CHOWN
+      - CAP_CHOWN
       - CAP_FOWNER
       - CAP_FSETID
     network_mode: none

@@ -1,4 +1,3 @@
-# TODO: add IO limits
 version: "3.9"
 services:
   sshd_permissions: 
@@ -23,7 +22,7 @@ services:
       - ALL 
     cap_add:
       - CAP_DAC_OVERRIDE
-      - CHOWN
+      - CAP_CHOWN
       - CAP_FOWNER
       - CAP_FSETID
     network_mode: none
@@ -69,6 +68,27 @@ services:
       sshd_envsubst:
         condition: 
           service_completed_successfully
+    cpu_shares: 256
+    deploy:
+      resources:
+        limits:
+          memory: 352M 
+        reservations:
+          memory: 128M  
+    blkio_config:
+      weight: 450
+      device_write_bps:
+        - path: ${DISK}
+          rate: 83886080
+      device_read_bps:
+        - path: ${DISK}
+          rate: 104857600
+      device_read_iops:
+        - path: ${DISK}
+          rate: 300
+      device_write_iops:
+        - path: ${DISK}
+          rate: 220
     restart: unless-stopped
 networks:
   ssh:
