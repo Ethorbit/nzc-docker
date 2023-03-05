@@ -76,7 +76,7 @@ services:
       - gmod_3:/mnt/3
     command: >
       /bin/sh -c 'for d in shared 1 2 3; do 
-      chown "${srcds_u}":"${gmod_g}" /mnt/$$d 
+      chown "${srcds_u}":"${gmod_g}" /mnt/$$d && 
       chmod 2770 /mnt/$$d; 
       done'
     cap_drop:
