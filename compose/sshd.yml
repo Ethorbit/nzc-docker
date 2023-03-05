@@ -1,3 +1,4 @@
+# TODO: add IO limits
 version: "3.9"
 services:
   sshd_permissions: 
@@ -17,7 +18,7 @@ services:
       done
       && mkdir -p /mnt/game_servers/svencoop
       && chown root:root /mnt/game_servers/svencoop
-      && chmod 3751 /mnt/game_servers/svencoop'
+      && chmod 2751 /mnt/game_servers/svencoop'
     cap_drop:
       - ALL 
     cap_add:

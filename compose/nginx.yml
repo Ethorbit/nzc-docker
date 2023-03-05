@@ -93,7 +93,7 @@ services:
       - nginx_fastdl:/mnt/fastdl
     command: >
       /bin/sh -c "mkdir -p /mnt/links/svencoop/svencoop
-      && rm /mnt/fastdl/svencoop
+      && rm -f /mnt/fastdl/svencoop
       && ln -sf /mnt/links/svencoop/svencoop /mnt/fastdl/svencoop"
     cap_drop:
       - ALL 
@@ -119,11 +119,11 @@ services:
       /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
       && chown ${nginx_u}:${websites_g} /mnt/nginx_websites
       && chown ${nginx_u}:${fastdl_g} /mnt/nginx_fastdl
-      && chmod 3771 /mnt/nginx_websites 
+      && chmod 2771 /mnt/nginx_websites 
       /mnt/nginx_fastdl
       && mkdir -p /mnt/nginx_fastdl/gmod
       && chown ${nginx_u}:${gmod_g} /mnt/nginx_fastdl/gmod
-      && chmod 3771 /mnt/nginx_fastdl/gmod
+      && chmod 2771 /mnt/nginx_fastdl/gmod
       && chown -R root:${admin_g} /mnt/nginx_conf/
       && chmod -R 775 /mnt/nginx_conf/
       && chown -fR ${nginx_u}:root /mnt/mkcert/

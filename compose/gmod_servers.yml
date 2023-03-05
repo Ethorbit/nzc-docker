@@ -71,12 +71,16 @@ services:
     image: alpine:3.17.2
     volumes:
       - gmod_shared:/mnt/shared
+      - gmod_1:/mnt/1
+      - gmod_2:/mnt/2
+      - gmod_3:/mnt/3
     command: >
-      /bin/sh -c 'chmod 770 /mnt/shared
-      && chown "${srcds_u}":"${gmod_g}" /mnt/shared
-      && chmod g+s /mnt/shared'
+      /bin/sh -c 'for d in shared 1 2 3; do 
+      chown "${srcds_u}":"${gmod_g}" /mnt/$$d 
+      chmod 2770 /mnt/$$d; 
+      done'
     cap_drop:
-      - ALL 
+      - ALL
     cap_add:
       - CAP_DAC_OVERRIDE
       - CHOWN
