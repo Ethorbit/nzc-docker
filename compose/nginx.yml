@@ -288,6 +288,7 @@ volumes:
   certbot_conf:
   certbot_www:
   mkcert:
+  svencoop:
 networks:
   nginx:
     ipam:
