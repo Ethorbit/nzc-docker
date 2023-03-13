@@ -5,20 +5,19 @@ services:
       context: ./build/svencoop-server
       args:
         TZ: ${TZ}
-        PUID: ${srcds_u}
+        PUID: ${steam_u}
         PGID: ${svencoop_g} 
         UMASK: "007"
     tty: true
     stdin_open: true
     environment:
-      SRCDS_RUN_ARGS: "-port ${SVENCOOP_PORT:-28015} +maxplayers 12 +map uplink"
-      SRCDS_RECURSIVE_FILE_PERMISSIONS: 1
+      START_ARGS: "-port ${SVENCOOP_PORT:-28015} +maxplayers 12 +map uplink"
     volumes: 
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
       - ./data/users/gshadow:/etc/gshadow:ro
-      - svencoop:/home/srcds/server
+      - svencoop:/home/steam/server
     depends_on:
       nginx_production: 
         condition: service_healthy

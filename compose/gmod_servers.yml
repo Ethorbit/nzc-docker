@@ -30,7 +30,7 @@ x-defaults: &defaults
 #  privileged: true
 #  network_mode: none
 #  environment:
-#    PUID: ${srcds_u}
+#    PUID: ${steam_u}
 #    PGID: ${gmod_g}
 #    TZ: ${TZ}
 #    MERGED_DIR_NAME: server
@@ -46,13 +46,16 @@ x-mergerfs: &mergerfs
   init: true
   privileged: true
   environment:
-    - PUID=${srcds_u}
+    - PUID=${steam_u}
     - PGID=${gmod_g}
     - UMASK=007
     - TZ=${TZ}
   devices:
-    - /dev/fuse 
-  command: "-o allow_other,nonempty /branch_1=RO:/branch_2=RW /mountpoint" #category.create=epall
+    - /dev/fuse
+  command: "-o allow_other,default_permissions,\
+    nonempty,minfreespace=0,category.create=mfs,\
+    category.search=mfs,category.action=mfs \
+    /branch_1=RW:/branch_2=RO /mountpoint"
   cpu_shares: 256
   deploy:
     resources:
@@ -65,9 +68,9 @@ x-gmod-environment: &gmod-environment
 
 x-gmod: &gmod
   build:
-    context: ./build/srcds-server
+    context: ./build/gmod-server
     args:
-      PUID: ${srcds_u}
+      PUID: ${steam_u}
       PGID: ${gmod_g}
       UMASK: "007"
       TZ: ${TZ}
@@ -103,7 +106,7 @@ services:
       - ./data/mounts/gmod_3_merged:/mnt/3_merged
     command: >
       /bin/sh -c 'for d in shared 1 2 3 1_merged 2_merged 3_merged; do 
-      chown "${srcds_u}":"${gmod_g}" /mnt/$$d && 
+      chown "${steam_u}":"${gmod_g}" /mnt/$$d && 
       chmod 2770 /mnt/$$d; 
       done'
     cap_drop:
@@ -131,8 +134,8 @@ services:
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
-      - gmod_shared:/branch_1
-      - gmod_1:/branch_2
+      - gmod_1:/branch_1
+      - gmod_shared:/branch_2:ro
       - ./data/mounts/gmod_1_merged:/mountpoint:rshared
   gmod-1:
     <<: *gmod
@@ -140,13 +143,13 @@ services:
     cpu_shares: 1024
     environment:
       <<: *gmod-environment
-      SRCDS_RUN_ARGS: "-tickrate 33 -disableluarefresh -port 27015 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
+      START_ARGS: "-tickrate 33 -disableluarefresh -port 27015 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
     volumes:
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
       - ./data/users/gshadow:/etc/gshadow:ro
-      - ./data/mounts/gmod_1_merged:/home/srcds/server
+      - ./data/mounts/gmod_1_merged:/home/steam/server
     ports:
       - 27015:27015/udp
     depends_on:
@@ -173,7 +176,7 @@ services:
 #      - ./data/users/group:/etc/group:ro
 #      - ./data/users/shadow:/etc/shadow:ro
 #      - ./data/users/gshadow:/etc/gshadow:ro
-#      - ./data/mounts/gmod_2_merged:/home/srcds/server
+#      - ./data/mounts/gmod_2_merged:/home/steam/server
 #    ports:
 #      - 27016:27016/udp
 #    depends_on:
@@ -200,7 +203,7 @@ services:
 #      - ./data/users/group:/etc/group:ro
 #      - ./data/users/shadow:/etc/shadow:ro
 #      - ./data/users/gshadow:/etc/gshadow:ro
-#      - ./data/mounts/gmod_3_merged:/home/srcds/server
+#      - ./data/mounts/gmod_3_merged:/home/steam/server
 #    ports:
 #      - 27017:27017/udp
 #    depends_on:

@@ -1,4 +1,4 @@
-FROM ethorbit/svencoop-server:latest
+FROM ethorbit/gmod-server:latest
 ARG PUID
 ARG PGID
 ARG UMASK
