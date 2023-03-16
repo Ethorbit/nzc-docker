@@ -21,28 +21,6 @@ x-defaults: &defaults
     device_write_iops:
       - path: ${DISK}
         rate: 200
-
-x-unionfs: &unionfs
-  image: ethorbit/unionfs:latest
-  <<: *defaults
-  privileged: true
-  network_mode: none
-  command: "-o auto_unmount,allow_other,\
-            uid=$steam_u,gid=$gmod_g,umask=007,\
-            max_files=32000 \
-            /top=RW:/bottom=RO /mount"
-  devices:
-    - /dev/fuse
-  cpu_shares: 256
-  deploy:
-    resources:
-      limits:
-        memory: 50M
-  restart: unless-stopped
-
-x-gmod-environment: &gmod-environment
-  SRCDS_APPID: 4020
-
 x-gmod: &gmod
   build:
     context: ./build/gmod-server
@@ -50,12 +28,10 @@ x-gmod: &gmod
       PUID: ${steam_u}
       PGID: ${gmod_g}
       UMASK: "007"
-      TZ: ${TZ}
+      SHARED_DIR: "/shared/garrysmod"
   <<: *defaults
   stdin_open: true
   tty: true
-  environment:
-    <<: *gmod-environment
   cpu_count: 1
   cpu_shares: 1024
   deploy:
@@ -71,16 +47,6 @@ networks:
   gmod:
     driver: "bridge"
 services:
-  gmod_unmount:
-    image: alpine:3.17.2
-    privileged: true
-    network_mode: none
-    volumes:
-      - ./data/mounts:/mnt:rshared
-    command: >
-      /bin/sh -c "for d in gmod_1_merged gmod_2_merged gmod_3_merged; do 
-      umount /mnt/$$d 2> /dev/null || exit 0; 
-      done"
   gmod_permissions:
     image: alpine:3.17.2
     volumes:
@@ -88,13 +54,10 @@ services:
       - gmod_1:/mnt/1
       - gmod_2:/mnt/2
       - gmod_3:/mnt/3
-      - ./data/mounts/gmod_1_merged:/mnt/1_merged:rshared
-      - ./data/mounts/gmod_2_merged:/mnt/2_merged:rshared
-      - ./data/mounts/gmod_3_merged:/mnt/3_merged:rshared
     command: >
-      /bin/sh -c 'for d in shared 1 2 3 1_merged 2_merged 3_merged; do 
-      chown "${steam_u}":"${gmod_g}" -R "/mnt/$$d" && 
-      chmod 2770 -R "/mnt/$$d"; 
+      /bin/sh -c 'for d in shared 1 2 3; do 
+      chown "${steam_u}":"${gmod_g}" "/mnt/$$d" && 
+      chmod 2770 "/mnt/$$d"; 
       done'
     cap_drop:
       - ALL
@@ -105,95 +68,59 @@ services:
       - CAP_FSETID
     network_mode: none
     restart: on-failure
-    depends_on:
-      gmod_unmount:
-        condition: service_completed_successfully
-  unionfs-1:
-    <<: *unionfs
-    cpuset: "${GMOD_1_CPU}"
-    volumes:
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
-      - gmod_1:/top
-      - gmod_shared:/bottom:ro
-      - ./data/mounts/gmod_1_merged:/mount:rshared
   gmod-1:
     <<: *gmod
     cpuset: "${GMOD_1_CPU}"
     cpu_shares: 1024
     environment:
-      <<: *gmod-environment
-      START_ARGS: "-tickrate 33 -disableluarefresh -port 27015 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
+      - PORT=27015
     volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
       - ./data/users/gshadow:/etc/gshadow:ro
-      - ./data/mounts/gmod_1_merged:/home/steam/server:slave
+      - gmod_1:/home/steam/server:slave
+      - gmod_shared:/shared:slave
     ports:
       - 27015:27015/udp
-    depends_on:
-      unionfs-1:
-        condition: service_started
-  unionfs-2:
-    <<: *unionfs
-    cpuset: "${GMOD_2_CPU}"
-    volumes:
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
-      - gmod_2:/top
-      - gmod_shared:/bottom:ro
-      - ./data/mounts/gmod_2_merged:/mount:rshared
   gmod-2:
     <<: *gmod
     cpuset: "${GMOD_2_CPU}"
     cpu_shares: 1024
     environment:
-      <<: *gmod-environment
-      START_ARGS: "-tickrate 33 -disableluarefresh -port 27015 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
+      - PORT=27016
     volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
       - ./data/users/gshadow:/etc/gshadow:ro
-      - ./data/mounts/gmod_2_merged:/home/steam/server:slave
+      - gmod_2:/home/steam/server:slave
+      - gmod_shared:/shared:slave
     ports:
       - 27016:27016/udp
-    depends_on:
-      unionfs-2:
-        condition: service_started
-  unionfs-3:
-    <<: *unionfs
-    cpuset: "${GMOD_3_CPU}"
-    volumes:
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
-      - gmod_3:/top
-      - gmod_shared:/bottom:ro
-      - ./data/mounts/gmod_3_merged:/mount:rshared
   gmod-3:
     <<: *gmod
     cpuset: "${GMOD_3_CPU}"
     cpu_shares: 256
     environment:
-      <<: *gmod-environment
-      START_ARGS: "-tickrate 33 -disableluarefresh -port 27015 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
+      - PORT=27017
     volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
       - ./data/users/gshadow:/etc/gshadow:ro
-      - ./data/mounts/gmod_3_merged:/home/steam/server:slave
+      - gmod_3:/home/steam/server:slave
+      - gmod_shared:/shared:slave
     ports:
       - 27017:27017/udp
-    depends_on:
-      unionfs-3:
-        condition: service_started
 volumes:
-  gmod_shared:   
-  gmod_1: 
-  gmod_2: 
-  gmod_3: 
+  gmod_shared:
+  gmod_1:
+  gmod_2:
+  gmod_3:
