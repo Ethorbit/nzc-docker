@@ -54,7 +54,7 @@ setup_users: #$(compose_dir)/users_and_groups.yml $(shell find $(data_dir)/users
 
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-.PHONY: update-containers update-users cmd help
+.PHONY: update-containers update-users cmd rm-vol help
 
 cmd: setup_users build_docker
 	$(command) $(args)
@@ -65,6 +65,12 @@ update-containers:
 update-users:
 	$(command_setup_users)
 
+# Because Docker likes to make removing volumes an annoying task
+rm-vol:
+	$(eval rm_command := docker volume rm -f $(args))
+	$(eval container_ids := $(shell remd= && while read id; do remd=1 && docker container rm -f $$id; done \
+		< <($(rm_command) 3>&1 1>&2- 2>&3- | grep -o "[A-Za-z0-9]\{64\}")) && [[ "$$remd" -eq 1 ]] && $(rm_command))
+
 define help_text
 	make cmd "compose arguments here"
 		Examples:
@@ -72,6 +78,7 @@ define help_text
 			nofiles=1 make cmd -- "-f ./compose/nginx.yml down"
 	make update-containers - Updates containers and then restarts those effected.
 	make update-users - Re-creates users, automatically called when calling cmd
+	make rm-vol - Removes a single Docker volume even if there are conflicting docker containers (It removes those too)
 endef
 
 help:
