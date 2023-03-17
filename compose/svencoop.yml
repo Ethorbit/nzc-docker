@@ -13,6 +13,8 @@ services:
     environment:
       START_ARGS: "-port ${SVENCOOP_PORT:-28015} +maxplayers 12 +map uplink"
     volumes: 
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro

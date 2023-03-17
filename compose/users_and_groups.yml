@@ -13,6 +13,8 @@ services:
     profiles:
       - setup_users
     volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - ./data/users:/mnt
         #- ./data/users/skel:/etc/skel
       - home:/home

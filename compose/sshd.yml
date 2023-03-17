@@ -47,6 +47,8 @@ services:
       - ${SSH_PORT:-22}:${SSH_PORT:-22}
     volumes:
       - home:/home
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - ./data/users/passwd:/etc/passwd:ro
       - ./data/users/group:/etc/group:ro
       - ./data/users/shadow:/etc/shadow:ro
