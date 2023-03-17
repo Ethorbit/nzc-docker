@@ -27,8 +27,9 @@ x-gmod: &gmod
     args:
       PUID: ${steam_u}
       PGID: ${gmod_g}
-      UMASK: "007"
-      SHARED_DIR: "/shared/garrysmod"
+  environment:
+    SHARED_DIR: "/shared"
+    UMASK: "007"
   <<: *defaults
   stdin_open: true
   tty: true
