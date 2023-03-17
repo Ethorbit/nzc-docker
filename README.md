@@ -11,8 +11,6 @@ DEVELOPING=1
 CA_TRUST_STORE_DIR="/etc/ca-certificates/trust-source"
 
 # Dev / Production vars
-TZ="America/Los_Angeles"
-
 DOMAIN_NAME="chronicles.local"
 
 NGINX_CPU=1
