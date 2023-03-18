@@ -5,7 +5,7 @@ ARG UMASK
 ENV UMASK=${UMASK}
 ENV PORT=27015
 ENV SHARED_DIR=/shared
-ENV SHARED_CACHE=/shared_cache.txt
+ENV SHARED_CACHE="${SERVER_DIR}/.server_shared_files_cache.txt"
 ENV STEAMCMD_UPDATE_SCRIPT_NOVALIDATE="steam_update_no_validate.txt"
 ENV START_ARGS="-tickrate 33 -disableluarefresh -port ${PORT} +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
 COPY ./container-start.sh /start_two.sh

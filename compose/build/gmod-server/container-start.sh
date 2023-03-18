@@ -1,21 +1,14 @@
 #!/bin/bash 
 echo "Merging shared files.."
-touch "${SHARED_CACHE}"
-
-# Check cache and remove any broken links before adding more, we don't want clutter!
-while read dest; do
-    if [[ -d "$dest" ]]; then
-        find -L "$dest" -type l -delete
-    fi 
-done < "${SHARED_CACHE}"
+#touch "${SHARED_CACHE}"
 
 # Merge shared and server using only symlinks
 # Save each added symlink to the cache
-cp --verbose --preserve=timestamp -dRns "${SHARED_DIR}/"* "${SERVER_DIR}/" | \
-    awk '{ print $NF }' >> "${SHARED_CACHE}"
+#        --verbose
+cp --preserve=timestamp -dRns "${SHARED_DIR}/"* "${SERVER_DIR}/" #| awk '{ print $NF }' >> "${SHARED_CACHE}"
 
-#echo "Setting file permissions.."
-#chmod 2770 -fR "${SERVER_DIR}/"
+echo "Setting file permissions.."
+chmod 2770 -fR "${SERVER_DIR}/"
 
 # Now start the steamcmd-server's start.sh
 exec /start.sh
