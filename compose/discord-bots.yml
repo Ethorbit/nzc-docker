@@ -1,14 +1,16 @@
 version: "3.9"
 services:
   discord_permissions:
-    image: alpine:3.17.2
+    build:
+      context: ./build/permissions
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - discord_sticky_bot:/mnt/discord_sticky_bot
     command: >
       /bin/sh -c 'chown -R ${stickybot_u}:${discord_g} /mnt/discord_sticky_bot/
-      && chmod 770 -R /mnt/discord_sticky_bot/'
+      && chmod 2770 -R /mnt/discord_sticky_bot/
+      && setfacl -d -m u::rwx,g::rwx,o::- "/mnt/discord_sticky_bot"'
     cap_drop:
       - ALL 
     cap_add:

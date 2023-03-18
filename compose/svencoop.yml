@@ -1,5 +1,23 @@
 version: "3.9"
 services:
+  svencoop_permissions:
+    build:
+      context: ./build/permissions
+    volumes:
+      - svencoop:/mnt
+    command: >
+      /bin/sh -c 'chown "${steam_u}":"${svencoop_g}" /mnt 
+      && chmod 2770 /mnt 
+      && setfacl -d -m u::rwx,g::rwx,o::- /mnt'
+    cap_drop:
+      - ALL 
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_CHOWN
+      - CAP_FOWNER
+      - CAP_FSETID
+    network_mode: none
+    restart: on-failure
   svencoop:
     build:
       context: ./build/svencoop-server
@@ -21,6 +39,8 @@ services:
       - ./data/users/gshadow:/etc/gshadow:ro
       - svencoop:/home/steam/server
     depends_on:
+      svencoop_permissions:
+        condition: service_completed_successfully
       nginx_production: 
         condition: service_healthy
       nginx_development:

@@ -49,7 +49,8 @@ networks:
     driver: "bridge"
 services:
   gmod_permissions:
-    image: alpine:3.17.2
+    build:
+      context: ./build/permissions
     volumes:
       - gmod_shared:/mnt/shared
       - gmod_1:/mnt/1
@@ -57,8 +58,9 @@ services:
       - gmod_3:/mnt/3
     command: >
       /bin/sh -c 'for d in shared 1 2 3; do 
-      chown "${steam_u}":"${gmod_g}" "/mnt/$$d" && 
-      chmod 2770 "/mnt/$$d"; 
+      chown "${steam_u}":"${gmod_g}" "/mnt/$$d" 
+      && chmod 2770 "/mnt/$$d" 
+      && setfacl -d -m u::rwx,g::rwx,o::- "/mnt/$$d"; 
       done'
     cap_drop:
       - ALL
@@ -86,40 +88,40 @@ services:
       - gmod_shared:/shared:slave
     ports:
       - 27015:27015/udp
-  gmod-2:
-    <<: *gmod
-    cpuset: "${GMOD_2_CPU}"
-    cpu_shares: 1024
-    environment:
-      - PORT=27016
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
-      - ./data/users/gshadow:/etc/gshadow:ro
-      - gmod_2:/home/steam/server:slave
-      - gmod_shared:/shared:slave
-    ports:
-      - 27016:27016/udp
-  gmod-3:
-    <<: *gmod
-    cpuset: "${GMOD_3_CPU}"
-    cpu_shares: 256
-    environment:
-      - PORT=27017
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
-      - ./data/users/gshadow:/etc/gshadow:ro
-      - gmod_3:/home/steam/server:slave
-      - gmod_shared:/shared:slave
-    ports:
-      - 27017:27017/udp
+#  gmod-2:
+#    <<: *gmod
+#    cpuset: "${GMOD_2_CPU}"
+#    cpu_shares: 1024
+#    environment:
+#      - PORT=27016
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
+#      - /etc/timezone:/etc/timezone:ro
+#      - ./data/users/passwd:/etc/passwd:ro
+#      - ./data/users/group:/etc/group:ro
+#      - ./data/users/shadow:/etc/shadow:ro
+#      - ./data/users/gshadow:/etc/gshadow:ro
+#      - gmod_2:/home/steam/server:slave
+#      - gmod_shared:/shared:slave
+#    ports:
+#      - 27016:27016/udp
+#  gmod-3:
+#    <<: *gmod
+#    cpuset: "${GMOD_3_CPU}"
+#    cpu_shares: 256
+#    environment:
+#      - PORT=27017
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
+#      - /etc/timezone:/etc/timezone:ro
+#      - ./data/users/passwd:/etc/passwd:ro
+#      - ./data/users/group:/etc/group:ro
+#      - ./data/users/shadow:/etc/shadow:ro
+#      - ./data/users/gshadow:/etc/gshadow:ro
+#      - gmod_3:/home/steam/server:slave
+#      - gmod_shared:/shared:slave
+#    ports:
+#      - 27017:27017/udp
 volumes:
   gmod_shared:
   gmod_1:
