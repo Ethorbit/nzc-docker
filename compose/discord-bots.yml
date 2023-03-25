@@ -30,10 +30,12 @@ services:
       - STICKY_COOLDOWN=600000
       - BOT_TOKEN=${DISCORD_STICKY_BOT_TOKEN}
     volumes:
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
-      - ./data/users/gshadow:/etc/gshadow:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/users/passwd:/etc/passwd:ro
+      - ./data/configs/users/group:/etc/group:ro
+      - ./data/configs/users/shadow:/etc/shadow:ro
+      - ./data/configs/users/gshadow:/etc/gshadow:ro
       - discord_sticky_bot:/botdb
     cpu_shares: 256
     #cpu_percent: 10

@@ -31,7 +31,7 @@ services:
   sshd_envsubst:
     image: ethorbit/envsubst:latest
     volumes:
-      - ./data/ssh:/mnt
+      - ./data/configs/ssh:/mnt
     command: >
       /bin/sh -c "envsubst `printf '$${%s}\n' SSH_PORT` 
       < /mnt/sshd_config.template > /mnt/sshd_config"
@@ -50,11 +50,11 @@ services:
       - home:/home
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
-      - ./data/users/gshadow:/etc/gshadow:ro
-      - ./data/ssh/sshd_config:/etc/ssh/sshd_config
+      - ./data/configs/users/passwd:/etc/passwd:ro
+      - ./data/configs/users/group:/etc/group:ro
+      - ./data/configs/users/shadow:/etc/shadow:ro
+      - ./data/configs/users/gshadow:/etc/gshadow:ro
+      - ./data/configs/ssh/sshd_config:/etc/ssh/sshd_config
       - sftp:/mnt
       - svencoop:/mnt/game_servers/svencoop
       - gmod_shared:/mnt/game_servers/gmod/shared

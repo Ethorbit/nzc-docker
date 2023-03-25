@@ -9,9 +9,11 @@ x-nginx: &nginx
   group_add:
     - ${gmod_g}
     - ${svencoop_g}
+    - ${websites_g}
   networks:
     - nginx
     - searxng
+    - mysql
   ports:
     - ${NGINX_HTTP_PORT:-80}:80
     - ${NGINX_HTTPS_PORT:-443}:443
@@ -52,8 +54,8 @@ x-nginx_envsubst_conf: &nginx_envsubst_conf
   build:
     context: ./build/nginx_envsubst
   volumes:
-    - ./data/nginx/conf.d.template:/mnt/input
-    - ./data/nginx/conf.d:/mnt/output
+    - ./data/configs/nginx/conf.d.template:/mnt/input
+    - ./data/configs/nginx/conf.d:/mnt/output
   network_mode: none
   cap_drop:
     - ALL
@@ -61,8 +63,8 @@ x-nginx_envsubst_snippets: &nginx_envsubst_snippets
   build:
     context: ./build/nginx_envsubst
   volumes:
-    - ./data/nginx/snippets.template:/mnt/input
-    - ./data/nginx/snippets:/mnt/output
+    - ./data/configs/nginx/snippets.template:/mnt/input
+    - ./data/configs/nginx/snippets:/mnt/output
   network_mode: none
   cap_drop:
     - ALL
@@ -108,14 +110,14 @@ services:
     volumes: 
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
-      - ./data/users/gshadow:/etc/gshadow:ro
+      - ./data/configs/users/passwd:/etc/passwd:ro
+      - ./data/configs/users/group:/etc/group:ro
+      - ./data/configs/users/shadow:/etc/shadow:ro
+      - ./data/configs/users/gshadow:/etc/gshadow:ro
       - nginx_websites:/mnt/nginx_websites
       - nginx_fastdl:/mnt/nginx_fastdl
-      - ./data/nginx/cpu:/mnt/nginx_cpu
-      - ./data/nginx:/mnt/nginx_conf
+      - ./data/configs/nginx/cpu:/mnt/nginx_cpu
+      - ./data/configs/nginx:/mnt/nginx_conf
       - mkcert:/mnt/mkcert
       - certbot_conf:/mnt/certbot_conf
       - certbot_www:/mnt/certbot_www
@@ -185,17 +187,17 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro 
-      - ./data/users/gshadow:/etc/gshadow:ro
-      - ./data/nginx/cpu/online:/sys/devices/system/cpu/online:ro
+      - ./data/configs/users/passwd:/etc/passwd:ro
+      - ./data/configs/users/group:/etc/group:ro
+      - ./data/configs/users/shadow:/etc/shadow:ro 
+      - ./data/configs/users/gshadow:/etc/gshadow:ro
+      - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
       - nginx_websites:/mnt/websites
       - nginx_fastdl:/mnt/fastdl
       - svencoop:/mnt/links/svencoop:ro
-      - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./data/nginx/snippets:/etc/nginx/snippets:ro
-      - ./data/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./data/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./data/configs/nginx/snippets:/etc/nginx/snippets:ro
+      - ./data/configs/nginx/conf.d:/etc/nginx/conf.d:ro
       - certbot_conf:/etc/letsencrypt
       - certbot_www:/var/www/certbot
     depends_on:
@@ -235,7 +237,7 @@ services:
     profiles:
       - development
     volumes:
-      - ./data/nginx/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
+      - ./data/configs/nginx/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
     ports:
       - 53/udp
     networks:
@@ -253,7 +255,7 @@ services:
   nginx_envsubst_dnsmasq_development:
     image: ethorbit/envsubst:latest
     volumes:
-      - ./data/nginx/dnsmasq:/mnt
+      - ./data/configs/nginx/dnsmasq:/mnt
     command: >
       /bin/sh -c "envsubst `printf '$${%s}\n' DOMAIN_NAME` 
       < /mnt/dnsmasq.conf.template > /mnt/dnsmasq.conf"
@@ -269,17 +271,17 @@ services:
     volumes:    
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro 
-      - ./data/users/gshadow:/etc/gshadow:ro
-      - ./data/nginx/cpu/online:/sys/devices/system/cpu/online:ro
+      - ./data/configs/users/passwd:/etc/passwd:ro
+      - ./data/configs/users/group:/etc/group:ro
+      - ./data/configs/users/shadow:/etc/shadow:ro 
+      - ./data/configs/users/gshadow:/etc/gshadow:ro
+      - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
       - nginx_websites:/mnt/websites
       - nginx_fastdl:/mnt/fastdl
       - svencoop:/mnt/links/svencoop:ro
-      - ./data/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./data/nginx/snippets:/etc/nginx/snippets:ro
-      - ./data/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./data/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./data/configs/nginx/snippets:/etc/nginx/snippets:ro
+      - ./data/configs/nginx/conf.d:/etc/nginx/conf.d:ro
       - mkcert:/etc/mkcert
     dns:
       - 172.10.1.1

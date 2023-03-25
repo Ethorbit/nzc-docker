@@ -43,6 +43,7 @@ x-gmod: &gmod
         memory: 256M
   networks:
     - gmod
+    - mysql
   restart: unless-stopped
 networks:
   gmod:
@@ -80,10 +81,10 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
-      - ./data/users/gshadow:/etc/gshadow:ro
+      - ./data/configs/users/passwd:/etc/passwd:ro
+      - ./data/configs/users/group:/etc/group:ro
+      - ./data/configs/users/shadow:/etc/shadow:ro
+      - ./data/configs/users/gshadow:/etc/gshadow:ro
       - gmod_1:/home/steam/server:slave
       - gmod_shared:/shared:slave
     ports:
@@ -97,10 +98,10 @@ services:
 #    volumes:
 #      - /etc/localtime:/etc/localtime:ro
 #      - /etc/timezone:/etc/timezone:ro
-#      - ./data/users/passwd:/etc/passwd:ro
-#      - ./data/users/group:/etc/group:ro
-#      - ./data/users/shadow:/etc/shadow:ro
-#      - ./data/users/gshadow:/etc/gshadow:ro
+#      - ./data/configs/users/passwd:/etc/passwd:ro
+#      - ./data/configs/users/group:/etc/group:ro
+#      - ./data/configs/users/shadow:/etc/shadow:ro
+#      - ./data/configs/users/gshadow:/etc/gshadow:ro
 #      - gmod_2:/home/steam/server:slave
 #      - gmod_shared:/shared:slave
 #    ports:
@@ -114,10 +115,10 @@ services:
 #    volumes:
 #      - /etc/localtime:/etc/localtime:ro
 #      - /etc/timezone:/etc/timezone:ro
-#      - ./data/users/passwd:/etc/passwd:ro
-#      - ./data/users/group:/etc/group:ro
-#      - ./data/users/shadow:/etc/shadow:ro
-#      - ./data/users/gshadow:/etc/gshadow:ro
+#      - ./data/configs/users/passwd:/etc/passwd:ro
+#      - ./data/configs/users/group:/etc/group:ro
+#      - ./data/configs/users/shadow:/etc/shadow:ro
+#      - ./data/configs/users/gshadow:/etc/gshadow:ro
 #      - gmod_3:/home/steam/server:slave
 #      - gmod_shared:/shared:slave
 #    ports:

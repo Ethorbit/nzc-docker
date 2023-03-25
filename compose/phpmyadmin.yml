@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  phpmyadmin:
+    image: phpmyadmin:latest 
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=${MYSQL_REMOTE_PASSWORD}
+      - PMA_HOST=mysql
+    networks:
+      - mysql
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - 8085:80 
+    restart: unless-stopped

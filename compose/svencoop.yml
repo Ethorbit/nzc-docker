@@ -33,10 +33,10 @@ services:
     volumes: 
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ./data/users/passwd:/etc/passwd:ro
-      - ./data/users/group:/etc/group:ro
-      - ./data/users/shadow:/etc/shadow:ro
-      - ./data/users/gshadow:/etc/gshadow:ro
+      - ./data/configs/users/passwd:/etc/passwd:ro
+      - ./data/configs/users/group:/etc/group:ro
+      - ./data/configs/users/shadow:/etc/shadow:ro
+      - ./data/configs/users/gshadow:/etc/gshadow:ro
       - svencoop:/home/steam/server
     depends_on:
       svencoop_permissions:

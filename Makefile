@@ -2,6 +2,7 @@ include .env
 SHELL := /bin/bash 
 compose_dir := ./compose
 data_dir := $(compose_dir)/data
+config_dir := $(data_dir)/configs
 build_dir := $(compose_dir)/build
 
 # Used to add newlines into other defines
@@ -31,7 +32,7 @@ $(shell $(list_yml_command))
 endef
 
 profile := $(shell [[ "$(DEVELOPING)" -ge 1 ]] && echo "development" || echo "production")
-export_ids := set -a && source "$(compose_dir)/data/users/env" > /dev/null 2>&1 &&
+export_ids := set -a && source "$(config_dir)/users/env" > /dev/null 2>&1 &&
 command_base := nofiles=$(nofiles) \
 				DISK=$(DISK) HUID=$(shell id -u) HGID=$(shell id -g) \
 				docker-compose --env-file .env --profile $(profile) -p nzc

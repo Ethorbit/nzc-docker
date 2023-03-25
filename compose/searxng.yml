@@ -50,7 +50,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./data/searxng:/etc/searxng:rw
+      - ./data/configs/searxng:/etc/searxng:rw
     cap_drop:
       - ALL
     cap_add:
