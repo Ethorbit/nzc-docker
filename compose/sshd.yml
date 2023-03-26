@@ -99,6 +99,7 @@ volumes:
   sftp:
   nginx_websites:
   nginx_fastdl:
+  discord_sticky_bot:
   svencoop:
   gmod_1:
   gmod_2:
