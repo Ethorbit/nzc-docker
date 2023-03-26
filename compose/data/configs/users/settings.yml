@@ -28,9 +28,15 @@ users:
       - svencoop
       - discord
     password: ${ADMIN_PASSWORD}
+  php:
+    home: false
+    groups:
+      - nginx
+      - websites
   nginx:
     home: false
     groups:
+      - php
       - fastdl
       - websites
       - gmod

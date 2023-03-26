@@ -7,6 +7,7 @@ x-nginx: &nginx
       GID: ${nginx_g}
   user: "${nginx_u}:${nginx_g}"
   group_add:
+    - ${php_g}
     - ${gmod_g}
     - ${svencoop_g}
     - ${websites_g}
@@ -195,6 +196,7 @@ services:
       - ./data/configs/users/shadow:/etc/shadow:ro 
       - ./data/configs/users/gshadow:/etc/gshadow:ro
       - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
+      - php_fpm_run:/var/run/php-fpm
       - nginx_websites:/mnt/websites
       - nginx_fastdl:/mnt/fastdl
       - svencoop:/mnt/links/svencoop:ro
@@ -210,6 +212,8 @@ services:
         condition: service_completed_successfully
       nginx_permissions:
         condition: service_completed_successfully
+      php_fpm:
+        condition: service_started
   # Development nginx (because Let's Encrypt only works on the actual domain)
   mkcert:
     image: ethorbit/mkcert:latest
@@ -283,6 +287,7 @@ services:
       - ./data/configs/users/shadow:/etc/shadow:ro 
       - ./data/configs/users/gshadow:/etc/gshadow:ro
       - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
+      - php_fpm_run:/var/run/php-fpm
       - nginx_websites:/mnt/websites
       - nginx_fastdl:/mnt/fastdl
       - svencoop:/mnt/links/svencoop:ro
@@ -300,6 +305,8 @@ services:
       nginx_permissions:
         condition: service_completed_successfully
       nginx_dnsmasq:
+        condition: service_started
+      php_fpm:
         condition: service_started
 volumes:
   nginx_websites:
