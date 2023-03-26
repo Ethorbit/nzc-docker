@@ -53,8 +53,10 @@ To remove:
 * After bringing the containers up, restart your browser and then inside set the mkcert certificate to be trusted
 
 ## Production Maintenance
-Because this project consists of many different containers, it is not feasable to take the entire cluster offline every time you need to make changes. It is also not appropriate to restart individual containers as some have dependency services. You should restart entire files instead of individual containers, this will ensure things like file permissions are set and configuration files are generated from templates when needed.
+Because this project consists of many different containers, it is not feasible to take the entire cluster offline every time you need to make changes. It is also not appropriate to restart individual containers as some have dependency services. You should restart entire files instead of individual containers, this will ensure things like file permissions are set and configuration files are generated from templates when needed.
 
 For example, to restart ONLY the web server:
 `nofiles=1 make cmd -- "-f ./compose/nginx.yml restart"`
+
+To update users and groups: `make update-users`
 
