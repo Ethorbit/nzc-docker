@@ -1,7 +1,9 @@
 version: "3.9"
 services:
   php_fpm:
-    image: php:8.2.4-fpm
+    build:
+      context:
+        ./build/php_fpm
     networks:
       - nginx
     volumes:
@@ -16,7 +18,7 @@ services:
       - php_fpm_run:/var/run/php-fpm
       - nginx_websites:/mnt/websites
     command: >
-      /bin/bash -c "touch /var/run/php-fpm/sock
+      /bin/sh -c "touch /var/run/php-fpm/sock
       && chown ${php_u}:${php_g} /var/run/php-fpm
       && chmod 770 /var/run/php-fpm
       && chown ${php_u}:${php_g} /var/run/php-fpm/sock
