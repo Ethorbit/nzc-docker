@@ -175,17 +175,15 @@ services:
       - nginx
     restart: unless-stopped       
   nginx_envsubst_conf_production:
-    <<: *nginx_envsubst_conf
-    profiles:
-      - production 
-  nginx_envsubst_conf_production:
-    <<: *nginx_envsubst_conf
-    <<: *nginx_envsubst_production
+    #<<: *nginx_envsubst_conf
+    #<<: *nginx_envsubst_production
+    <<: [*nginx_envsubst_conf, *nginx_envsubst_production]
   nginx_envsubst_snippets_production:
-    <<: *nginx_envsubst_snippets
-    <<: *nginx_envsubst_production
+    #<<: *nginx_envsubst_snippets
+    #<<: *nginx_envsubst_production
+    <<: [*nginx_envsubst_snippets, *nginx_envsubst_production]
   nginx_production: 
-    <<: *nginx  
+    <<: [ *nginx ]
     profiles:
       - production
     volumes:
@@ -257,11 +255,13 @@ services:
         condition: service_completed_successfully
     restart: on-failure
   nginx_envsubst_conf_development:
-    <<: *nginx_envsubst_conf
-    <<: *nginx_envsubst_development
+    #<<: *nginx_envsubst_conf
+    #<<: *nginx_envsubst_development
+    <<: [ *nginx_envsubst_conf, *nginx_envsubst_development ]
   nginx_envsubst_snippets_development:
-    <<: *nginx_envsubst_snippets
-    <<: *nginx_envsubst_development
+    #<<: *nginx_envsubst_snippets
+    #<<: *nginx_envsubst_development
+    <<: [ *nginx_envsubst_snippets, *nginx_envsubst_development ]
   nginx_envsubst_dnsmasq_development:
     image: ethorbit/envsubst:latest
     volumes:
@@ -276,7 +276,7 @@ services:
       - ALL
     restart: on-failure
   nginx_development:
-    <<: *nginx
+    <<: [ *nginx ]
     profiles:
       - development
     volumes:    

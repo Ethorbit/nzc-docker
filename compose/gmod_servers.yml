@@ -30,7 +30,7 @@ x-gmod: &gmod
   environment:
     SHARED_DIR: "/shared"
     UMASK: "007"
-  <<: *defaults
+  <<: [ *defaults ]
   stdin_open: true
   tty: true
   cpu_count: 1
@@ -73,7 +73,7 @@ services:
     network_mode: none
     restart: on-failure
   gmod-1:
-    <<: *gmod
+    <<: [ *gmod ]
     cpuset: "${GMOD_1_CPU}"
     cpu_shares: 1024
     environment:

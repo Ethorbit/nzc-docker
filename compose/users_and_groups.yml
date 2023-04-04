@@ -18,7 +18,7 @@ services:
       - ./data/configs/users:/mnt
       #- ./data/configs/users/skel:/etc/skel
       - home:/home
-        #- pam:/etc/pam.d
+      #- pam:/etc/pam.d
     network_mode: none
 volumes:
   home:
