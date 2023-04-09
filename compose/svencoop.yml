@@ -22,7 +22,6 @@ services:
     build:
       context: ./build/svencoop-server
       args:
-        TZ: ${TZ}
         PUID: ${steam_u}
         PGID: ${svencoop_g} 
         UMASK: "007"

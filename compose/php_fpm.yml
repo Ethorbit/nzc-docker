@@ -18,6 +18,7 @@ services:
       - ./data/configs/php_fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
       - php_fpm_run:/var/run/php-fpm
       - nginx_websites:/mnt/websites
+      - opengamepanel:/mnt/opengamepanel
     command: >
       /bin/sh -c "touch /var/run/php-fpm/sock
       && chown ${php_u}:${php_g} /var/run/php-fpm
@@ -28,3 +29,4 @@ services:
     restart: unless-stopped
 volumes:
   php_fpm_run:
+  opengamepanel:

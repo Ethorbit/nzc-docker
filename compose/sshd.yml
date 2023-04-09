@@ -18,7 +18,8 @@ services:
       done
       && mkdir -p /mnt/game_servers/svencoop
       && chown root:root /mnt/game_servers/svencoop
-      && chmod 751 /mnt/game_servers/svencoop'
+      && chmod 751 /mnt/game_servers/svencoop
+      && mkdir -p /mnt/game_servers/opengamepanel'
     cap_drop:
       - ALL 
     cap_add:
@@ -63,6 +64,7 @@ services:
       - gmod_3:/mnt/game_servers/gmod/3
       - nginx_fastdl:/mnt/fastdl
       - nginx_websites:/mnt/websites
+      - opengamepanel:/mnt/game_servers/opengamepanel
       - discord_sticky_bot:/mnt/discord_bots/stickies
     depends_on:
       sshd_permissions:
@@ -99,6 +101,7 @@ volumes:
   sftp:
   nginx_websites:
   nginx_fastdl:
+  opengamepanel:
   discord_sticky_bot:
   svencoop:
   gmod_1:

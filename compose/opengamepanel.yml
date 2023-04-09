@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  opengamepanel:
+    build:
+      context: ./build/opengamepanel
+      args:
+        UID: ${opengamepanel_u}
+        GID: ${websites_g}
+        WEBSERVER_UID: ${nginx_u}
+    volumes:
+      - opengamepanel:/mnt
+    restart: unless-stopped
+volumes:
+  opengamepanel:
