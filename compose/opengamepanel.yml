@@ -1,5 +1,25 @@
 version: "3.9"
 services:
+  opengamepanel_permissions:
+    build:
+      context: ./build/permissions
+    volumes:
+      - opengamepanel:/panel
+      - ./data/configs/opengamepanel:/configs
+    command: >
+      /bin/sh -c "chown -R ${opengamepanel_u}:${admin_g} /configs
+      && chmod 770 -R /configs
+      && chown ${opengamepanel_u}:${websites_g} /panel
+      && chmod 770 /panel"
+    cap_drop:
+      - ALL 
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_CHOWN
+      - CAP_FOWNER
+      - CAP_FSETID
+    network_mode: none
+    restart: on-failure
   opengamepanel:
     build:
       context: ./build/opengamepanel
@@ -7,8 +27,23 @@ services:
         UID: ${opengamepanel_u}
         GID: ${websites_g}
         WEBSERVER_UID: ${nginx_u}
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - DATABASE_USER=admin
+      - DATABASE_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - DATABASE_NAME=ogp
+    command: >
+      /bin/sh -c "envsubst `printf '$${%s}\n' DATABASE_HOST DATABASE_USER DATABASE_PASSWORD DATABASE_NAME` 
+      < /configs/includes/config.inc.php.template > /panel/includes/config.inc.php
+      && while true; do sleep 5; done"
+    networks:
+      - mysql
     volumes:
-      - opengamepanel:/mnt
+      - opengamepanel:/panel
+      - ./data/configs/opengamepanel:/configs
+    depends_on:
+      opengamepanel_permissions:
+        condition: service_completed_successfully
     restart: unless-stopped
 volumes:
   opengamepanel:
