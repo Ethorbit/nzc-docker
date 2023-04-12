@@ -1,5 +1,6 @@
 version: "3.9"
 x-nginx: &nginx
+  #container_name: ${CONTAINER_NAME_PREFIX}-nginx-${CONTAINER_NAME_SUFFIX}
   build:
     context: ./build/nginx
     args:
@@ -213,7 +214,7 @@ services:
         condition: service_completed_successfully
       nginx_permissions:
         condition: service_completed_successfully
-      php_fpm:
+      php_fpm_production:
         condition: service_started
   # Development nginx (because Let's Encrypt only works on the actual domain)
   mkcert:
@@ -310,7 +311,7 @@ services:
         condition: service_completed_successfully
       nginx_dnsmasq:
         condition: service_started
-      php_fpm:
+      php_fpm_development:
         condition: service_started
 volumes:
   nginx_websites:

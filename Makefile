@@ -5,6 +5,9 @@ data_dir := $(compose_dir)/data
 config_dir := $(data_dir)/configs
 build_dir := $(compose_dir)/build
 
+CONTAINER_NAME_PREFIX := nzc
+CONTAINER_NAME_SUFFIX := 1 # this is just what Docker does.. Don't think we can control it.
+
 # Used to add newlines into other defines
 define newline 
 
@@ -35,7 +38,8 @@ profile := $(shell [[ "$(DEVELOPING)" -ge 1 ]] && echo "development" || echo "pr
 export_ids := set -a && source "$(config_dir)/users/env" > /dev/null 2>&1 &&
 command_base := nofiles=$(nofiles) \
 				DISK=$(DISK) HUID=$(shell id -u) HGID=$(shell id -g) \
-				docker-compose --env-file .env --profile $(profile) -p nzc
+				CONTAINER_NAME_PREFIX=$(CONTAINER_NAME_PREFIX) CONTAINER_NAME_SUFFIX=$(CONTAINER_NAME_SUFFIX) \
+				docker-compose --env-file .env --profile $(profile) -p $(CONTAINER_NAME_PREFIX)
 command_update := $(command_base) --profile update -f $(compose_dir)/update.yml up
 command_setup_users := $(command_base) --profile setup_users -f $(compose_dir)/users_and_groups.yml up
 command_build := $(export_ids) $(command_base) --profile setup_users $(yml_files_build) build

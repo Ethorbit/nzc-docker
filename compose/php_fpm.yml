@@ -1,32 +1,51 @@
 version: "3.9"
+x-php_fpm: &php_fpm
+  #container_name: ${CONTAINER_NAME_PREFIX}-php_fpm-${CONTAINER_NAME_SUFFIX}
+  networks:
+    - nginx
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+    - ./data/configs/users/passwd:/etc/passwd:ro
+    - ./data/configs/users/group:/etc/group:ro
+    - ./data/configs/users/shadow:/etc/shadow:ro 
+    - ./data/configs/users/gshadow:/etc/gshadow:ro
+    - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
+    - ./data/configs/php_fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
+    - php_fpm_run:/var/run/php-fpm
+    - nginx_websites:/mnt/websites
+    - opengamepanel:/mnt/opengamepanel
+  command: >
+    /bin/sh -c "touch /var/run/php-fpm/sock
+    && chown ${php_u}:${php_g} /var/run/php-fpm
+    && chmod 770 /var/run/php-fpm
+    && chown ${php_u}:${php_g} /var/run/php-fpm/sock
+    && chmod 770 /var/run/php-fpm/sock
+    && php-fpm"
+  restart: unless-stopped
 services:
-  php_fpm:
+  php_fpm_development:
+    <<: [ *php_fpm ]
+    profiles: 
+      - development 
     build:
+      target: development
       context:
         ./build/php_fpm
+      args:
+        - UID=${php_u}
+        - GID=${php_g}
+  php_fpm_production:
+    <<: [ *php_fpm ]
+    profiles: 
+      - production
+    build:
       target: production
-    networks:
-      - nginx
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/users/passwd:/etc/passwd:ro
-      - ./data/configs/users/group:/etc/group:ro
-      - ./data/configs/users/shadow:/etc/shadow:ro 
-      - ./data/configs/users/gshadow:/etc/gshadow:ro
-      - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
-      - ./data/configs/php_fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
-      - php_fpm_run:/var/run/php-fpm
-      - nginx_websites:/mnt/websites
-      - opengamepanel:/mnt/opengamepanel
-    command: >
-      /bin/sh -c "touch /var/run/php-fpm/sock
-      && chown ${php_u}:${php_g} /var/run/php-fpm
-      && chmod 770 /var/run/php-fpm
-      && chown ${php_u}:${php_g} /var/run/php-fpm/sock
-      && chmod 770 /var/run/php-fpm/sock
-      && php-fpm"
-    restart: unless-stopped
+      context:
+        ./build/php_fpm
+      args:
+        - UID=${php_u}
+        - GID=${php_g}
 volumes:
   php_fpm_run:
   opengamepanel:
