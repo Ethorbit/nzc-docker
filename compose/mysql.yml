@@ -1,20 +1,36 @@
-# TODO: setup gmod, anticheat and svencoop databases
 version: "3.9"
 services:
+  mysql_envsubst:
+    image: ethorbit/envsubst
+    volumes:
+      - ./data/configs/mysql:/mnt
+    command: >
+      /bin/sh -c "envsubst `printf '$${%s}\n' MYSQL_ADMIN_PASSWORD 
+      MYSQL_OGP_PASSWORD MYSQL_GMOD_PASSWORD MYSQL_SVENCOOP_PASSWORD` 
+      < /mnt/init.sql.template > /mnt/init.sql
+      && chmod +x /mnt/init.sql"
+    environment:
+      - MYSQL_ADMIN_PASSWORD=${MYSQL_ADMIN_PASSWORD}
+      - MYSQL_OGP_PASSWORD=${MYSQL_OGP_PASSWORD}
+      - MYSQL_GMOD_PASSWORD=${MYSQL_GMOD_PASSWORD}
+      - MYSQL_SVENCOOP_PASSWORD=${MYSQL_SVENCOOP_PASSWORD}
+    network_mode: none
+    restart: on-failure
   mysql:
     image: mysql:8.0.32-debian
-    environment:
-      - MYSQL_DATABASE=test
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=${MYSQL_REMOTE_PASSWORD}
     command: '--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci'
     networks:
       - mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ADMIN_PASSWORD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - mysql:/var/lib/mysql
+      - ./data/configs/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    depends_on:
+      mysql_envsubst:
+        condition: service_completed_successfully
     restart: always
 volumes:
   mysql:

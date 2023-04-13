@@ -3,6 +3,7 @@ x-php_fpm: &php_fpm
   #container_name: ${CONTAINER_NAME_PREFIX}-php_fpm-${CONTAINER_NAME_SUFFIX}
   networks:
     - nginx
+    - mysql
   volumes:
     - /etc/localtime:/etc/localtime:ro
     - /etc/timezone:/etc/timezone:ro
