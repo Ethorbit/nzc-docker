@@ -13,21 +13,23 @@ x-nginx: &nginx
     - ${svencoop_g}
     - ${websites_g}
   networks:
-    - nginx
-    - searxng
+    nginx:
+      ipv4_address: 172.10.1.2
+    searxng:
   ports:
     - ${NGINX_HTTP_PORT:-80}:80
     - ${NGINX_HTTPS_PORT:-443}:443
   extra_hosts:
     - "searxng:172.50.10.1"
   healthcheck:
-    test: "curl -f http://${DOMAIN_NAME} || exit 1"
+    test: "curl -f http://${PRIVATE_DOMAIN_NAME} || exit 1"
     start_period: 5s
     interval: 10s
     timeout: 10s
     retries: 3
   environment:
-    - DOMAIN_NAME=${DOMAIN_NAME}
+    - PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}
+    - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
   cpuset: ${NGINX_CPU}
   cpu_shares: 2048
   deploy:
@@ -75,7 +77,8 @@ x-nginx_envsubst_production: &nginx_envsubst_production
   profiles:
     - production
   environment:  
-    - DOMAIN_NAME=${DOMAIN_NAME}
+    - PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}
+    - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
     - WEBSITES_ROOT="/mnt/websites"
     - FASTDL_ROOT="/mnt/fastdl"
     - GAMEPANEL_ROOT="/mnt/opengamepanel"
@@ -87,7 +90,8 @@ x-nginx_envsubst_development: &nginx_envsubst_development
   profiles:
     - development
   environment:
-    - DOMAIN_NAME=${DOMAIN_NAME}
+    - PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}
+    - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
     - WEBSITES_ROOT="/mnt/websites"
     - FASTDL_ROOT="/mnt/fastdl"
     - GAMEPANEL_ROOT="/mnt/opengamepanel"
@@ -228,7 +232,7 @@ services:
       /bin/sh -c "[[ ! -s /mnt/mkcert.pem || ! -s /mnt/mkcert.key ]]
       && mkcert -install
       && mkcert -cert-file /mnt/mkcert.pem -key-file /mnt/mkcert.key
-      ${DOMAIN_NAME} *.${DOMAIN_NAME} 
+      ${PRIVATE_DOMAIN_NAME} *.${PRIVATE_DOMAIN_NAME} 
       || exit 0" 
     network_mode: none 
     restart: on-failure
@@ -271,10 +275,10 @@ services:
     volumes:
       - ./data/configs/nginx/dnsmasq:/mnt
     command: >
-      /bin/sh -c "envsubst `printf '$${%s}\n' DOMAIN_NAME` 
+      /bin/sh -c "envsubst `printf '$${%s}\n' PRIVATE_DOMAIN_NAME` 
       < /mnt/dnsmasq.conf.template > /mnt/dnsmasq.conf"
     environment:
-      - DOMAIN_NAME=${DOMAIN_NAME}
+      - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
     network_mode: none
     cap_drop:
       - ALL
