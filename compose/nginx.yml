@@ -100,6 +100,33 @@ x-nginx_envsubst_development: &nginx_envsubst_development
     - NGINX_SSL_DHPARAM="/etc/mkcert/mkcert.dh"
   restart: on-failure
 services:
+  nginx_dnsmasq:
+    image: ethorbit/dnsmasq:latest
+    volumes:
+      - ./data/configs/nginx/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
+    ports:
+      - 53/udp
+    networks:
+      nginx:
+        ipv4_address: 172.10.1.1
+    depends_on:
+      nginx_envsubst_dnsmasq:
+        condition: service_completed_successfully
+    restart: on-failure
+  nginx_envsubst_dnsmasq:
+    image: ethorbit/envsubst:latest
+    volumes:
+      - ./data/configs/nginx/dnsmasq:/mnt
+    command: >
+      /bin/sh -c "envsubst `printf '$${%s}\n' PRIVATE_DOMAIN_NAME` 
+      < /mnt/dnsmasq.conf.template > /mnt/dnsmasq.conf"
+    environment:
+      - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
+    network_mode: none
+    cap_drop:
+      - ALL
+    restart: on-failure
+  
   nginx_links:
     image: alpine:3.17.2
     volumes:
@@ -218,6 +245,8 @@ services:
         condition: service_completed_successfully
       nginx_permissions:
         condition: service_completed_successfully
+      nginx_dnsmasq:
+        condition: service_started
       php_fpm_production:
         condition: service_started
   # Development nginx (because Let's Encrypt only works on the actual domain)
@@ -247,21 +276,6 @@ services:
       && openssl dhparam -out /mnt/mkcert.dh 2048
       || exit 0"
     restart: on-failure
-  nginx_dnsmasq:
-    image: ethorbit/dnsmasq:latest
-    profiles:
-      - development
-    volumes:
-      - ./data/configs/nginx/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
-    ports:
-      - 53/udp
-    networks:
-      nginx:
-        ipv4_address: 172.10.1.1
-    depends_on:
-      nginx_envsubst_dnsmasq_development:
-        condition: service_completed_successfully
-    restart: on-failure
   nginx_envsubst_conf_development:
     #<<: *nginx_envsubst_conf
     #<<: *nginx_envsubst_development
@@ -270,19 +284,6 @@ services:
     #<<: *nginx_envsubst_snippets
     #<<: *nginx_envsubst_development
     <<: [ *nginx_envsubst_snippets, *nginx_envsubst_development ]
-  nginx_envsubst_dnsmasq_development:
-    image: ethorbit/envsubst:latest
-    volumes:
-      - ./data/configs/nginx/dnsmasq:/mnt
-    command: >
-      /bin/sh -c "envsubst `printf '$${%s}\n' PRIVATE_DOMAIN_NAME` 
-      < /mnt/dnsmasq.conf.template > /mnt/dnsmasq.conf"
-    environment:
-      - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
-    network_mode: none
-    cap_drop:
-      - ALL
-    restart: on-failure
   nginx_development:
     <<: [ *nginx ]
     profiles:

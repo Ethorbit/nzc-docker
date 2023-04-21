@@ -4,6 +4,8 @@ x-php_fpm: &php_fpm
   networks:
     - nginx
     - mysql
+  dns:
+    - 172.10.1.1
   volumes:
     - /etc/localtime:/etc/localtime:ro
     - /etc/timezone:/etc/timezone:ro
