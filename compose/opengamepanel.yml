@@ -27,7 +27,12 @@ services:
         UID: ${opengamepanel_u}
         GID: ${websites_g}
         WEBSERVER_UID: ${nginx_u}
+    networks:
+      - nginx
+    dns:
+      - 172.10.1.1
     environment:
+      - WEB_PAGE=gamepanel.${PRIVATE_DOMAIN_NAME}
       - DATABASE_HOST=mysql
       - DATABASE_USER=ogp
       - DATABASE_PASSWORD=${MYSQL_OGP_PASSWORD}
@@ -42,6 +47,14 @@ services:
     depends_on:
       opengamepanel_permissions:
         condition: service_completed_successfully
+      nginx_production: 
+        condition: service_healthy
+      nginx_development:
+        condition: service_healthy
+      php_fpm_development:
+        condition: service_started
+      php_fpm_production:
+        condition: service_started
     restart: unless-stopped
 volumes:
   opengamepanel:

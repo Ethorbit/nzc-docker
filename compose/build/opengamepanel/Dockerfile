@@ -17,7 +17,7 @@ VOLUME /panel
 VOLUME /configs
 WORKDIR /home/opengamepanel
 COPY --chown=${UID}:${GID} --chmod=755 ./*.sh /
-RUN apk add --no-cache git shadow &&\
+RUN apk add --no-cache curl git shadow &&\
     groupadd -g ${GID} opengamepanel &&\
     useradd -m -u ${UID} -g ${GID} opengamepanel &&\
     chmod 700 /home/opengamepanel &&\
