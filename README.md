@@ -11,7 +11,8 @@ DEVELOPING=1
 CA_TRUST_STORE_DIR="/etc/ca-certificates/trust-source"
 
 # Dev / Production vars
-DOMAIN_NAME="chronicles.local"
+PUBLIC_DOMAIN_NAME="nzcservers.com"
+PRIVATE_DOMAIN_NAME="chronicles.local"
 
 NGINX_CPU=1
 
@@ -26,14 +27,21 @@ GMOD_2_CPU=0
 GMOD_3_CPU=0
 
 DISCORD_CPU=1
-DISCORD_STICKY_BOT_TOKEN="bot's token here"
+DISCORD_STICKY_BOT_TOKEN=""
 
 SVENCOOP_CPU=1
 SVENCOOP_PORT=1337
 
-ADMIN_PASSWORD="admin's password"
+MYSQL_ADMIN_PASSWORD=""
+MYSQL_OGP_PASSWORD=""
+MYSQL_GMOD_PASSWORD=""
+MYSQL_SVENCOOP_PASSWORD=""
 
-DEVELOPING=1
+OGP_ADMIN_USER=""
+OGP_ADMIN_PASSWORD=""
+OGP_ADMIN_EMAIL=""
+
+ADMIN_PASSWORD=""
 ```
 
 Change as needed.
@@ -48,7 +56,7 @@ To remove:
 `make cmd "down"`
 
 ## Local Testing
-* In .env set DEVELOPING to 1 and set DOMAIN_NAME to "chronicles.local"
+* In .env set DEVELOPING to 1 and set PRIVATE\_DOMAIN\_NAME to "chronicles.local"
 * In your host, either use dnsmasq and add `address=/chronicles.local/127.0.0.1` to /etc/dnsmasq.conf OR add an /etc/hosts entry `127.0.0.1 chronicles.local` for each subdomain
 * After bringing the containers up, restart your browser and then inside set the mkcert certificate to be trusted
 

@@ -37,6 +37,9 @@ services:
       - DATABASE_USER=ogp
       - DATABASE_PASSWORD=${MYSQL_OGP_PASSWORD}
       - DATABASE_NAME=ogp
+      - ADMIN_USER=${OGP_ADMIN_USER}
+      - ADMIN_PASSWORD=${OGP_ADMIN_PASSWORD}
+      - ADMIN_EMAIL=${OGP_ADMIN_EMAIL}
     volumes:
       - opengamepanel:/panel
       - ./data/configs/opengamepanel:/configs

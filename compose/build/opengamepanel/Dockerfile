@@ -1,11 +1,4 @@
-FROM ethorbit/envsubst:latest as envsubst
-
-FROM alpine:3.17.2 as alpine_with_envsubst
-COPY --from=envsubst /usr/lib/libintl.so.8 /usr/lib/libintl.so.8
-COPY --from=envsubst /usr/lib/libintl.so.8.3.0 /usr/lib/libintl.so.8.3.0
-COPY --from=envsubst /usr/local/bin/envsubst /usr/local/bin/envsubst
-
-FROM alpine_with_envsubst as install
+FROM alpine:3.17.2 as install
 ARG UID
 ARG GID
 ARG WEBSERVER_UID
@@ -13,7 +6,9 @@ ENV DATABASE_HOST="localhost"
 ENV DATABASE_USER="admin"
 ENV DATABASE_PASSWORD="password"
 ENV DATABASE_NAME="ogp"
-# ( Bind mount in a /configs/includes/config.inc.php.template file )
+ENV ADMIN_USER="admin"
+ENV ADMIN_PASSWORD="password"
+ENV ADMIN_EMAIL=""
 VOLUME /panel
 VOLUME /configs
 WORKDIR /home/opengamepanel
