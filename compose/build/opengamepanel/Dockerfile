@@ -13,6 +13,7 @@ ENV DATABASE_HOST="localhost"
 ENV DATABASE_USER="admin"
 ENV DATABASE_PASSWORD="password"
 ENV DATABASE_NAME="ogp"
+# ( Bind mount in a /configs/includes/config.inc.php.template file )
 VOLUME /panel
 VOLUME /configs
 WORKDIR /home/opengamepanel
@@ -27,4 +28,4 @@ RUN git clone "https://github.com/OpenGamePanel/OGP-Website" . &&\
     git checkout cbc2afe0f3a88063b8c80b2cb50039467b7eb2b5 &&\
     chmod -R 770 ./
 ENTRYPOINT [ "/entrypoint.sh" ]
-CMD [ "/bin/sh", "-c", "while true; do sleep 5; done" ]
+CMD [ "/start.sh" ]

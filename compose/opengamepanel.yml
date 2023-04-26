@@ -37,10 +37,6 @@ services:
       - DATABASE_USER=ogp
       - DATABASE_PASSWORD=${MYSQL_OGP_PASSWORD}
       - DATABASE_NAME=ogp
-    command: >
-      /bin/sh -c "envsubst `printf '$${%s}\n' DATABASE_HOST DATABASE_USER DATABASE_PASSWORD DATABASE_NAME` 
-      < /configs/includes/config.inc.php.template > /panel/includes/config.inc.php
-      && while true; do sleep 5; done"
     volumes:
       - opengamepanel:/panel
       - ./data/configs/opengamepanel:/configs

@@ -1,7 +1,0 @@
-<?php
-$db_host="${DATABASE_HOST}";
-$db_user="${DATABASE_USER}";
-$db_pass="${DATABASE_PASSWORD}";
-$db_name="${DATABASE_NAME}";
-$table_prefix="ogp_";
-$db_type="mysql";
