@@ -45,11 +45,6 @@ users:
     groups:
       - gmod
       - svencoop
-  opengamepanel:
-    home: false
-    groups:
-      - websites
-      - php
   stickybot:
     home: false
     groups:

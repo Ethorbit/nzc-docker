@@ -4,6 +4,9 @@ x-php_fpm: &php_fpm
   networks:
     - nginx
     - mysql
+      #- ssh
+      #- gmod
+      #- svencoop
   dns:
     - 172.10.1.1
   volumes:
@@ -17,7 +20,6 @@ x-php_fpm: &php_fpm
     - ./data/configs/php_fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
     - php_fpm_run:/var/run/php-fpm
     - nginx_websites:/mnt/websites
-    - opengamepanel:/mnt/opengamepanel
   command: >
     /bin/sh -c "touch /var/run/php-fpm/sock
     && chown ${php_u}:${php_g} /var/run/php-fpm
@@ -53,4 +55,3 @@ services:
         - GID=${php_g}
 volumes:
   php_fpm_run:
-  opengamepanel:

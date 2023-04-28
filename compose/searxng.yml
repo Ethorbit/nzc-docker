@@ -1,7 +1,6 @@
 version: "3.9"
 x-cpu-limits: &cpu-limits
   cpuset: ${SEARXNG_CPU}
-  cpu_percent: 5
   cpu_shares: 20
 x-io-limits: &io-limits 
   blkio_config:
