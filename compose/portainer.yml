@@ -2,16 +2,18 @@ version: "3.9"
 services:
   portainer:
     image: portainer/portainer-ce:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    command: -H unix:///var/run/docker.sock
     networks:
       portainer:
         ipv4_address: 172.60.10.1
       nginx:
     ports:
-      - ${PORTAINER_PORT:-5059}:9000/tcp
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /var/run/docker.sock:/var/run/docker.sock
+      - 9443:9443/tcp
     cpuset: ${PORTAINER_CPU}
     cpu_shares: 60
     deploy:
@@ -21,3 +23,5 @@ services:
         reservations:
           memory: 250M
     restart: unless-stopped
+volumes:
+  portainer_data:
