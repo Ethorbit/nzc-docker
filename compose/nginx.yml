@@ -209,12 +209,8 @@ services:
       - nginx
     restart: unless-stopped       
   nginx_envsubst_conf_production:
-    #<<: *nginx_envsubst_conf
-    #<<: *nginx_envsubst_production
     <<: [*nginx_envsubst_conf, *nginx_envsubst_production]
   nginx_envsubst_snippets_production:
-    #<<: *nginx_envsubst_snippets
-    #<<: *nginx_envsubst_production
     <<: [*nginx_envsubst_snippets, *nginx_envsubst_production]
   nginx_production: 
     <<: [ *nginx ]
