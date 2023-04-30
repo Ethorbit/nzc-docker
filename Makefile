@@ -42,7 +42,7 @@ command_base := nofiles=$(nofiles) \
 				docker-compose --env-file .env --profile $(profile) -p $(CONTAINER_NAME_PREFIX)
 command_update := $(command_base) --profile update -f $(compose_dir)/update.yml up
 command_setup_users := $(command_base) --profile setup_users -f $(compose_dir)/users_and_groups.yml up
-command_build := $(export_ids) $(command_base) --profile setup_users $(yml_files_build) build
+command_build := $(export_ids) $(command_base) --profile setup_users $(yml_files_build) build --progress plain
 command := $(export_ids) $(command_base) $(yml_files)
 
 build_docker: $(dir $(wildcard $(build_dir)/**/*))
