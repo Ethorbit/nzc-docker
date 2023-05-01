@@ -20,6 +20,7 @@ x-php_fpm: &php_fpm
     - ./data/configs/php_fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
     - php_fpm_run:/var/run/php-fpm
     - nginx_websites:/mnt/websites
+    - phpmyadmin:/mnt/admin/phpmyadmin
   command: >
     /bin/sh -c "touch /var/run/php-fpm/sock
     && chown ${php_u}:${php_g} /var/run/php-fpm
@@ -27,10 +28,35 @@ x-php_fpm: &php_fpm
     && chown ${php_u}:${php_g} /var/run/php-fpm/sock
     && chmod 770 /var/run/php-fpm/sock
     && php-fpm"
+  environment:
+    - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    - MYSQL_USER=admin
+    - MYSQL_PASSWORD=${MYSQL_REMOTE_PASSWORD}
+    - PMA_HOST=mysql
+  #depends_on:
+  #  php_fpm_permissions:
+  #    condition:
+  #      service_completed_successfully
   cpuset: ${NGINX_CPU} # Since we handle the workloads of php (which is closely tied to webserver), we might as well use the same cores..
   cpu_shares: 2048
   restart: unless-stopped
 services:
+  #php_fpm_permissions:
+  #  build:
+  #    context: ./build/permissions
+  #  command: >
+  #    /bin/sh -c 'mkdir /mnt/admin
+  #    && chmod 755 /mnt/admin'
+  #  cap_drop:
+  #    - ALL 
+  #  cap_add:
+  #    - CAP_DAC_OVERRIDE
+  #    - CAP_CHOWN
+  #    - CAP_FOWNER
+  #    - CAP_FSETID
+  #  network_mode: none
+  #  restart: on-failure
+
   php_fpm_development:
     <<: [ *php_fpm ]
     profiles: 

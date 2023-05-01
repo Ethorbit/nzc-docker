@@ -1,17 +1,26 @@
 version: "3.9"
 services:
   phpmyadmin:
-    image: phpmyadmin:latest 
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=${MYSQL_REMOTE_PASSWORD}
-      - PMA_HOST=mysql
-    networks:
-      - mysql
+    build:
+      context: ./build/phpmyadmin
+      args:
+        UID: ${phpmyadmin_u}
+        GID: ${websites_g}
+    #environment:
+      #- MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      #- MYSQL_USER=admin
+      #- MYSQL_PASSWORD=${MYSQL_REMOTE_PASSWORD}
+      #- PMA_HOST=mysql
+      #networks:
+      #- mysql
+      #- phpmyadmin  
+    network_mode: none 
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-    ports:
-      - 8085:80 
+      - phpmyadmin:/panel
+    #ports:
+      #- 8085:80 
     restart: unless-stopped
+volumes:
+  phpmyadmin:

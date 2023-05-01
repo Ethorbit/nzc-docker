@@ -32,6 +32,8 @@ users:
     groups:
       - nginx
       - websites
+  phpmyadmin:
+    home: false
   nginx:
     home: false
     groups:

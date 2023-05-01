@@ -6,10 +6,14 @@ services:
     volumes:
       - sftp:/mnt
     command: >
-      /bin/sh -c 'for d in game_servers discord_bots; do 
+      /bin/sh -c 'for d in game_servers discord_bots admin_websites; do 
       mkdir -p "/mnt/$$d" 
       chown root:root "/mnt/$$d" 
       chmod 751 "/mnt/$$d"; 
+      done
+      && for d in admin_websites/phpmyadmin admin_websites/portainer; do 
+      mkdir -p "/mnt/$$d"
+      chmod 750 "/mnt/$$d"
       done
       && for d in discord_bots/stickies; do 
       mkdir -p "/mnt/$$d" 
@@ -64,6 +68,8 @@ services:
       - nginx_fastdl:/mnt/fastdl
       - nginx_websites:/mnt/websites
       - discord_sticky_bot:/mnt/discord_bots/stickies
+      - phpmyadmin:/mnt/admin_websites/phpmyadmin
+      - portainer_data:/mnt/admin_websites/portainer
     depends_on:
       sshd_permissions:
         condition:
@@ -99,6 +105,8 @@ volumes:
   sftp:
   nginx_websites:
   nginx_fastdl:
+  phpmyadmin:
+  portainer_data:
   discord_sticky_bot:
   svencoop:
   gmod_1:

@@ -23,6 +23,7 @@ x-nginx: &nginx
   extra_hosts:
     - "searxng:172.50.10.1"
     - "portainer:172.60.10.1"
+    - "phpmyadmin:172.70.10.1"
   healthcheck:
     test: "curl -f http://${PRIVATE_DOMAIN_NAME} || exit 1"
     start_period: 5s
@@ -83,9 +84,13 @@ x-nginx_envsubst_production: &nginx_envsubst_production
     - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
     - WEBSITES_ROOT="/mnt/websites"
     - FASTDL_ROOT="/mnt/fastdl"
+    - PHPMYADMIN_ROOT="/mnt/admin/phpmyadmin"
     - NGINX_SSL_CERT="/etc/letsencrypt/live/chronicles.local/cert.pem"
     - NGINX_SSL_CERT_KEY="/etc/letsencrypt/live/chronicles.local/privkey.pem"
     - NGINX_SSL_DHPARAM="/etc/letsencrypt/ssl-dhparams.pem"
+    - NGINX_PORTAINER_CACHE_PATH=/mnt/cache/portainer
+    - NGINX_PHPMYADMIN_CACHE_PATH=/mnt/cache/phpmyadmin
+    - NGINX_SEARCH_CACHE_PATH=/mnt/cache/search
   restart: on-failure
 x-nginx_envsubst_development: &nginx_envsubst_development
   profiles:
@@ -95,9 +100,13 @@ x-nginx_envsubst_development: &nginx_envsubst_development
     - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
     - WEBSITES_ROOT="/mnt/websites"
     - FASTDL_ROOT="/mnt/fastdl"
+    - PHPMYADMIN_ROOT="/mnt/admin/phpmyadmin"
     - NGINX_SSL_CERT="/etc/mkcert/mkcert.pem"
     - NGINX_SSL_CERT_KEY="/etc/mkcert/mkcert.key"
     - NGINX_SSL_DHPARAM="/etc/mkcert/mkcert.dh"
+    - NGINX_PORTAINER_CACHE_PATH=/mnt/cache/portainer
+    - NGINX_PHPMYADMIN_CACHE_PATH=/mnt/cache/phpmyadmin
+    - NGINX_SEARCH_CACHE_PATH=/mnt/cache/search
   restart: on-failure
 services:
   nginx_dnsmasq:
@@ -152,6 +161,7 @@ services:
       - ./data/configs/users/group:/etc/group:ro
       - ./data/configs/users/shadow:/etc/shadow:ro
       - ./data/configs/users/gshadow:/etc/gshadow:ro
+      - nginx_cache:/mnt/nginx_cache
       - nginx_websites:/mnt/nginx_websites
       - nginx_fastdl:/mnt/nginx_fastdl
       - ./data/configs/nginx/cpu:/mnt/nginx_cpu
@@ -165,6 +175,12 @@ services:
       && chown ${nginx_u}:${fastdl_g} /mnt/nginx_fastdl
       && chmod 2771 /mnt/nginx_websites 
       /mnt/nginx_fastdl
+      && mkdir -p /mnt/nginx_cache/portainer
+      && mkdir -p /mnt/nginx_cache/phpmyadmin
+      && mkdir -p /mnt/nginx_cache/search
+      && mkdir -p /mnt/admin/portainer
+      && chmod 700 -R /mnt/nginx_cache/
+      && chown -R ${nginx_u}:${nginx_g} /mnt/nginx_cache/
       && mkdir -p /mnt/nginx_fastdl/gmod
       && chown ${nginx_u}:${gmod_g} /mnt/nginx_fastdl/gmod
       && chmod 2771 /mnt/nginx_fastdl/gmod
@@ -196,7 +212,7 @@ services:
         condition: service_completed_successfully
       openssl:
         condition: service_completed_successfully
-    restart: on-failure
+    #restart: on-failure
   # Production nginx, for use only on a machine the real domain is pointing to.
   certbot:
     image: certbot/certbot:v2.3.0
@@ -225,8 +241,10 @@ services:
       - ./data/configs/users/gshadow:/etc/gshadow:ro
       - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
       - php_fpm_run:/var/run/php-fpm
+      - nginx_cache:/mnt/cache
       - nginx_websites:/mnt/websites
       - nginx_fastdl:/mnt/fastdl
+      - phpmyadmin:/mnt/admin/phpmyadmin
       - svencoop:/mnt/links/svencoop:ro
       - ./data/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/configs/nginx/snippets:/etc/nginx/snippets:ro
@@ -292,8 +310,10 @@ services:
       - ./data/configs/users/gshadow:/etc/gshadow:ro
       - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
       - php_fpm_run:/var/run/php-fpm
+      - nginx_cache:/mnt/cache
       - nginx_websites:/mnt/websites
       - nginx_fastdl:/mnt/fastdl
+      - phpmyadmin:/mnt/admin/phpmyadmin
       - svencoop:/mnt/links/svencoop:ro
       - ./data/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/configs/nginx/snippets:/etc/nginx/snippets:ro
@@ -313,8 +333,10 @@ services:
       php_fpm_development:
         condition: service_started
 volumes:
+  nginx_cache:
   nginx_websites:
   nginx_fastdl:
+  phpmyadmin:
   certbot_conf:
   certbot_www:
   mkcert:
@@ -335,3 +357,8 @@ networks:
       driver: default 
       config:
         - subnet: 172.60.10.0/22
+  phpmyadmin:
+    ipam:
+      driver: default 
+      config:
+        - subnet: 172.70.10.0/22
