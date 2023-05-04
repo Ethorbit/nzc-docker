@@ -5,5 +5,7 @@ USER root
 RUN apk add --no-cache shadow &&\
     rm /usr/share/nginx/html/*.html &&\
     usermod -u "$UID" nginx &&\
-    groupmod -g "$GID" nginx
+    groupmod -g "$GID" nginx &&\
+    mkdir /mnt/admin &&\
+    mkdir /mnt/admin/portainer
 USER nginx

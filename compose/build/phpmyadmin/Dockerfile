@@ -1,19 +1,19 @@
-FROM php:fpm-alpine3.17 as install
+FROM phpmyadmin:5-fpm-alpine
 ARG UID
 ARG GID
 VOLUME /panel
-WORKDIR /home/phpmyadmin
-COPY *.sh /
-RUN apk add --no-cache shadow git &&\
-    groupadd -g ${GID} phpmyadmin &&\
-    useradd -u ${UID} -g ${GID} phpmyadmin &&\
+COPY --chown=www-data:www-data ./*.sh /
+USER root
+RUN apk add --no-cache shadow &&\
+    groupmod -g ${GID} www-data &&\
+    usermod -u ${UID} www-data &&\
     mkdir /panel &&\
-    chown phpmyadmin:phpmyadmin /home/phpmyadmin /panel &&\
+    chown -R www-data:www-data /var/www/html &&\
+    chmod 770 -R /var/www/html/ &&\
+    chown www-data:www-data /panel &&\
     chmod 770 /panel &&\
     chmod 755 /*.sh &&\
-    chown phpmyadmin:phpmyadmin /*.sh
-USER phpmyadmin
-RUN git clone -b STABLE https://github.com/phpmyadmin/phpmyadmin.git . &&\
-    chmod -R 770 ./
+    chown www-data:www-data /*.sh
+USER www-data
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/start.sh" ]

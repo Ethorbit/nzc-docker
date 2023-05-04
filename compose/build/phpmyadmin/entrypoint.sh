@@ -1,6 +1,6 @@
 #!/bin/sh
 if [ -z $(ls -A /panel/) ]; then
-    cp -rap "$HOME"/* /panel/
+    cp -rap /var/www/html/* /panel/
 fi
 
 exec "$@"
