@@ -44,7 +44,7 @@ x-gmod: &gmod
   networks:
     - gmod
     - mysql
-  restart: unless-stopped
+  restart: always
 networks:
   gmod:
     driver: "bridge"

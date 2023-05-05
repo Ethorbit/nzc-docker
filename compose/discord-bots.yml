@@ -62,7 +62,7 @@ services:
     depends_on:
       discord_permissions:
         condition: service_completed_successfully
-    restart: unless-stopped
+    restart: always
     networks:
       - discord 
 networks:    

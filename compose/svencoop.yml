@@ -71,7 +71,7 @@ services:
       device_write_iops:
         - path: ${DISK}
           rate: 100
-    restart: unless-stopped 
+    restart: always
 volumes:
   svencoop:
 networks: 

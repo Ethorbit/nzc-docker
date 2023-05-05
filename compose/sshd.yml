@@ -98,7 +98,7 @@ services:
       device_write_iops:
         - path: ${DISK}
           rate: 220
-    restart: unless-stopped
+    restart: always
 networks:
   ssh:
 volumes:

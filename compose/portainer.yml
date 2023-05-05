@@ -1,17 +1,28 @@
 version: "3.9"
 services:
   portainer:
-    image: portainer/portainer-ce:latest
+    build:
+      context: ./build/portainer
+      args:
+        DATA_GID: ${websites_g}
+    user: 0:${websites_g}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-    command: -H unix:///var/run/docker.sock
+    command: >
+      -H unix:///var/run/docker.sock 
+      --no-analytics
     networks:
       portainer:
         ipv4_address: 172.60.10.1
-      nginx:
+      #nginx:
+    dns:
+      - 172.10.1.1
+    environment:
+      - PORTAINER_ADMIN_PASSWORD=${PORTAINER_ADMIN_PASSWORD}
+      - WEB_PAGE=https://portainer:9443 #https://admin.${PRIVATE_DOMAIN_NAME}/portainer
     ports:
       - 9443:9443/tcp
     cpuset: ${PORTAINER_CPU}
@@ -22,6 +33,15 @@ services:
           memory: 312M 
         reservations:
           memory: 250M
-    restart: unless-stopped
+    depends_on:
+      nginx_production: 
+        condition: service_healthy
+      nginx_development:
+        condition: service_healthy
+      php_fpm_development:
+        condition: service_started
+      php_fpm_production:
+        condition: service_started
+    restart: always
 volumes:
   portainer_data:

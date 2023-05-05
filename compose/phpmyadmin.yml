@@ -22,6 +22,6 @@ services:
       - phpmyadmin:/panel
     #ports:
       #- 8085:80 
-    restart: unless-stopped
+    restart: always
 volumes:
   phpmyadmin:

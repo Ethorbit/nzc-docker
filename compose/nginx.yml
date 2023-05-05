@@ -55,7 +55,7 @@ x-nginx: &nginx
     device_write_iops:
       - path: ${DISK}
         rate: 100
-  restart: unless-stopped
+  restart: always
 x-nginx_envsubst_conf: &nginx_envsubst_conf
   build:
     context: ./build/nginx_envsubst

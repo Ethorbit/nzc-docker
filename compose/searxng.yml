@@ -32,7 +32,7 @@ services:
       - SETUID
       - DAC_OVERRIDE
     <<: [ *cpu-limits, *io-limits ]
-    restart: unless-stopped
+    restart: always
     deploy:
       resources:
         limits:
@@ -64,4 +64,4 @@ services:
           memory: 156M 
         reservations:
           memory: 128M
-    restart: unless-stopped
+    restart: always

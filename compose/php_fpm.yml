@@ -39,7 +39,7 @@ x-php_fpm: &php_fpm
   #      service_completed_successfully
   cpuset: ${NGINX_CPU} # Since we handle the workloads of php (which is closely tied to webserver), we might as well use the same cores..
   cpu_shares: 2048
-  restart: unless-stopped
+  restart: always
 services:
   #php_fpm_permissions:
   #  build:
