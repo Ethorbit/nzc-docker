@@ -1,5 +1,27 @@
 version: "3.9"
 services:
+  portainer_envsubst:
+    build:
+      context: ./build/input_output_envsubst
+      args:
+        FILE_EXTENSION: "json"
+    volumes:
+      - ./data/configs/portainer/templates:/mnt/input
+      - ./data/configs/portainer:/mnt/output
+    network_mode: none
+    cap_drop:
+      - ALL 
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_FOWNER
+    environment:
+      - CONTAINER_NAME_PREFIX=${CONTAINER_NAME_PREFIX}
+      - CONTAINER_NAME_SUFFIX=${CONTAINER_NAME_SUFFIX}
+      - BLUNTO_PASSWORD=${BLUNTO_PASSWORD}
+      - BERB_PASSWORD=${BERB_PASSWORD}
+      - FREEMAN_PASSWORD=${FREEMAN_PASSWORD}
+      - PEPE_PASSWORD=${PEPE_PASSWORD}
+    restart: on-failure
   portainer:
     build:
       context: ./build/portainer
@@ -11,9 +33,11 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
+      - ./data/configs/portainer:/configs
     command: >
       -H unix:///var/run/docker.sock 
-      --no-analytics
+      --no-analytics 
+      --ssl 
     networks:
       portainer:
         ipv4_address: 172.60.10.1
@@ -34,6 +58,8 @@ services:
         reservations:
           memory: 250M
     depends_on:
+      portainer_envsubst:
+        condition: service_completed_successfully
       nginx_production: 
         condition: service_healthy
       nginx_development:

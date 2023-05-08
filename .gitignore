@@ -2,3 +2,5 @@
 compose/data/nginx/conf.d/*
 compose/data/mysql/*.sql
 compose/data/configs/nginx/conf.d/nzc.conf
+compose/data/configs/portainer/users.json
+compose/data/configs/portainer/teams.json

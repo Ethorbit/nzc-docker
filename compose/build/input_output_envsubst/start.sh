@@ -8,6 +8,6 @@ if [[ ! -z "$file" ]]; then
     envsubst "`printf '${%s} ' $(printenv | cut -d "=" -f 1)`" \
         < "$file" > "/mnt/output/$(basename \"$file \")"
 else
-    find /mnt/input -type f -name "*.conf" -exec /start.sh {} \;
+    find /mnt/input -type f -name "*.${FILE_EXTENSION}" -exec /start.sh {} \;
 fi
 

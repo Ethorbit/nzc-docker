@@ -58,23 +58,33 @@ x-nginx: &nginx
   restart: always
 x-nginx_envsubst_conf: &nginx_envsubst_conf
   build:
-    context: ./build/nginx_envsubst
+    context: ./build/input_output_envsubst
+    args:
+      FILE_EXTENSION: "conf"
   volumes:
     - ./data/configs/nginx/conf.d.template:/mnt/input
     - ./data/configs/nginx/conf.d:/mnt/output
   network_mode: none
   cap_drop:
     - ALL
+  cap_add:
+    - CAP_DAC_OVERRIDE
+    - CAP_FOWNER
   restart: on-failure
 x-nginx_envsubst_snippets: &nginx_envsubst_snippets
   build:
-    context: ./build/nginx_envsubst
+    context: ./build/input_output_envsubst
+    args:
+      FILE_EXTENSION: "conf"
   volumes:
     - ./data/configs/nginx/snippets.template:/mnt/input
     - ./data/configs/nginx/snippets:/mnt/output
   network_mode: none
   cap_drop:
     - ALL
+  cap_add:
+    - CAP_DAC_OVERRIDE
+    - CAP_FOWNER
   restart: on-failure
 x-nginx_envsubst_production: &nginx_envsubst_production
   profiles:

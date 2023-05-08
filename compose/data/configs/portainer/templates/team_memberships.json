@@ -1,0 +1,5 @@
+[
+    { "TeamID": "gmod", "ResourceID": "${CONTAINER_NAME_PREFIX}-gmod-1-${CONTAINER_NAME_SUFFIX}", "Role": 2 },
+    { "TeamID": "gmod", "ResourceID": "${CONTAINER_NAME_PREFIX}-gmod-2-${CONTAINER_NAME_SUFFIX}", "Role": 2 },
+    { "TeamID": "svencoop", "ResourceID": "${CONTAINER_NAME_PREFIX}-svencoop-${CONTAINER_NAME_SUFFIX}", "Role": 2 }
+]

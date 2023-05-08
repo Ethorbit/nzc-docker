@@ -44,6 +44,9 @@ x-gmod: &gmod
   networks:
     - gmod
     - mysql
+  labels:
+    - "com.portainer.access.control.public=true"
+    - "com.portainer.access.control.teams=gmod"
   restart: always
 networks:
   gmod:

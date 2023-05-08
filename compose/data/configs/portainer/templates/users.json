@@ -1,0 +1,26 @@
+[
+    {
+        "Username": "blunto",
+        "Password": "${BLUNTO_PASSWORD}",
+        "Role": 2,
+        "Teams": [ "gmod" ]
+    },
+    {
+        "Username": "berb",
+        "Password": "${BERB_PASSWORD}",
+        "Role": 2,
+        "Teams": [ "gmod" ]
+    },
+    {
+        "Username": "freeman",
+        "Password": "${FREEMAN_PASSWORD}",
+        "Role": 2,
+        "Teams": [ "svencoop" ]
+    },
+    {
+        "Username": "pepe",
+        "Password": "${PEPE_PASSWORD}",
+        "Role": 2,
+        "Teams": [ "svencoop" ]
+    }
+]
