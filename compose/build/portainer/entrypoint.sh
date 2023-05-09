@@ -4,78 +4,112 @@ chmod 755 /data
 
 c_loc=/data/.install_cookie
 jwt_token=
+teams=
 
-send_requests_from_file()
+get_team_id_from_team_name()
 {
-    file="$1"
-    endpoint="$2"
-    error_msg="$3"
-
-    for row in $(jq -c '.[]' "$file"); do 
-        response=$(curl -ksLf -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
-            -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" -d "$row" "${WEB_PAGE}${endpoint}")
-
-        [ "$response" -ne 200 ] && echo -e "$error_msg ($?) - $response\n$row" >&2 &&\
-            sleep 2 && send_requests_from_file "$1" "$2" "$3" && return
-    done
+    team_name="$1"
+    echo "$teams" | jq -r ".[] | select(.Name == \"$team_name\") | .Id"
 }
 
 setup_users()
 {
     echo "Adding users.."
 
-    for row in $(jq -c '.[]' /configs/users.json); do 
-        response=$(curl -ksLf -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
-            -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" -d "$row" "${WEB_PAGE}/api/users")
-
-        [ "$response" -ne 200 ] && echo -e "Failed to add user ($?) - $response\n$row" >&2 &&\
-            sleep 2 && setup_users && return
-    done
-
-    # Add users to their Teams
+    add_user_to_team()
+    {
+        user_id="$1"
+        team_id="$2"
+        
+        response=$(curl -ksLf -X POST -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${jwt_token}" \
+            -c "$c_loc" -b "$c_loc" -d "$row" \
+            -d "{ \"UserID\":\"$user_id\",\"TeamID\":\"$team_id\",\"Role\":2 }" \
+            "${WEB_PAGE}/api/team_memberships")
+       
+        [ $(echo "$response" | jq -r .Id) = null ] &&\ 
+            echo "Failed to add user ($user_id) to team ($team_id) - $?" &&\
+            sleep 2 && add_user_to_team "$1" "$2"
+    }
     
-    #echo "Test users.json output"
-    #cat /configs/users.json
-    #
-    #response=$(curl -ksLf -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
-    #    -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" \
-    #    -d "{ \"Username\":\"blunto\", \"Password\":\"${BLUNTO_PASSWORD}\", \"Role\":1 }" \
-    #    "${WEB_PAGE}/api/users")
+    for row in $(jq -c '.[]' /configs/users.json); do 
+        response=$(curl -ksLf -X POST -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${jwt_token}" \
+            -c "$c_loc" -b "$c_loc" -d "$row" \
+            "${WEB_PAGE}/api/users")
 
-    #[ "$response" -ne 200 ] && echo "Failed to add users ($?) - $response" >&2 &&\
-    #    sleep 2 && setup_users && return
-    #
+        user_id=$(echo "$response" | jq -r .Id)
+       
+        # Hide the password, we don't want sensitive info ending up in the docker logs
+        row=$(echo "$row" | sed -E "s/\"Password\":\"[^\"]+\"/\"Password\":\"[Redacted]\"/")
+        
+        [ -z "$user_id" ] && echo -e "Failed to add user ($?)\n$row" >&2 &&\
+            sleep 2 && setup_users && return
+       
+        echo "Added user, ID: $user_id"
+    
+        user_teams=$(echo "$row" | jq -r '.Teams')
+        if [ "$user_teams" != "null" ]; then 
+            for team_name in $(echo "$user_teams" | jq -r '.[]'); do 
+                echo "Getting ${team_name}'s ID.."
+                team_id=$(get_team_id_from_team_name "$team_name")
+                echo "Team ID successfully retrieved: $team_id"
+                echo "Adding user to the team.."
+                add_user_to_team "$user_id" "$team_id"
+                sleep 1
+            done
+        fi 
+        
+        sleep 1
+    done
+    
     ##touch /data/.install_completed
 }
 
 setup_teams()
 {
     echo "Adding teams.."
-
     for row in $(jq -c '.[]' /configs/teams.json); do 
         response=$(curl -ksLf -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
             -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" -d "$row" "${WEB_PAGE}/api/teams")
 
         [ "$response" -ne 200 ] && echo -e "Failed to add team ($?) - $response\n$row" >&2 &&\
             sleep 2 && setup_teams && return
+    
+        sleep 1
     done
 
-    # Grant team to their EndpointIDs
-}
-
-setup_resource_controls()
-{
-    echo "Adding resource controls.."
-
-    #for row in $(jq -c '.[]' /configs/resource_controls.json); do 
-    #    response=$(curl -ksLf -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
-    #        -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" \
-    #        -d "$row" "${WEB_PAGE}/api/resource_controls")
-
-    #    [ "$response" -ne 200 ] && echo -e "Failed to add resource_control ($?) - $response\n$row" >&2 &&\
-    #        sleep 2 && setup_resource_controls && return
+    echo "Retrieving team list.."
+    response=$(curl -ksLf -X GET -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
+        -c "$c_loc" -b "$c_loc" "${WEB_PAGE}/api/teams")
+    
+    teams="$response"
+    echo "Successfully retrieved teams: $response"
+    
+    #echo "Giving teams access to endpoints.."
+    #for row in $(jq -c '.[]' /configs/teams.json); do 
+        # Get the team's ID using our stored team list 
+        #team_id=$(get_team_id_from_team_name "$team_name")
+        
+        # Get the team's endpoint IDs from their provided EndpointIDs array
+        
+        # Add the teamID to each specified endpointID
     #done
 }
+
+#setup_resource_controls()
+#{
+#    echo "Adding resource controls.."
+#
+#    #for row in $(jq -c '.[]' /configs/resource_controls.json); do 
+#    #    response=$(curl -ksLf -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
+#    #        -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" \
+#    #        -d "$row" "${WEB_PAGE}/api/resource_controls")
+#
+#    #    [ "$response" -ne 200 ] && echo -e "Failed to add resource_control ($?) - $response\n$row" >&2 &&\
+#    #        sleep 2 && setup_resource_controls && return
+#    #done
+#}
 
 login_to_admin()
 {
@@ -137,7 +171,6 @@ start_install()
 
     setup_admin
     login_to_admin
-    setup_resource_controls
     setup_teams
     setup_users
 }
