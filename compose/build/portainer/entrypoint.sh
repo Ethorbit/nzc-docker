@@ -26,10 +26,13 @@ setup_users()
             -c "$c_loc" -b "$c_loc" -d "$row" \
             -d "{ \"UserID\":\"$user_id\",\"TeamID\":\"$team_id\",\"Role\":2 }" \
             "${WEB_PAGE}/api/team_memberships")
-       
-        [ $(echo "$response" | jq -r .Id) = null ] &&\ 
+      
+        teammembership_id=$(echo "$response" | jq -r '.Id')
+        [ "$teammembership_id" = null ] &&\
             echo "Failed to add user ($user_id) to team ($team_id) - $?" &&\
             sleep 2 && add_user_to_team "$1" "$2"
+        
+        echo "Successfully added user ($user_id) to team. (TeamMembership ID: $team_id)"
     }
     
     for row in $(jq -c '.[]' /configs/users.json); do 
