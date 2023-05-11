@@ -71,10 +71,16 @@ update-users:
 	$(command_setup_users)
 
 # Because Docker likes to make removing volumes an annoying task
+define rm-vol_cmd
+$(eval rm_command := docker volume rm -f $(args))
+$(eval container_ids := $(shell remd= && while read id; do remd=1 && docker container rm -f $$id; done \
+	< <($(rm_command) 3>&1 1>&2- 2>&3- | grep -o "[A-Za-z0-9]\{64\}")) && [[ "$$remd" -eq 1 ]] && $(rm_command))
+endef
+
+# Not quite sure why it has to run twice to work, but just gonna do this for now..
 rm-vol:
-	$(eval rm_command := docker volume rm -f $(args))
-	$(eval container_ids := $(shell remd= && while read id; do remd=1 && docker container rm -f $$id; done \
-		< <($(rm_command) 3>&1 1>&2- 2>&3- | grep -o "[A-Za-z0-9]\{64\}")) && [[ "$$remd" -eq 1 ]] && $(rm_command))
+	$(rm-vol_cmd)
+	$(rm-vol_cmd)
 
 define help_text
 	make cmd "compose arguments here"
