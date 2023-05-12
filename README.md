@@ -86,4 +86,4 @@ Included along with the nginx webserver is an admin endpoint with Portainer and 
 
 You can use PHPMyAdmin to manage MYSQL and Portainer to manage all the containers.
 
-This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you do not use it to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords inside - do that in the config files and then re-create the container(s).
+This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you do not use it to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
