@@ -81,8 +81,6 @@ For example, to restart ONLY the web server:
 
 To update users and groups: `make update-users`
 
-For cmd arguments, check the [docker compose docs](https://docs.docker.com/compose/) for more info.
-
 ### Admin Webpanels
 Provided from the nginx webserver is an admin page with Portainer and PHPMyAdmin to manage most stuff in the browser. 
 
@@ -91,4 +89,6 @@ You can use PHPMyAdmin to manage MYSQL and Portainer to manage all the container
 This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you do not use it to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
 
 ## Help 
-If you need more info: use `make help`
+If you need more info on the makefile: use `make help`
+
+For cmd arguments, check the [docker compose docs](https://docs.docker.com/compose/) for more info.
