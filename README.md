@@ -88,5 +88,5 @@ You can use PHPMyAdmin to manage MYSQL and Portainer to manage all the container
 
 This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you do not use it to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
 
-# Help 
+## Help 
 If you need more info: use `make help`
