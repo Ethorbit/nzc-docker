@@ -91,4 +91,4 @@ This project relies on a Makefile which Portainer knows nothing about, so it is 
 ## Help 
 If you need more info on the makefile: use `make help`
 
-For cmd arguments, check the [docker compose docs](https://docs.docker.com/compose/) for more info.
+For understanding cmd arguments, check the [docker compose docs](https://docs.docker.com/compose/).
