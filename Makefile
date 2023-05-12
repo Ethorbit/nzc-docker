@@ -57,6 +57,11 @@ setup_users: #$(compose_dir)/users_and_groups.yml $(shell find $(data_dir)/users
 	$(command_setup_users)
 #	touch $@
 
+# This really shouldn't matter because people should be doing 
+# make args='' <target> instead of make <target> 'args', but I'm leaving this 
+# for compatibility. Only downside is it will exit with error 
+# code 2 with 'invalid rule' every time, but other than that, 
+# it works just the same.
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 .PHONY: update-containers update-users cmd rm-vol help
@@ -85,11 +90,11 @@ rm-vol:
 define help_text
 	make cmd "compose arguments here"
 		Examples:
-			make cmd "up"
-			nofiles=1 make cmd -- "-f ./compose/nginx.yml down"
+			make args='up' cmd
+			nofiles=1 make args='-f ./compose/nginx.yml down' cmd"
 	make update-containers - Updates containers and then restarts those effected.
 	make update-users - Re-creates users, automatically called when calling cmd
-	make rm-vol - Removes a single Docker volume even if there are conflicting docker containers (It removes those too)
+	make args='volume name' rm-vol - Removes a single Docker volume even if there are conflicting docker containers (It removes those too)
 endef
 
 help:
