@@ -35,6 +35,7 @@ SVENCOOP_PORT=1337
 PORTAINER_CPU=1
 
 ADMIN_PASSWORD=""
+# Custom users AKA your staff members
 BERB_PASSWORD=""
 BLUNTO_PASSWORD=""
 PEPE_PASSWORD=""
@@ -80,7 +81,9 @@ For example, to restart ONLY the web server:
 
 To update users and groups: `make update-users`
 
-## Admin Webpanels
-Included along with the nginx webserver is an admin endpoint with Portainer to manage most stuff in the browser. This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you do not use it to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands.
+### Admin Webpanels
+Included along with the nginx webserver is an admin endpoint with Portainer and PHPMyAdmin to manage most stuff in the browser. 
 
-nginx also hosts PHPMyAdmin to help assist you with managing MySQL in the browser.
+You can use PHPMyAdmin to manage MYSQL and Portainer to manage all the containers.
+
+This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you do not use it to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords inside - do that in the config files and then re-create the container(s).
