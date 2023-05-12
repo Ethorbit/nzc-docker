@@ -1,6 +1,7 @@
 [
     { 
         "Name": "gmod", 
+        "EndpointIDs": [ 1 ],
         "ResourceIDs": [
             "${CONTAINER_NAME_PREFIX}-gmod-1-${CONTAINER_NAME_SUFFIX}", 
             "${CONTAINER_NAME_PREFIX}-gmod-2-${CONTAINER_NAME_SUFFIX}", 
@@ -9,10 +10,12 @@
     },
     { 
         "Name": "svencoop", 
+        "EndpointIDs": [ 1 ],
         "ResourceIDs": [ "${CONTAINER_NAME_PREFIX}-svencoop-${CONTAINER_NAME_SUFFIX}" ] 
     },
     { 
         "Name": "websites", 
+        "EndpointIDs": [ 1 ],
         "ResourceIDs": [
             "${CONTAINER_NAME_PREFIX}-redis-${CONTAINER_NAME_SUFFIX}",
             "${CONTAINER_NAME_PREFIX}-searxng-${CONTAINER_NAME_SUFFIX}",
