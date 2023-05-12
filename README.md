@@ -74,15 +74,17 @@ Pass -v after down to also remove the volumes
 * After bringing the containers up, restart your browser and then inside set the mkcert certificate to be trusted
 
 ## Production Maintenance
-Because this project consists of many different containers, it is not feasible to take all the containers offline every time you need to make changes. It is also not appropriate to restart individual containers as some have dependency services. You should restart entire files instead of individual containers, this will ensure things like file permissions are set and configuration files are generated from templates when needed.
+Because this project consists of many different containers, it is not feasible to take all the containers offline every time you need to make changes. It is also not appropriate to re-create individual containers as some have dependency services. You should re-create entire files instead of individual containers, this will ensure things like file permissions are set and configuration files are generated from templates when needed.
 
 For example, to restart ONLY the web server:
 `nofiles=1 make args='-f ./compose/nginx.yml restart' cmd`
 
 To update users and groups: `make update-users`
 
+Check the [docker compose docs](https://docs.docker.com/compose/) for more info.
+
 ### Admin Webpanels
-Included along with the nginx webserver is an admin endpoint with Portainer and PHPMyAdmin to manage most stuff in the browser. 
+Provided from the nginx webserver is an admin page with Portainer and PHPMyAdmin to manage most stuff in the browser. 
 
 You can use PHPMyAdmin to manage MYSQL and Portainer to manage all the containers.
 
