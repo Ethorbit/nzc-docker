@@ -74,7 +74,7 @@ Pass -v after down to also remove the volumes
 * After bringing the containers up, restart your browser and then inside set the mkcert certificate to be trusted
 
 ## Production Maintenance
-Because this project consists of many different containers, it is not feasible to take the entire cluster offline every time you need to make changes. It is also not appropriate to restart individual containers as some have dependency services. You should restart entire files instead of individual containers, this will ensure things like file permissions are set and configuration files are generated from templates when needed.
+Because this project consists of many different containers, it is not feasible to take all the containers offline every time you need to make changes. It is also not appropriate to restart individual containers as some have dependency services. You should restart entire files instead of individual containers, this will ensure things like file permissions are set and configuration files are generated from templates when needed.
 
 For example, to restart ONLY the web server:
 `nofiles=1 make args='-f ./compose/nginx.yml restart' cmd`
@@ -87,3 +87,6 @@ Included along with the nginx webserver is an admin endpoint with Portainer and 
 You can use PHPMyAdmin to manage MYSQL and Portainer to manage all the containers.
 
 This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you do not use it to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
+
+# Help 
+If you need more info: use `make help`
