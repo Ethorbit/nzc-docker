@@ -2,7 +2,7 @@
 Docker infrastructure used by the nZombies Chronicles Garry's Mod servers. 
 
 ## Configuring
-Create a .env file at the root of the project and add the contents:
+Create a .env file at the root of the project and add the variables:
 
 ```
 DEVELOPING=1
@@ -32,25 +32,35 @@ DISCORD_STICKY_BOT_TOKEN=""
 SVENCOOP_CPU=1
 SVENCOOP_PORT=1337
 
-MYSQL_ADMIN_PASSWORD=""
-MYSQL_OGP_PASSWORD=""
-MYSQL_GMOD_PASSWORD=""
-MYSQL_SVENCOOP_PASSWORD=""
-
-OGP_ADMIN_USER=""
-OGP_ADMIN_PASSWORD=""
-OGP_ADMIN_EMAIL=""
+PORTAINER_CPU=1
 
 ADMIN_PASSWORD=""
+BERB_PASSWORD=""
+BLUNTO_PASSWORD=""
+PEPE_PASSWORD=""
+FREEMAN_PASSWORD=""
 ```
 
 Change as needed.
+
+### Users and groups
+Unix users and groups are shared between all containers to make permission management easier.
+You can configure the Unix users from `compose/data/configs/users/settings.yml`
+
+Be careful not to override users and groups that containers use to function and to only change the optional
+ones (There is comments inside to help understand).
+
+You will also want to configure MYSQL database users and database access, which is in `compose/data/configs/mysql/init.sql.template`
+
+Lastly, you'll also want to manage the Portainer web panel's users and teams in `compose/data/configs/portainer/templates`
+
+In case anything was missed, look around in the configs directory because that's where all user management is located.
 
 ## Creating
 To start:
 `make args='up' cmd`
 
-If it works, add a -d at the end to keep it in the background.
+If it works, add a -d after up to keep it in the background.
 
 To remove:
 `make args='down' cmd`
@@ -70,3 +80,7 @@ For example, to restart ONLY the web server:
 
 To update users and groups: `make update-users`
 
+## Admin Webpanels
+Included along with the nginx webserver is an admin endpoint with Portainer to manage most stuff in the browser. This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you do not use it to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands.
+
+nginx also hosts PHPMyAdmin to help assist you with managing MySQL in the browser.
