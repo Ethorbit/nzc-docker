@@ -81,7 +81,7 @@ For example, to restart ONLY the web server:
 
 To update users and groups: `make update-users`
 
-Check the [docker compose docs](https://docs.docker.com/compose/) for more info.
+For cmd arguments, check the [docker compose docs](https://docs.docker.com/compose/) for more info.
 
 ### Admin Webpanels
 Provided from the nginx webserver is an admin page with Portainer and PHPMyAdmin to manage most stuff in the browser. 
