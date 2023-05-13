@@ -45,7 +45,7 @@ services:
     dns:
       - 172.10.1.1
     environment:
-      - PORTAINER_ADMIN_PASSWORD=${PORTAINER_ADMIN_PASSWORD}
+      - PORTAINER_ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - WEB_PAGE=https://portainer:9443 #https://admin.${PRIVATE_DOMAIN_NAME}/portainer
     ports:
       - 9443:9443/tcp

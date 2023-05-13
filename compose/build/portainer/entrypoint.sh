@@ -33,13 +33,13 @@ start_install()
             
             response=$(curl -ksLf -X POST -H "Content-Type: application/json" \
                 -H "Authorization: Bearer ${jwt_token}" \
-                -c "$c_loc" -b "$c_loc" -d "$row" \
-                -d "{ \"UserID\":\"$user_id\",\"TeamID\":\"$team_id\",\"Role\":2 }" \
+                -c "$c_loc" -b "$c_loc" \
+                -d "{ \"UserID\":$user_id,\"TeamID\":$team_id,\"Role\":2 }" \
                 "${WEB_PAGE}/api/team_memberships")
           
             teammembership_id=$(echo "$response" | jq -r '.Id')
-            [ "$teammembership_id" = null ] &&\
-                echo "Failed to add user ($user_id) to team ($team_id) - $?" &&\
+            [ -z "$teammembership_id" ] || [ "$teammembership_id" = null ] &&\
+                echo "Failed to add user ($user_id) to team ($team_id) - $?. Response: $response" &&\
                 sleep 2 && add_user_to_team "$1" "$2"
             
             echo "Successfully added user ($user_id) to team ($team_id). (TeamMembership ID: $teammembership_id)"
@@ -110,6 +110,7 @@ start_install()
                 #/endpoints/{id}
                 #  endpoints.endpointUpdatePayload
                 #  teamAccessPolicies
+                # Use PUT, (not POST)
                 
                 #response=$(curl -ksLf -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
                 #    -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" -d "$row" "${WEB_PAGE}/api/teams")
