@@ -84,7 +84,7 @@ start_install()
             response=$(curl -ksLf -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
                 -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" -d "$row" "${WEB_PAGE}/api/teams")
 
-            [ "$response" -ne 200 ] && echo -e "Failed to add team ($?) - $response\n$row" >&2 &&\
+            [ "$response" -ne 200 ] && [ "$response" -ne 409 ] && echo -e "Failed to add team ($?) - $response\n$row" >&2 &&\
                 sleep 2 && setup_teams && return
         
             sleep 1
@@ -104,16 +104,47 @@ start_install()
             
             team_id=$(get_team_id_from_team_name "$team_name")
             
-            for endpoint_id in $(echo "$row" | jq -r '.EndpointIDs | .[]'); do 
+            # endpoint ID 1 is in EndpointIDs by default because that's the primary / local one.
+            for endpoint_id in $(echo "$row" | jq -r '.EndpointIDs | .[1:1] |= [1]'); do 
                 echo "So we'd add the endpoint ID: $endpoint_id to Team ID: $team_id"
-                
+            
                 #/endpoints/{id}
                 #  endpoints.endpointUpdatePayload
-                #  teamAccessPolicies
-                # Use PUT, (not POST)
+
+                #endpoints.endpointUpdatePayload:
+                #    properties:
+                #      teamAccessPolicies:
+                #        $ref: '#/definitions/portainer.TeamAccessPolicies'
+                #      userAccessPolicies:
+                #        $ref: '#/definitions/portainer.UserAccessPolicies'
+                #    type: object
+                   
+                #portainer.TeamAccessPolicies:
+                #  additionalProperties:
+                #    $ref: '#/definitions/portainer.AccessPolicy'
+                #  type: object
+               
+                #portainer.UserAccessPolicies:
+                #   additionalProperties:
+                #    $ref: '#/definitions/portainer.AccessPolicy'
+                #   type: object
                 
-                #response=$(curl -ksLf -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
-                #    -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" -d "$row" "${WEB_PAGE}/api/teams")
+                #portainer.AccessPolicy:
+                #    properties:
+                #      RoleId:
+                #        description: Role identifier. Reference the role that will be associated to
+                #          this access policy
+                #        example: 1
+                #        type: integer
+                #    type: object
+
+                response=$(curl -ksLf -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
+                    -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" \
+                    -d "{ \"TeamAccessPolicies\": { \"$team_id\": { \"RoleID\": 0 } } }" \
+                    "${WEB_PAGE}/api/endpoints/${endpoint_id}")
+            
+                [ "$response" -ne 200 ] && echo -e "Failed to give team ${team_name} (${team_id}) access to endpoint (${endpoint_id}) ($?) - $response\n$row" >&2 &&\
+                    sleep 2 && setup_teams && return
             done
         done
     }
