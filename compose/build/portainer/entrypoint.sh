@@ -200,7 +200,8 @@ start_install()
     setup_teams
     setup_users
 
-    ##touch /data/.install_completed
+    touch /data/.install_completed
+    echo "Install finished. Remove .install_completed and restart the container to install again."
 }
 
 set_permissions()

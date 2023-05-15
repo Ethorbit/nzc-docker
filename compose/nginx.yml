@@ -1,4 +1,8 @@
 version: "3.9"
+x-labels: &labels
+  labels:
+    - "io.portainer.accesscontrol.teams=websites"
+  
 x-nginx: &nginx
   #container_name: ${CONTAINER_NAME_PREFIX}-nginx-${CONTAINER_NAME_SUFFIX}
   build:
@@ -55,6 +59,7 @@ x-nginx: &nginx
     device_write_iops:
       - path: ${DISK}
         rate: 100
+  <<: [*labels]
   restart: always
 x-nginx_envsubst_conf: &nginx_envsubst_conf
   build:
@@ -70,6 +75,7 @@ x-nginx_envsubst_conf: &nginx_envsubst_conf
   cap_add:
     - CAP_DAC_OVERRIDE
     - CAP_FOWNER
+  <<: [*labels]
   restart: on-failure
 x-nginx_envsubst_snippets: &nginx_envsubst_snippets
   build:
@@ -85,6 +91,7 @@ x-nginx_envsubst_snippets: &nginx_envsubst_snippets
   cap_add:
     - CAP_DAC_OVERRIDE
     - CAP_FOWNER
+  <<: [*labels]
   restart: on-failure
 x-nginx_envsubst_production: &nginx_envsubst_production
   profiles:
@@ -101,6 +108,7 @@ x-nginx_envsubst_production: &nginx_envsubst_production
     - NGINX_PORTAINER_CACHE_PATH=/mnt/cache/portainer
     - NGINX_PHPMYADMIN_CACHE_PATH=/mnt/cache/phpmyadmin
     - NGINX_SEARCH_CACHE_PATH=/mnt/cache/search
+  <<: [*labels]
   restart: on-failure
 x-nginx_envsubst_development: &nginx_envsubst_development
   profiles:
@@ -131,6 +139,7 @@ services:
     depends_on:
       nginx_envsubst_dnsmasq:
         condition: service_completed_successfully
+    <<: [*labels]
     restart: on-failure
   nginx_envsubst_dnsmasq:
     image: ethorbit/envsubst:latest
@@ -144,6 +153,7 @@ services:
     network_mode: none
     cap_drop:
       - ALL
+    <<: [*labels]
     restart: on-failure
   
   nginx_links:
@@ -159,6 +169,7 @@ services:
     cap_add:
       - CAP_DAC_OVERRIDE
     network_mode: none
+    <<: [*labels]
     restart: on-failure
   nginx_permissions:
     image: alpine:3.17.2
@@ -222,7 +233,8 @@ services:
         condition: service_completed_successfully
       openssl:
         condition: service_completed_successfully
-    #restart: on-failure
+    <<: [*labels]
+  #restart: on-failure
   # Production nginx, for use only on a machine the real domain is pointing to.
   certbot:
     image: certbot/certbot:v2.3.0
@@ -233,6 +245,7 @@ services:
       - certbot_www:/var/www/certbot
     networks:
       - nginx
+    <<: [*labels]
     restart: unless-stopped       
   nginx_envsubst_conf_production:
     <<: [*nginx_envsubst_conf, *nginx_envsubst_production]

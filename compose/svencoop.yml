@@ -49,8 +49,7 @@ services:
     networks:
       - svencoop
     labels:
-      - "com.portainer.access.control.public=false"
-      - "com.portainer.access.control.teams=svencoop"
+      - "io.portainer.accesscontrol.teams=svencoop"
     cpuset: ${SVENCOOP_CPU}
     cpu_count: 1
     cpu_shares: 256
