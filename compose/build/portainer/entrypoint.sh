@@ -98,54 +98,37 @@ start_install()
         echo "Successfully retrieved teams: $response"
         
         echo "Giving teams access to their endpoints.."
+        request="{ }"
         for row in $(jq -c '.[]' /configs/teams.json); do 
             team_name=$(echo "$row" | jq -r .Name)
             [ "$team_name" = null ] && continue
             
             team_id=$(get_team_id_from_team_name "$team_name")
             
-            # endpoint ID 1 is in EndpointIDs by default because that's the primary / local one.
-            for endpoint_id in $(echo "$row" | jq -r '.EndpointIDs | .[1:1] |= [1]'); do 
-                echo "So we'd add the endpoint ID: $endpoint_id to Team ID: $team_id"
-            
-                #/endpoints/{id}
-                #  endpoints.endpointUpdatePayload
+            # endpoint ID 1 exists by default because that's the primary / local one.
+            for endpoint_id in $(echo "$row" | jq -r '.EndpointIDs | .[1:1] |= [1] | .[]'); do
+                echo "Is this a valid endpoint ID? $endpoint_id"
+                # Append each teamid to each endpoint id in the $request which we parse later
+                request=$(echo "$request" | jq ".[\"${endpoint_id}\"] += { \"$team_id\": { \"RoleID\": 0 } }")
+            done
 
-                #endpoints.endpointUpdatePayload:
-                #    properties:
-                #      teamAccessPolicies:
-                #        $ref: '#/definitions/portainer.TeamAccessPolicies'
-                #      userAccessPolicies:
-                #        $ref: '#/definitions/portainer.UserAccessPolicies'
-                #    type: object
-                   
-                #portainer.TeamAccessPolicies:
-                #  additionalProperties:
-                #    $ref: '#/definitions/portainer.AccessPolicy'
-                #  type: object
-               
-                #portainer.UserAccessPolicies:
-                #   additionalProperties:
-                #    $ref: '#/definitions/portainer.AccessPolicy'
-                #   type: object
-                
-                #portainer.AccessPolicy:
-                #    properties:
-                #      RoleId:
-                #        description: Role identifier. Reference the role that will be associated to
-                #          this access policy
-                #        example: 1
-                #        type: integer
-                #    type: object
+            [ -z "$request" ] &&\
+                echo "Failed to create json request for granting teams access to endpoints. ($?)" &&\
+                sleep 2 && setup_teams && return
 
+            for endpoint_id in $(echo "$request" | jq -r 'to_entries | .[].key'); do
+                echo "Giving $team_name ($team_id) access to endpoint ($endpoint_id)"
+          
                 response=$(curl -ksLf -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
                     -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" \
-                    -d "{ \"TeamAccessPolicies\": { \"$team_id\": { \"RoleID\": 0 } } }" \
+                    -d "{ \"TeamAccessPolicies\": $(echo $request | jq ".[\"${endpoint_id}\"]") }" \
                     "${WEB_PAGE}/api/endpoints/${endpoint_id}")
-            
-                [ "$response" -ne 200 ] && echo -e "Failed to give team ${team_name} (${team_id}) access to endpoint (${endpoint_id}) ($?) - $response\n$row" >&2 &&\
+           
+                [ $? -ne 0 ] || [ "$response" -ne 200 ] && echo -e "Failed to give team ${team_name} (${team_id}) access to endpoint (${endpoint_id}) ($?) - $response\n$row" >&2 &&\
                     sleep 2 && setup_teams && return
             done
+
+            echo "Successfully granted ${team_name} access to environments."
         done
     }
 
