@@ -1,9 +1,4 @@
 version: "3.9"
-
-#x-portainer-envs: &portainer-envs
-  #CONTAINER_NAME_PREFIX: ${CONTAINER_NAME_PREFIX}
-  #CONTAINER_NAME_SUFFIX: ${CONTAINER_NAME_SUFFIX}
-  
 services:
   portainer_envsubst:
     build:
@@ -28,8 +23,6 @@ services:
   portainer:
     build:
       context: ./build/portainer
-      args:
-        DATA_GID: ${websites_g}
     user: 0:${websites_g}
     volumes:
       - /etc/localtime:/etc/localtime:ro

@@ -1,6 +1,4 @@
 #!/bin/sh
-chown -R root:${DATA_GID} /data/
-chmod 755 /data
 
 c_loc=/data/.install_cookie
 jwt_token=
@@ -207,7 +205,8 @@ start_install()
 set_permissions()
 {
     sleep 1
-    chmod -R 760 /data/
+    chmod -R 770 /data/
+    chown -R $(id -u):$(id -g) /data/
 }
 
 set_permissions &
