@@ -55,8 +55,7 @@ Change as needed.
 Be careful not to override users and groups that containers rely on to function and to only change the optional
 ones (There is usually comments inside config files to indicate where custom users are, but just use your best judgement).
 
-User variables are defined not only in the .env (as shown above), but also inside compose/users\_and\_groups.yml (because 
-that is the file that all the containers read from when they need password variables).
+You can modify passwords in the .users.env as shown above.
 
 Unix users and groups are shared between all containers to make permission management easier, you can configure them in: `compose/data/configs/users/settings.yml`
 **Make sure all ids are unique**. If you want to change ids (AKA UID/GID), then you'll need to re-create all containers as well as volumes, or you'll need to manually exec into each affected container and correct their permissions - that's tedious, so make sure not to change ids if you don't want to ever deal with that.
@@ -68,7 +67,7 @@ Lastly, you'll want to manage the Portainer web panel's users and teams in: `com
 
 In case anything was missed, look around in the configs directory.
 
-## Creating
+## Creating the containers
 To start:
 `make args='up' cmd`
 
@@ -97,7 +96,7 @@ Provided from the nginx webserver is an admin page with Portainer and PHPMyAdmin
 
 You can use PHPMyAdmin to manage MYSQL and Portainer to manage all the containers.
 
-This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you do not use Portainer to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
+This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you **do not** use Portainer to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
 
 ## Help 
 If you need more info on the makefile: use `make help`
