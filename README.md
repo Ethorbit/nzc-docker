@@ -67,7 +67,7 @@ Lastly, you'll want to manage the Portainer web panel's users and teams in: `com
 
 In case anything was missed, look around in the configs directory.
 
-## Creating the containers
+## Creating/Removing the containers
 To start:
 `make args='up' cmd`
 
