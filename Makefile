@@ -35,15 +35,15 @@ $(shell $(list_yml_command))
 endef
 
 profile := $(shell [[ "$(DEVELOPING)" -ge 1 ]] && echo "development" || echo "production")
-export_ids := set -a && source "$(config_dir)/users/env" > /dev/null 2>&1 &&
-command_base := nofiles=$(nofiles) \
+command_base := set -a && source <(cat .*env "$(config_dir)/users/env") > /dev/null 2>&1 &&\
+				nofiles=$(nofiles) \
 				DISK=$(DISK) HUID=$(shell id -u) HGID=$(shell id -g) \
 				CONTAINER_NAME_PREFIX=$(CONTAINER_NAME_PREFIX) CONTAINER_NAME_SUFFIX=$(CONTAINER_NAME_SUFFIX) \
-				docker-compose --env-file .env --profile $(profile) -p $(CONTAINER_NAME_PREFIX)
+				docker-compose --profile $(profile) -p $(CONTAINER_NAME_PREFIX)
 command_update := $(command_base) --profile update -f $(compose_dir)/update.yml up
 command_setup_users := $(command_base) --profile setup_users -f $(compose_dir)/users_and_groups.yml up
-command_build := $(export_ids) $(command_base) --profile setup_users $(yml_files_build) build --progress plain
-command := $(export_ids) $(command_base) $(yml_files)
+command_build := $(command_base) --profile setup_users $(yml_files_build) build --progress plain
+command := $(command_base) $(yml_files)
 
 build_docker: $(dir $(wildcard $(build_dir)/**/*))
 	$(command_build)

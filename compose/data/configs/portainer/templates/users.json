@@ -1,5 +1,11 @@
 [
     {
+        "Username": "doormatt",
+        "Password": "${DOORMATT_PASSWORD}",
+        "Role": 2,
+        "Teams": [ "gmod" ]
+    },
+    {
         "Username": "blunto",
         "Password": "${BLUNTO_PASSWORD}",
         "Role": 2,

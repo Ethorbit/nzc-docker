@@ -1,28 +1,11 @@
 [
     { 
-        "Name": "gmod", 
-        "ResourceIDs": [
-            "${CONTAINER_NAME_PREFIX}-gmod-1-${CONTAINER_NAME_SUFFIX}", 
-            "${CONTAINER_NAME_PREFIX}-gmod-2-${CONTAINER_NAME_SUFFIX}", 
-            "${CONTAINER_NAME_PREFIX}-gmod-3-${CONTAINER_NAME_SUFFIX}" 
-        ]
+        "Name": "gmod"
     },
     { 
-        "Name": "svencoop", 
-        "ResourceIDs": [ "${CONTAINER_NAME_PREFIX}-svencoop-${CONTAINER_NAME_SUFFIX}" ] 
+        "Name": "svencoop"
     },
     { 
-        "Name": "websites", 
-        "ResourceIDs": [
-            "${CONTAINER_NAME_PREFIX}-redis-${CONTAINER_NAME_SUFFIX}",
-            "${CONTAINER_NAME_PREFIX}-searxng-${CONTAINER_NAME_SUFFIX}",
-            "${CONTAINER_NAME_PREFIX}-openssl-${CONTAINER_NAME_SUFFIX}",
-            "${CONTAINER_NAME_PREFIX}-mkcert-${CONTAINER_NAME_SUFFIX}",
-            "${CONTAINER_NAME_PREFIX}-php_fpm_production-${CONTAINER_NAME_SUFFIX}",
-            "${CONTAINER_NAME_PREFIX}-nginx_envsubst_conf_production-${CONTAINER_NAME_SUFFIX}",
-            "${CONTAINER_NAME_PREFIX}-nginx_permissions-${CONTAINER_NAME_SUFFIX}",
-            "${CONTAINER_NAME_PREFIX}-nginx_production-${CONTAINER_NAME_SUFFIX}",
-            "${CONTAINER_NAME_PREFIX}-phpmyadmin-${CONTAINER_NAME_SUFFIX}"
-        ]
+        "Name": "websites"
     }
 ]

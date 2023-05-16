@@ -9,11 +9,8 @@ services:
       MYSQL_OGP_PASSWORD MYSQL_GMOD_PASSWORD MYSQL_SVENCOOP_PASSWORD` 
       < /mnt/init.sql.template > /mnt/init.sql
       && chmod +x /mnt/init.sql"
-    environment:
-      - MYSQL_ADMIN_PASSWORD=${MYSQL_ADMIN_PASSWORD}
-      - MYSQL_OGP_PASSWORD=${MYSQL_OGP_PASSWORD}
-      - MYSQL_GMOD_PASSWORD=${MYSQL_GMOD_PASSWORD}
-      - MYSQL_SVENCOOP_PASSWORD=${MYSQL_SVENCOOP_PASSWORD}
+    env_file:
+      - ../.users.env
     network_mode: none
     restart: on-failure
   mysql:
@@ -22,7 +19,7 @@ services:
     networks:
       - mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ADMIN_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${ADMIN_PASSWORD}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro

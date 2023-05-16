@@ -1,15 +1,13 @@
 version: "3.9"
+
 services:
   users_and_groups:
     image: ethorbit/user-manager:latest
+    env_file:
+      - ../.users.env
     environment:
       - HUID=${HUID}
       - HGID=${HGID}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - BLUNTO_PASSWORD=${BLUNTO_PASSWORD}
-      - BERB_PASSWORD=${BERB_PASSWORD}
-      - PEPE_PASSWORD=${PEPE_PASSWORD}
-      - FREEMAN_PASSWORD=${FREEMAN_PASSWORD}
     profiles:
       - setup_users
     volumes:

@@ -1,13 +1,29 @@
 groups:
   admin:
     id: ${HGID}
+  php:
+    id: 1799
+  phpmyadmin:
+    id: 1800
+  nginx:
+    id: 1801
+  steam:
+    id: 1802
+  stickybot:
+    id: 1803
   staff:
+    id: 1804
   fastdl:
+    id: 1805
   websites:
+    id: 1806
   discord:
+    id: 1807
   gmod:
+    id: 1808
   svencoop:
-    
+    id: 1809
+      
 x-staff-defaults: &staff-defaults
   primarygroup: staff
   keys:
@@ -28,14 +44,20 @@ users:
       - discord
     password: ${ADMIN_PASSWORD}
   php:
+    id: 1799
     home: false
+    primarygroup: php
     groups:
       - nginx
       - websites
   phpmyadmin:
+    id: 1800
     home: false
+    primarygroup: phpmyadmin
   nginx:
+    id: 1801
     home: false
+    primarygroup: nginx
     groups:
       - php
       - fastdl
@@ -43,33 +65,48 @@ users:
       - gmod
       - svencoop
   steam:
+    id: 1802
     home: false
+    primarygroup: steam
     groups:
       - gmod
       - svencoop
   stickybot:
+    id: 1803
     home: false
+    primarygroup: stickybot
     groups:
       - discord
   # Custom users below, replace with your own.
+  doormatt:
+    id: 1901
+    <<: *staff-defaults
+    groups:
+      - fastdl
+      - gmod
+    password: ${DOORMATT_PASSWORD}
   blunto:
+    id: 1902
     <<: *staff-defaults
     groups:
       - fastdl
       - gmod
     password: ${BLUNTO_PASSWORD}
   berb:
+    id: 1903
     <<: *staff-defaults
     groups:
       - fastdl
       - gmod
     password: ${BERB_PASSWORD}
   pepe:
+    id: 1904
     <<: *staff-defaults
     groups:
       - svencoop
     password: ${PEPE_PASSWORD}
   freeman:
+    id: 1905
     <<: *staff-defaults
     groups:
       - svencoop

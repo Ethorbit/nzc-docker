@@ -34,10 +34,17 @@ SVENCOOP_PORT=1337
 
 PORTAINER_CPU=1
 
+```
+
+Create a .users.env file at the root of the project as well:
+```
+ADMIN_EMAIL=""
 ADMIN_PASSWORD=""
+
 # Custom users AKA your staff members
-BERB_PASSWORD=""
+DOORMATT_PASSWORD=""
 BLUNTO_PASSWORD=""
+BERB_PASSWORD=""
 PEPE_PASSWORD=""
 FREEMAN_PASSWORD=""
 ```
@@ -45,17 +52,21 @@ FREEMAN_PASSWORD=""
 Change as needed.
 
 ### Users and groups
-Unix users and groups are shared between all containers to make permission management easier.
-You can configure the Unix users from `compose/data/configs/users/settings.yml`
+Be careful not to override users and groups that containers rely on to function and to only change the optional
+ones (There is usually comments inside config files to indicate where custom users are, but just use your best judgement).
 
-Be careful not to override users and groups that containers use to function and to only change the optional
-ones (There is comments inside to help understand).
+User variables are defined not only in the .env (as shown above), but also inside compose/users\_and\_groups.yml (because 
+that is the file that all the containers read from when they need password variables).
 
-You will also want to configure MYSQL database users and database access, which is in `compose/data/configs/mysql/init.sql.template`
+Unix users and groups are shared between all containers to make permission management easier, you can configure them in: `compose/data/configs/users/settings.yml`
+**Make sure all ids are unique**. If you want to change ids (AKA UID/GID), then you'll need to re-create all containers as well as volumes, or you'll need to manually exec into each affected container and correct their permissions - that's tedious, so make sure not to change ids if you don't want to ever deal with that.
 
-Lastly, you'll also want to manage the Portainer web panel's users and teams in `compose/data/configs/portainer/templates`
+You will also want to configure MYSQL database users, databases and access, which is in: `compose/data/configs/mysql/init.sql.template`
+A basic understanding of SQL syntax will be required.
 
-In case anything was missed, look around in the configs directory because that's where all user management is located.
+Lastly, you'll want to manage the Portainer web panel's users and teams in: `compose/data/configs/portainer/templates`
+
+In case anything was missed, look around in the configs directory.
 
 ## Creating
 To start:

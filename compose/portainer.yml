@@ -1,4 +1,9 @@
 version: "3.9"
+
+#x-portainer-envs: &portainer-envs
+  #CONTAINER_NAME_PREFIX: ${CONTAINER_NAME_PREFIX}
+  #CONTAINER_NAME_SUFFIX: ${CONTAINER_NAME_SUFFIX}
+  
 services:
   portainer_envsubst:
     build:
@@ -14,13 +19,11 @@ services:
     cap_add:
       - CAP_DAC_OVERRIDE
       - CAP_FOWNER
+    env_file:
+      - ../.users.env
     environment:
       - CONTAINER_NAME_PREFIX=${CONTAINER_NAME_PREFIX}
       - CONTAINER_NAME_SUFFIX=${CONTAINER_NAME_SUFFIX}
-      - BLUNTO_PASSWORD=${BLUNTO_PASSWORD}
-      - BERB_PASSWORD=${BERB_PASSWORD}
-      - FREEMAN_PASSWORD=${FREEMAN_PASSWORD}
-      - PEPE_PASSWORD=${PEPE_PASSWORD}
     restart: on-failure
   portainer:
     build:

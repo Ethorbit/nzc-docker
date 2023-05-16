@@ -1,15 +1,25 @@
-CREATE USER 'admin'@'%' IDENTIFIED BY '${MYSQL_ADMIN_PASSWORD}';
-CREATE USER 'gmod'@'%' IDENTIFIED BY '${MYSQL_GMOD_PASSWORD}';
-CREATE USER 'svencoop'@'%' IDENTIFIED BY '${MYSQL_SVENCOOP_PASSWORD}';
-CREATE USER 'ogp'@'%' IDENTIFIED BY '${MYSQL_OGP_PASSWORD}';
+CREATE USER 'admin'@'%' IDENTIFIED BY '${ADMIN_PASSWORD}';
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;
 
-CREATE DATABASE ogp;
+CREATE ROLE 'gmod';
+CREATE ROLE 'svencoop;
+
+# Your custom users AKA staff members
+CREATE USER 'doormatt'@'%' IDENTIFIED BY '${DOORMATT_PASSWORD}';
+CREATE USER 'blunto'@'%' IDENTIFIED BY '${BLUNTO_PASSWORD}';
+CREATE USER 'berb'@'%' IDENTIFIED BY '${BERB_PASSWORD}';
+CREATE USER 'freeman'@'%' IDENTIFIED BY '${FREEMAN_PASSWORD}';
+CREATE USER 'pepe'@'%' IDENTIFIED BY '${PEPE_PASSWORD}';
+
+GRANT 'gmod' TO 'doormatt'@'%';
+GRANT 'gmod' TO 'blunto'@'%';
+GRANT 'gmod' TO 'berb'@'%';
+GRANT 'svencoop' TO 'freeman'@'%';
+GRANT 'svencoop' TO 'pepe'@'%';
+
 CREATE DATABASE gmod_nzombies;
 CREATE DATABASE gmod_anticheat;
 CREATE DATABASE svencoop;
-
-GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;
-GRANT ALL PRIVILEGES ON ogp.* TO 'ogp';
 GRANT ALL PRIVILEGES ON gmod_nzombies.* TO 'gmod';
 GRANT ALL PRIVILEGES ON gmod_anticheat.* TO 'gmod';
 GRANT ALL PRIVILEGES ON svencoop.* TO 'svencoop';
