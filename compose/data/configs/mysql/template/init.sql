@@ -2,7 +2,7 @@ CREATE USER 'admin'@'%' IDENTIFIED BY '${ADMIN_PASSWORD}';
 GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;
 
 CREATE ROLE 'gmod';
-CREATE ROLE 'svencoop;
+CREATE ROLE 'svencoop';
 
 CREATE DATABASE gmod_nzombies;
 CREATE DATABASE gmod_anticheat;

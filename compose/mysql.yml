@@ -1,17 +1,21 @@
 version: "3.9"
 services:
   mysql_envsubst:
-    image: ethorbit/envsubst
-    volumes:
-      - ./data/configs/mysql:/mnt
-    command: >
-      /bin/sh -c "envsubst `printf '$${%s}\n' MYSQL_ADMIN_PASSWORD 
-      MYSQL_OGP_PASSWORD MYSQL_GMOD_PASSWORD MYSQL_SVENCOOP_PASSWORD` 
-      < /mnt/init.sql.template > /mnt/init.sql
-      && chmod +x /mnt/init.sql"
+    build:
+      context: ./build/input_output_envsubst
+      args:
+        FILE_EXTENSION: "sql"
     env_file:
       - ../.users.env
+    volumes:
+      - ./data/configs/mysql/template:/mnt/input
+      - ./data/configs/mysql:/mnt/output
     network_mode: none
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_FOWNER
     restart: on-failure
   mysql:
     image: mysql:8.0.32-debian
