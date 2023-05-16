@@ -246,6 +246,21 @@ services:
     networks:
       - nginx
     <<: [*labels]
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+    # Use --standalone if current webserver isn't working out for this.
+    # standalone:
+    #   Spin up a temporary webserver
+    command: >
+      --agree-tos 
+      --renew-by-default 
+      --email "${ADMIN_EMAIL}" 
+      --rsa-key-size 4096 
+      --keep-until-expiring 
+      --preferred-challenges=http 
+      --verbose 
+      -d ${PRIVATE_DOMAIN_NAME} 
+      -d *.${PRIVATE_DOMAIN_NAME}
     restart: unless-stopped       
   nginx_envsubst_conf_production:
     <<: [*nginx_envsubst_conf, *nginx_envsubst_production]
