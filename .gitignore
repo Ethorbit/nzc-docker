@@ -5,6 +5,7 @@ compose/data/configs/users/gshadow
 compose/data/configs/users/passwd
 compose/data/configs/users/shadow
 compose/data/nginx/conf.d/*
+compose/data/configs/phpmyadmin/*.php
 compose/data/configs/mysql/*.sql
 compose/data/configs/nginx/conf.d/nzc.conf
 compose/data/configs/portainer/users.json

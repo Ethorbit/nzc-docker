@@ -28,11 +28,6 @@ x-php_fpm: &php_fpm
     && chown ${php_u}:${php_g} /var/run/php-fpm/sock
     && chmod 770 /var/run/php-fpm/sock
     && php-fpm"
-  environment:
-    - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    - MYSQL_USER=admin
-    - MYSQL_PASSWORD=${MYSQL_REMOTE_PASSWORD}
-    - PMA_HOST=mysql
   #depends_on:
   #  php_fpm_permissions:
   #    condition:

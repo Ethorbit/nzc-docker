@@ -22,6 +22,7 @@ services:
     command: '--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci'
     networks:
       - mysql
+      - gmod
     environment:
       - MYSQL_ROOT_PASSWORD=${ADMIN_PASSWORD}
     volumes:
@@ -29,6 +30,8 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - mysql:/var/lib/mysql
       - ./data/configs/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 3306:3306/tcp
     depends_on:
       mysql_envsubst:
         condition: service_completed_successfully

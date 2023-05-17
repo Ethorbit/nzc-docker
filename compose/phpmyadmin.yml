@@ -1,5 +1,42 @@
 version: "3.9"
 services:
+  phpmyadmin_envsubst:
+    build:
+      context: ./build/input_output_envsubst
+      args:
+        FILE_EXTENSION: "php"
+    environment:
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=${ADMIN_PASSWORD}
+      - PMA_HOST=mysql
+      #- MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./data/configs/phpmyadmin/template:/mnt/input
+      - ./data/configs/phpmyadmin:/mnt/output
+    network_mode: none
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_FOWNER
+    restart: on-failure
+  phpmyadmin_permissions:
+    build:
+      context: ./build/permissions
+    volumes:
+      - ./data/configs/phpmyadmin:/mnt
+    command: >
+      /bin/sh -c 'chown ${phpmyadmin_u}:${php_g} /mnt/config.sample.inc.php
+      && chmod 760 /mnt/config.sample.inc.php'
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_CHOWN
+      - CAP_FOWNER
+      - CAP_FSETID
+    network_mode: none
+    restart: on-failure
   phpmyadmin:
     build:
       context: ./build/phpmyadmin #./build/php_fpm
@@ -7,11 +44,6 @@ services:
       args:
         UID: ${phpmyadmin_u}
         GID: ${websites_g}
-    #environment:
-      #- MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      #- MYSQL_USER=admin
-      #- MYSQL_PASSWORD=${MYSQL_REMOTE_PASSWORD}
-      #- PMA_HOST=mysql
       #networks:
       #- mysql
       #- phpmyadmin  
@@ -19,7 +51,15 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/phpmyadmin/config.sample.inc.php:/var/www/html/config.sample.inc.php
       - phpmyadmin:/panel
+    depends_on:
+      phpmyadmin_envsubst:
+        condition:
+          service_completed_successfully
+      phpmyadmin_permissions:
+        condition:
+          service_completed_successfully
     #ports:
       #- 8085:80 
     restart: always
