@@ -22,15 +22,20 @@ SEARXNG_CPU=1
 
 SSH_PORT=8822
 
+MYSQL_PORT=3306
+
+GMOD_1_PORT=27015
+GMOD_2_PORT=27016
+GMOD_3_PORT=27017
 GMOD_1_CPU=0
 GMOD_2_CPU=0
 GMOD_3_CPU=0
 
-DISCORD_CPU=1
-DISCORD_STICKY_BOT_TOKEN=""
-
 SVENCOOP_CPU=1
 SVENCOOP_PORT=1337
+
+DISCORD_CPU=1
+DISCORD_STICKY_BOT_TOKEN=""
 
 PORTAINER_CPU=1
 
@@ -40,6 +45,11 @@ Create a .users.env file at the root of the project as well:
 ```
 ADMIN_EMAIL=""
 ADMIN_PASSWORD=""
+
+# Internal passwords (cannot be used outside of containers)
+# These are intended for server scripts so they can connect to databases and stuff
+GMOD_PASSWORD=""
+SVENCOOP_PASSWORD=""
 
 # Custom users AKA your staff members
 DOORMATT_PASSWORD=""
