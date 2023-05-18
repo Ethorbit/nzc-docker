@@ -52,7 +52,7 @@ To update users and groups: `make update-users`
 ### Admin Webpanels
 Provided from the nginx webserver is an admin page with Portainer and PHPMyAdmin to manage most stuff in the browser. 
 
-You can use PHPMyAdmin to manage MYSQL and Portainer to manage all the containers.
+You can use PHPMyAdmin to manage MySQL and Portainer to manage all the containers.
 
 This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you **do not** use Portainer to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
 
