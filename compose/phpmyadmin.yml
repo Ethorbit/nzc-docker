@@ -10,7 +10,6 @@ services:
       - MYSQL_USER=admin
       - MYSQL_PASSWORD=${ADMIN_PASSWORD}
       - PMA_HOST=mysql
-      #- MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - ./data/configs/phpmyadmin/template:/mnt/input
       - ./data/configs/phpmyadmin:/mnt/output
@@ -44,7 +43,6 @@ services:
       args:
         UID: ${phpmyadmin_u}
         GID: ${websites_g}
-        USAGE_DIRECTORY: /mnt/admin/phpmyadmin/ # It's used in the php fpm container, this is where it is in there
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
