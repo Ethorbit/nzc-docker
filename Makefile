@@ -1,4 +1,5 @@
-include .env
+-include $(wildcard ./*.env)
+
 SHELL := /bin/bash 
 compose_dir := ./compose
 data_dir := $(compose_dir)/data
@@ -12,6 +13,11 @@ CONTAINER_NAME_SUFFIX := 1 # this is just what Docker does.. Don't think we can 
 define newline 
 
 
+endef
+
+# Used to add equal signs into other defines
+define equals
+=
 endef
 
 bs := $(strip \) # Used to add literal newlines into other defines
@@ -64,33 +70,33 @@ setup_users: #$(compose_dir)/users_and_groups.yml $(shell find $(data_dir)/users
 # it works just the same.
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-.PHONY: install setup change-passwords set-passwords update-containers update-users cmd rm-vol help
+.PHONY: install setup gen-passwords update-containers update-users cmd rm-vol help
 
 # TODO, check if each necessary CLI tool exists, if not bail with error
 setup:
-	@if ls -A .*envs > /dev/null; then \
+	@if ls -A $(CURDIR)/.*env > /dev/null; then \
 		echo "You have already generated or created .env files."; \
 		echo "Either remove them or take the extension out of their names"; \
 		echo "before installing."; \
 		exit 1; \
-	fi
+	fi; \
+	find "$(CURDIR)/install/" -mindepth 1 -maxdepth 1 -type f -name "*env.template" \
+	-exec /bin/sh -c 'envsubst < {} > $$(basename -s ".template" {}) && echo "Generated $$(basename {})"' \; ; \
+	echo "Go ahead and fill them out and then start the containers. Use make help for more info."
 
-set-passwords:
-	@gen_pass() { echo $$(openssl rand -base64 "$$1") ; }; \
-	echo $$(gen_pass 18)
-#@echo "TODO: change passwords here."
-#@echo "Some containers will need to restart for the new passwords to take effect."
-
+# I was going to originally make it automatically fill out PASSWORD variables, but I don't get paid for this.
+gen-passwords:
+	@echo "Here are some passwords you can use:"; \
+	gen_pass() { echo $$(openssl rand -base64 6 | printf "%s%s\n" "$$(cat -)" '!@#$%^&*()' | fold -w1 | shuf | tr -d '\n') ; }; \
+	for i in {1..15}; do echo "$$i. $$(gen_pass)"; done
+	
 update-users:
 	$(command_setup_users)
 
 update-containers:
 	$(command_update)
 
-change-passwords: set-passwords update-users
-install: setup change-passwords
-
-echo "TODO: replace .env and .users.env in README.MD instructions and just let people generate them with this."
+install: setup gen-passwords
 
 cmd: setup_users build_docker
 	$(command) $(args)
@@ -116,11 +122,8 @@ Makefile: a wrapper script created to overcome Docker Compose limitations.
 	    All .env files are passed to compose, meaning they can be referenced in the yaml files.
 	    You can also use env_file to pass them to individual containers.
 		
-   make change-passwords 
-      - Securely randomizes the value of every PASSWORD variable in the users .env file and then updates users.
-	Length:
-	    By default ADMIN gets 36 characters, everyone else gets 18.
-	    You can change this with args: make args='36 18' change-passwords
+   make gen-passwords 
+      - Generates a bunch of short but very secure passwords. You still need to fill out the environment variables yourself.
 		
    make args='Docker compose command' cmd
 	Examples:
