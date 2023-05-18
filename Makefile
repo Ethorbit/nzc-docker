@@ -75,8 +75,15 @@ setup:
 	fi; \
 	echo "TODO: replace .env and .users.env in README.MD instructions and just let people generate them with this."
 
-change-passwords:
+update-users:
+	$(command_setup_users)
+
+update-containers:
+	$(command_update)
+
+change-passwords: update-users
 	@echo "TODO: change passwords here."
+	@echo "Some containers will need to restart for the new passwords to take effect."
 
 install: setup change-passwords
 	
@@ -84,12 +91,6 @@ echo "TODO: replace .env and .users.env in README.MD instructions and just let p
 
 cmd: setup_users build_docker
 	$(command) $(args)
-
-update-containers:
-	$(command_update)
-
-update-users:
-	$(command_setup_users)
 
 # Because Docker likes to make removing volumes an annoying task
 define rm-vol_cmd
