@@ -34,7 +34,7 @@ Pass -v after down to also remove the volumes
 ## Development / Local Testing
 * In .env set DEVELOPING to 1 and set PRIVATE\_DOMAIN\_NAME to "chronicles.local"
 * In your host, either use dnsmasq and add `address=/chronicles.local/127.0.0.1` to /etc/dnsmasq.conf OR add an /etc/hosts entry `127.0.0.1 chronicles.local` for each subdomain
-* After bringing the containers up, restart your browser and then inside set the mkcert certificate to be trusted
+* After bringing the containers up, restart your browser and then inside set the mkcert certificate (located in CA\_TRUST\_STORE\_DIR) to be trusted
 
 ## Production
 * Set DEVELOPING to 0 in .env 
