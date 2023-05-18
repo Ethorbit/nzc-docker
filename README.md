@@ -1,5 +1,5 @@
 # nZombies Chronicles
-Docker infrastructure used by the nZombies Chronicles community. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
+Docker infrastructure used by the nZombies Chronicles community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
 
 ## Configuring
 Create a .env file at the root of the project and add the variables:
