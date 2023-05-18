@@ -64,7 +64,23 @@ setup_users: #$(compose_dir)/users_and_groups.yml $(shell find $(data_dir)/users
 # it works just the same.
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-.PHONY: update-containers update-users cmd rm-vol help
+.PHONY: install setup change-passwords update-containers update-users cmd rm-vol help
+
+setup:
+	@if ls -A .*env > /dev/null; then \
+		echo "You have already generated or created .env files."; \
+		echo "Either remove them or take the extension out of their names"; \
+		echo "before installing."; \
+		exit 1; \
+	fi; \
+	echo "TODO: replace .env and .users.env in README.MD instructions and just let people generate them with this."
+
+change-passwords:
+	@echo "TODO: change passwords here."
+
+install: setup change-passwords
+	
+echo "TODO: replace .env and .users.env in README.MD instructions and just let people generate them with this."
 
 cmd: setup_users build_docker
 	$(command) $(args)
@@ -88,6 +104,8 @@ rm-vol:
 	$(rm-vol_cmd)
 
 define help_text
+	make install - Sets up .env configuration templates for you to edit.
+	make change-passwords - Randomizes the value of every PASSWORD variable in the users .env file.
 	make cmd "compose arguments here"
 		Examples:
 			make args='up' cmd
