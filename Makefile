@@ -64,16 +64,22 @@ setup_users: #$(compose_dir)/users_and_groups.yml $(shell find $(data_dir)/users
 # it works just the same.
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-.PHONY: install setup change-passwords update-containers update-users cmd rm-vol help
+.PHONY: install setup change-passwords set-passwords update-containers update-users cmd rm-vol help
 
+# TODO, check if each necessary CLI tool exists, if not bail with error
 setup:
-	@if ls -A .*env > /dev/null; then \
+	@if ls -A .*envs > /dev/null; then \
 		echo "You have already generated or created .env files."; \
 		echo "Either remove them or take the extension out of their names"; \
 		echo "before installing."; \
 		exit 1; \
-	fi; \
-	echo "TODO: replace .env and .users.env in README.MD instructions and just let people generate them with this."
+	fi
+
+set-passwords:
+	@gen_pass() { echo $$(openssl rand -base64 "$$1") ; }; \
+	echo $$(gen_pass 18)
+#@echo "TODO: change passwords here."
+#@echo "Some containers will need to restart for the new passwords to take effect."
 
 update-users:
 	$(command_setup_users)
@@ -81,12 +87,9 @@ update-users:
 update-containers:
 	$(command_update)
 
-change-passwords: update-users
-	@echo "TODO: change passwords here."
-	@echo "Some containers will need to restart for the new passwords to take effect."
-
+change-passwords: set-passwords update-users
 install: setup change-passwords
-	
+
 echo "TODO: replace .env and .users.env in README.MD instructions and just let people generate them with this."
 
 cmd: setup_users build_docker
@@ -105,15 +108,36 @@ rm-vol:
 	$(rm-vol_cmd)
 
 define help_text
-	make install - Sets up .env configuration templates for you to edit.
-	make change-passwords - Randomizes the value of every PASSWORD variable in the users .env file.
-	make cmd "compose arguments here"
-		Examples:
-			make args='up' cmd
-			nofiles=1 make args='-f ./compose/nginx.yml down' cmd"
-	make update-containers - Updates containers and then restarts those effected.
-	make update-users - Re-creates users, automatically called when calling cmd
-	make args='volume name' rm-vol - Removes a single Docker volume even if there are conflicting docker containers (It removes those too)
+Makefile: a wrapper script created to overcome Docker Compose limitations.
+   make install 
+      - Sets up the necessary .env configuration as a template for you to modify.
+	  
+	Notes for devs:
+	    All .env files are passed to compose, meaning they can be referenced in the yaml files.
+	    You can also use env_file to pass them to individual containers.
+		
+   make change-passwords 
+      - Securely randomizes the value of every PASSWORD variable in the users .env file and then updates users.
+	Length:
+	    By default ADMIN gets 36 characters, everyone else gets 18.
+	    You can change this with args: make args='36 18' change-passwords
+		
+   make args='Docker compose command' cmd
+	Examples:
+	    make args='up' cmd
+	    nofiles=1 make args='-f ./compose/nginx.yml down' cmd
+
+	Note: unless nofiles=1 is specified, ALL yaml files are used.
+
+   make update-containers 
+      - Updates containers and then restarts those affected.
+      Note: Most containers are version-locked for stability so you'll need to manually bump up their image tags in each yaml file to truly keep them up-to-date. Only containers tagged with :latest can benefit from this.
+
+   make update-users 
+     - Re-creates users (automatically called when calling cmd)
+
+   make args='volume name' rm-vol 
+      - Removes a single Docker volume even if there are conflicting docker containers (It removes those too). This is only useful if you find yourself needing to repeatedly remove volumes.
 endef
 
 help:
