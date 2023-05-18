@@ -48,6 +48,7 @@ services:
       - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/udp
     networks:
       - svencoop
+      - mysql
     labels:
       - "io.portainer.accesscontrol.teams=svencoop"
     cpuset: ${SVENCOOP_CPU}

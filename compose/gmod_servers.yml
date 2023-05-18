@@ -79,7 +79,7 @@ services:
     cpuset: "${GMOD_1_CPU}"
     cpu_shares: 1024
     environment:
-      - PORT=27015
+      - PORT=${GMOD_1_PORT:-27015}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -90,13 +90,13 @@ services:
       - gmod_1:/home/steam/server:slave
       - gmod_shared:/shared:slave
     ports:
-      - 27015:27015/udp
+      - ${GMOD_1_PORT:-27015}:${GMOD_1_PORT:-27015}/udp
   gmod-2:
     <<: [ *gmod ]
     cpuset: "${GMOD_2_CPU}"
     cpu_shares: 1024
     environment:
-      - PORT=27016
+      - PORT=${GMOD_2_PORT:-27016}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -107,13 +107,13 @@ services:
       - gmod_2:/home/steam/server:slave
       - gmod_shared:/shared:slave
     ports:
-      - 27016:27016/udp
+      - ${GMOD_2_PORT:-27016}:${GMOD_2_PORT:-27016}/udp
   gmod-3:
     <<: [ *gmod ]
     cpuset: "${GMOD_3_CPU}"
     cpu_shares: 1024
     environment:
-      - PORT=27017
+      - PORT=${GMOD_3_PORT:-27017}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -124,7 +124,7 @@ services:
       - gmod_3:/home/steam/server:slave
       - gmod_shared:/shared:slave
     ports:
-      - 27017:27017/udp
+      - ${GMOD_3_PORT:-27017}:${GMOD_3_PORT:-27017}/udp
 volumes:
   gmod_shared:
   gmod_1:

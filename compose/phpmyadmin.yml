@@ -6,6 +6,7 @@ services:
       args:
         FILE_EXTENSION: "php"
     environment:
+      - PHPMYADMIN_BLOWFISH_SECRET=${PHPMYADMIN_BLOWFISH_SECRET}
       - MYSQL_USER=admin
       - MYSQL_PASSWORD=${ADMIN_PASSWORD}
       - PMA_HOST=mysql
@@ -26,8 +27,8 @@ services:
     volumes:
       - ./data/configs/phpmyadmin:/mnt
     command: >
-      /bin/sh -c 'chown ${phpmyadmin_u}:${php_g} /mnt/config.sample.inc.php
-      && chmod 760 /mnt/config.sample.inc.php'
+      /bin/sh -c 'chown ${phpmyadmin_u}:${php_g} /mnt/config.inc.php
+      && chmod 760 /mnt/config.inc.php'
     cap_drop:
       - ALL
     cap_add:
@@ -39,19 +40,15 @@ services:
     restart: on-failure
   phpmyadmin:
     build:
-      context: ./build/phpmyadmin #./build/php_fpm
-      #target: phpmyadmin
+      context: ./build/phpmyadmin
       args:
         UID: ${phpmyadmin_u}
         GID: ${websites_g}
-      #networks:
-      #- mysql
-      #- phpmyadmin  
-    #network_mode: none 
+        USAGE_DIRECTORY: /mnt/admin/phpmyadmin/ # It's used in the php fpm container, this is where it is in there
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/phpmyadmin/config.sample.inc.php:/var/www/html/config.sample.inc.php
+      - ./data/configs/phpmyadmin/config.inc.php:/var/www/html/config.inc.php
       - phpmyadmin:/panel
     depends_on:
       phpmyadmin_envsubst:
@@ -60,8 +57,7 @@ services:
       phpmyadmin_permissions:
         condition:
           service_completed_successfully
-    #ports:
-      #- 8085:80 
+    network_mode: none 
     restart: always
 volumes:
   phpmyadmin:
