@@ -2,7 +2,7 @@
 Docker infrastructure used by the nZombies Chronicles community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
 
 ## Installing 
-Run `make install` and it should generate config templates for you. Change them as needed.
+Run `make install` and it should generate env files for you. Change them as needed.
 
 ### Managing Users and groups
 You can modify passwords in the .env files.
