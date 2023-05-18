@@ -13,7 +13,7 @@ ones (There is usually comments inside config files to indicate where custom use
 Unix users and groups are shared between all containers to make permission management easier, you can configure them in: `compose/data/configs/users/settings.yml`
 **Make sure all ids are unique**. If you want to change ids (AKA UID/GID), then you'll need to re-create all containers as well as volumes, or you'll need to manually exec into each affected container and correct their permissions - that's tedious, so make sure not to change ids if you don't want to ever deal with that.
 
-You will also want to configure MYSQL database users, databases and access, which is in: `compose/data/configs/mysql/init.sql.template`
+You will also want to configure MySQL database users, databases and access, which is in: `compose/data/configs/mysql/init.sql.template`
 A basic understanding of SQL syntax will be required.
 
 Lastly, you'll want to manage the Portainer web panel's users and teams in: `compose/data/configs/portainer/templates`
