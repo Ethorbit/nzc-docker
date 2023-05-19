@@ -98,14 +98,15 @@ setup:
 	echo "Go ahead and fill them out and then start the containers. Use make help for more info."
 
 list-passwords:
-	@echo "Here are some other passwords you can use:"
-	@for i in {1..10}; do echo "$$i. $(call gen_pass,$(call rand_int,6,14))"; done
+	@echo "Here are some passwords you can use:"
+	@for i in {1..20}; do echo "$$i. $(call gen_pass,$(call rand_int,6,17))"; done
 
 set-passwords:
 	@change_file_passwords() { \
 		file="$$1" &&\
 		echo "$$file"; \
 	}; \
+	exit; \
 	export -f change_file_passwords; \
 	find "$(CURDIR)" -mindepth 1 -maxdepth 1 -type f -name ".*env" \
 	-exec /bin/sh -c "change_file_passwords {}" \; ; \
@@ -145,9 +146,10 @@ Makefile: a wrapper script created to overcome Docker Compose limitations.
 		
    make set-passwords 
       - Applies a random password to every PASSWORD variable. Additionally lists a bunch of short, but very secure passwords to choose from. When finished, users are updated.
+      NOTE: This does not actually do anything currently, the functionality has not been implemented!
 	
    make list-passwords
-      - Lists a bunch of short, but very secure passwords to choose from.
+      - Lists a bunch of random and very secure passwords to choose from.
 
    make args='Docker compose command' cmd
 	Examples:
