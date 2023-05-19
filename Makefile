@@ -87,10 +87,11 @@ setup:
 		echo "before installing."; \
 		exit 1; \
 	fi; \
-	if ! command -v docker-compose > /dev/null; then echo "docker-compose not found, install it." >&2 && exit 1; fi; \
-	if ! command -v envsubst > /dev/null; then echo "envsubst not found, install it." >&2 && exit 1; fi; \
-	if ! command -v openssl > /dev/null; then echo "openssl not found, install it." >&2 && exit 1; fi; \
-	if ! command -v find > /dev/null; then echo "find not found, install it." >&2 && exit 1; fi; \
+	check_cmd() { if ! command -v "$$1" > /dev/null; then echo "$$1 not found, install it." >&2 && exit 1; fi; }; \
+	check_cmd docker-compose; \
+	check_cmd envsubst; \
+	check_cmd openssl; \
+	check_cmd find; \
 	export PHPMYADMIN_BLOWFISH_SECRET="$(call gen_pass,15)"; \
 	find "$(CURDIR)/install/" -mindepth 1 -maxdepth 1 -type f -name "*env.template" \
 	-exec /bin/sh -c 'envsubst < {} > $$(basename -s ".template" {}) && echo "Generated $$(basename {})"' \; ; \
