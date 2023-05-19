@@ -76,6 +76,10 @@ define gen_pass
 $$(openssl rand -base64 $(1) | printf "%s%s\n" "$$(cat -)" '!@#$%^&*()' | fold -w1 | shuf | tr -d '\n')
 endef
 
+define rand_int
+$$(($$RANDOM % ($(2) - $(1)) + 1))
+endef
+
 setup:
 	@if ls -A $(CURDIR)/.*env > /dev/null 2> /dev/null; then \
 		echo "You have already generated or created .env files."; \
@@ -94,7 +98,7 @@ setup:
 
 list-passwords:
 	@echo "Here are some other passwords you can use:"
-	@for i in {1..10}; do echo "$$i. $(call gen_pass,6)"; done
+	@for i in {1..10}; do echo "$$i. $(call gen_pass,$(call rand_int,6,14))"; done
 
 set-passwords:
 	@change_file_passwords() { \
