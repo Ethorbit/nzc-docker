@@ -70,26 +70,41 @@ setup_users: #$(compose_dir)/users_and_groups.yml $(shell find $(data_dir)/users
 # it works just the same.
 args := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-.PHONY: install setup gen-passwords update-containers update-users cmd rm-vol help
+.PHONY: install setup list-passwords set-passwords update-containers update-users cmd rm-vol help
 
-# TODO, check if each necessary CLI tool exists, if not bail with error
+define gen_pass
+$$(openssl rand -base64 $(1) | printf "%s%s\n" "$$(cat -)" '!@#$%^&*()' | fold -w1 | shuf | tr -d '\n')
+endef
+
 setup:
-	@if ls -A $(CURDIR)/.*env > /dev/null; then \
+	@if ls -A $(CURDIR)/.*env > /dev/null 2> /dev/null; then \
 		echo "You have already generated or created .env files."; \
 		echo "Either remove them or take the extension out of their names"; \
 		echo "before installing."; \
 		exit 1; \
 	fi; \
-	export PHPMYADMIN_BLOWFISH_SECRET=$$(openssl rand -base64 24); \
+	if ! command -v docker-compose > /dev/null; then echo "docker-compose not found, install it." >&2 && exit 1; fi; \
+	if ! command -v envsubst > /dev/null; then echo "envsubst not found, install it." >&2 && exit 1; fi; \
+	if ! command -v openssl > /dev/null; then echo "openssl not found, install it." >&2 && exit 1; fi; \
+	if ! command -v find > /dev/null; then echo "find not found, install it." >&2 && exit 1; fi; \
+	export PHPMYADMIN_BLOWFISH_SECRET="$(call gen_pass,15)"; \
 	find "$(CURDIR)/install/" -mindepth 1 -maxdepth 1 -type f -name "*env.template" \
 	-exec /bin/sh -c 'envsubst < {} > $$(basename -s ".template" {}) && echo "Generated $$(basename {})"' \; ; \
 	echo "Go ahead and fill them out and then start the containers. Use make help for more info."
 
-# I was going to originally make it automatically fill out PASSWORD variables, but I don't get paid for this.
-gen-passwords:
-	@echo "Here are some passwords you can use:"; \
-	gen_pass() { echo $$(openssl rand -base64 6 | printf "%s%s\n" "$$(cat -)" '!@#$%^&*()' | fold -w1 | shuf | tr -d '\n') ; }; \
-	for i in {1..15}; do echo "$$i. $$(gen_pass)"; done
+list-passwords:
+	@echo "Here are some other passwords you can use:"
+	@for i in {1..10}; do echo "$$i. $(call gen_pass,6)"; done
+
+set-passwords:
+	@change_file_passwords() { \
+		file="$$1" &&\
+		echo "$$file"; \
+	}; \
+	export -f change_file_passwords; \
+	find "$(CURDIR)" -mindepth 1 -maxdepth 1 -type f -name ".*env" \
+	-exec /bin/sh -c "change_file_passwords {}" \; ; \
+	echo "Assigned random passwords."
 	
 update-users:
 	$(command_setup_users)
@@ -97,7 +112,7 @@ update-users:
 update-containers:
 	$(command_update)
 
-install: setup gen-passwords
+install: setup set-passwords list-passwords
 
 cmd: setup_users build_docker
 	$(command) $(args)
@@ -123,9 +138,12 @@ Makefile: a wrapper script created to overcome Docker Compose limitations.
 	    All .env files are passed to compose, meaning they can be referenced in the yaml files.
 	    You can also use env_file to pass them to individual containers.
 		
-   make gen-passwords 
-      - Generates a bunch of short but very secure passwords. You still need to fill out the environment variables yourself.
-		
+   make set-passwords 
+      - Applies a random password to every PASSWORD variable. Additionally lists a bunch of short, but very secure passwords to choose from. When finished, users are updated.
+	
+   make list-passwords
+      - Lists a bunch of short, but very secure passwords to choose from.
+
    make args='Docker compose command' cmd
 	Examples:
 	    make args='up' cmd
