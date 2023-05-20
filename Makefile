@@ -1,4 +1,4 @@
--include $(wildcard ./*.env)
+-include $(wildcard .*env)
 
 SHELL := /bin/bash 
 compose_dir := ./compose
