@@ -27,9 +27,6 @@ x-gmod: &gmod
     args:
       PUID: ${steam_u}
       PGID: ${gmod_g}
-  environment:
-    SHARED_DIR: "/shared"
-    UMASK: "007"
   <<: [ *defaults ]
   stdin_open: true
   tty: true
@@ -47,6 +44,10 @@ x-gmod: &gmod
   labels:
     - "io.portainer.accesscontrol.teams=gmod"
   restart: always
+x-gmod-env: &gmod-env
+  UMASK: "007" 
+  RCON_PASSWORD: ${GMOD_PASSWORD} 
+    
 networks:
   gmod:
     driver: "bridge"
@@ -79,7 +80,8 @@ services:
     cpuset: "${GMOD_1_CPU}"
     cpu_shares: 1024
     environment:
-      - PORT=${GMOD_1_PORT:-27015}
+      <<: [ *gmod-env ] 
+      PORT: ${GMOD_1_PORT:-27015}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -96,7 +98,8 @@ services:
     cpuset: "${GMOD_2_CPU}"
     cpu_shares: 1024
     environment:
-      - PORT=${GMOD_2_PORT:-27016}
+      <<: [ *gmod-env ] 
+      PORT: ${GMOD_2_PORT:-27016}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -113,7 +116,8 @@ services:
     cpuset: "${GMOD_3_CPU}"
     cpu_shares: 1024
     environment:
-      - PORT=${GMOD_3_PORT:-27017}
+      <<: [ *gmod-env ] 
+      PORT: ${GMOD_3_PORT:-27017}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro

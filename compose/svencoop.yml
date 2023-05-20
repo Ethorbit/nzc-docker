@@ -29,6 +29,7 @@ services:
     stdin_open: true
     environment:
       START_ARGS: "-port ${SVENCOOP_PORT:-28015} +maxplayers 12 +map uplink"
+      RCON_PASSWORD: ${SVENCOOP_PASSWORD}
     volumes: 
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
