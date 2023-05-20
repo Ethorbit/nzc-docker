@@ -23,6 +23,8 @@ groups:
     id: 1808
   svencoop:
     id: 1809
+  rsynclog:
+    id: 1810
       
 x-staff-defaults: &staff-defaults
   primarygroup: staff
@@ -77,6 +79,10 @@ users:
     primarygroup: stickybot
     groups:
       - discord
+  rsynclog:
+    id: 1804
+    home: false
+    primarygroup: rsynclog
   # Custom users below, replace with your own.
   doormatt:
     id: 1901

@@ -1,0 +1,14 @@
+#version: "3.9"
+#services:
+#  fail2ban:
+#    build:
+#      context: ./build/fail2ban 
+#    cap_add:
+#      - NET_ADMIN
+#      - NET_RAW
+#    network_mode: host
+#    command: '-f -x -v'
+#    volumes:
+#      - ./data/configs/fail2ban/jail.d:/etc/fail2ban/jail.d
+#    #user: 0:${admin_g}
+#    restart: unless-stopped

@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  rsyslog:
+    build:
+      context: ./build/rsyslog
+    command: ''
+    ports:
+      - 514/tcp
+      - 514/udp
+    networks:
+      - ssh
+    volumes:
+      - ./data/configs/rsyslog/rsyslog.conf
+    restart: always
+networks:
+  rsyslog:
+  ssh:
+# volumes:
+#  rsyslog:
