@@ -11,4 +11,5 @@ compose/data/configs/nginx/conf.d/nzc.conf
 compose/data/configs/portainer/users.json
 compose/data/configs/portainer/teams.json
 compose/data/configs/nginx/snippets/private/
+compose/data/configs/nginx/snippets/ssl.conf
 build_docker
