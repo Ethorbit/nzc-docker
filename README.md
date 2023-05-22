@@ -41,13 +41,20 @@ Pass -v after down to also remove the volumes
 * Set PUBLIC\_DOMAIN to the domain you own 
 * Make your domain point to your server
 
-## Production Maintenance
+## Logs 
+Normally you'd run `docker logs <container name>` to read the logs of a container, however our infrastructure uses a central logging container called 'rsyslog'. You need to `docker exec` into that container and `cd /logs` and `cat <file>` to read a container's logs.
+
+The reason we've done this is to make configuring services like Fail2Ban much easier.
+
+## Maintenance
 Because this project consists of many different containers, it is not feasible to take all the containers offline every time you need to make changes. It is also not appropriate to re-create individual containers as some have dependency services. You should re-create entire files instead of individual containers, this will ensure things like file permissions are set and configuration files are generated from templates when needed.
 
 For example, to restart ONLY the web server:
 `nofiles=1 make args='-f ./compose/nginx.yml restart' cmd`
 
 To update users and groups: `make update-users`
+
+Note: for Development there's nothing wrong with removing and re-creating everything: `make args='down -v' cmd && make args='up --build' cmd` - however that results in full data loss, so that's dangerous and unacceptable for a Production instance!
 
 ### Admin Webpanels
 Provided from the nginx webserver is an admin page with Portainer and PHPMyAdmin to manage most stuff in the browser. 

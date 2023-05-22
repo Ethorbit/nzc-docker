@@ -1,4 +1,4 @@
-#version: "3.9"
+version: "3.9"
 #services:
 #  fail2ban:
 #    build:
@@ -10,5 +10,8 @@
 #    command: '-f -x -v'
 #    volumes:
 #      - ./data/configs/fail2ban/jail.d:/etc/fail2ban/jail.d
-#    #user: 0:${admin_g}
+#      - rsyslog_logs:/mnt/logs:ro
+#    depends_on:
+#      rsyslog:
+#       condition: service_started
 #    restart: unless-stopped

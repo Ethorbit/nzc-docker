@@ -22,7 +22,8 @@ x-php_fpm: &php_fpm
     - nginx_websites:/mnt/websites
     - phpmyadmin:/mnt/admin/phpmyadmin
   command: >
-    /bin/sh -c "touch /var/run/php-fpm/sock
+    /bin/sh -c "rm /var/run/php-fpm/sock 2> /dev/null
+    ; touch /var/run/php-fpm/sock
     && chown ${php_u}:${php_g} /var/run/php-fpm
     && chmod 770 /var/run/php-fpm
     && chown ${php_u}:${php_g} /var/run/php-fpm/sock

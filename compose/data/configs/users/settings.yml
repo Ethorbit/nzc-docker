@@ -23,7 +23,7 @@ groups:
     id: 1808
   svencoop:
     id: 1809
-  rsynclog:
+  rsyslog:
     id: 1810
       
 x-staff-defaults: &staff-defaults
@@ -44,6 +44,7 @@ users:
       - gmod
       - svencoop
       - discord
+      - rsyslog
     password: ${ADMIN_PASSWORD}
   php:
     id: 1799
@@ -79,10 +80,10 @@ users:
     primarygroup: stickybot
     groups:
       - discord
-  rsynclog:
+  rsyslog:
     id: 1804
     home: false
-    primarygroup: rsynclog
+    primarygroup: rsyslog
   # Custom users below, replace with your own.
   doormatt:
     id: 1901
