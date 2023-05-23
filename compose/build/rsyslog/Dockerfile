@@ -15,5 +15,7 @@ RUN chmod +x /entrypoint.sh &&\
     chown rsyslog:root /logs
 VOLUME /socks
 VOLUME /logs
+EXPOSE 514/tcp
+EXPOSE 514/udp
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/bin/sh" ]

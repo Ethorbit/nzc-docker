@@ -1,22 +1,22 @@
 version: "3.9"
 services:
-  #rsyslog_permissions:
-  #  build:
-  #    context: ./build/permissions
-  #  volunmes:
-  #    - rsyslog_sockets:/mnt/socks
-  #  command: >
-  #    /bin/sh -c ''
-  #  cap_drop:
-  #    - ALL 
-  #  cap_add:
-  #    - CAP_DAC_OVERRIDE
-  #    - CAP_CHOWN
-  #    - CAP_FOWNER
-  #    - CAP_FSETID
-  #  network_mode: none
-  #  restart: on-failure
-  # TODO: add IO limits, logging should never utilize excessive SSD speeds..
+  rsyslog_envsubst:
+    build:
+      context: ./build/input_output_envsubst
+      args:
+        FILE_EXTENSION: "conf"
+    environment:
+      - RSYSLOG_PORT=${RSYSLOG_PORT}
+    volumes:
+      - ./data/configs/rsyslog/template:/mnt/input
+      - ./data/configs/rsyslog:/mnt/output
+    network_mode: none
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_FOWNER
+    restart: on-failure
   rsyslog:
     build:
       context: ./build/rsyslog
@@ -26,25 +26,21 @@ services:
     command: '-n'
     tty: true
     stdin_open: true
-    #ports:
-    #- 514/tcp
-    #- 514/udp
+    ports:
+      - ${RSYSLOG_PORT}:514/tcp
     #networks:
-    #  - ssh
-    network_mode: none
+    #  - rsyslog
+    #network_mode: host
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - rsyslog_sockets:/socks
       - rsyslog_logs:/logs
+    depends_on:
+      rsyslog_envsubst:
+        condition: service_completed_successfully
     restart: always
 volumes:
-  rsyslog_sockets:
   rsyslog_logs:
-
 #networks:
 #rsyslog:
-# ssh:
-# volumes:
-#  rsyslog:

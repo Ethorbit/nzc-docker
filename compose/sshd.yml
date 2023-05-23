@@ -48,8 +48,14 @@ services:
       context: ./build/sshd
     networks:
       - ssh
+        #- rsyslog
     ports:
       - ${SSH_PORT:-22}:${SSH_PORT:-22}
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        tag: "sshd"
     volumes:
       - home:/home
       - /etc/localtime:/etc/localtime:ro
@@ -77,6 +83,8 @@ services:
       sshd_envsubst:
         condition: 
           service_completed_successfully
+      rsyslog:
+        condition: service_started
     cpu_shares: 256
     deploy:
       resources:

@@ -12,4 +12,5 @@ compose/data/configs/portainer/users.json
 compose/data/configs/portainer/teams.json
 compose/data/configs/nginx/snippets/private/
 compose/data/configs/nginx/snippets/ssl.conf
+compose/data/configs/rsyslog/rsyslog.conf
 build_docker
