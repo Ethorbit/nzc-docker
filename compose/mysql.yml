@@ -36,6 +36,12 @@ services:
     depends_on:
       mysql_envsubst:
         condition: service_completed_successfully
+    logging:
+      driver: syslog
+      options:
+        mode: non-blocking
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        tag: "mysql"
     restart: always
 volumes:
   mysql:

@@ -62,6 +62,12 @@ services:
     depends_on:
       discord_permissions:
         condition: service_completed_successfully
+    logging:
+      driver: syslog
+      options:
+        mode: non-blocking
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        tag: "discord_sticky_bot"
     restart: always
     networks:
       - discord 

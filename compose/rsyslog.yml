@@ -27,10 +27,7 @@ services:
     tty: true
     stdin_open: true
     ports:
-      - ${RSYSLOG_PORT}:514/tcp
-    #networks:
-    #  - rsyslog
-    #network_mode: host
+      - 127.0.0.1:${RSYSLOG_PORT}:514/tcp
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -39,8 +36,27 @@ services:
     depends_on:
       rsyslog_envsubst:
         condition: service_completed_successfully
+    blkio_config:
+      weight: 700
+      device_write_bps:
+        - path: ${DISK}
+          rate: 30000000
+      device_read_bps:
+        - path: ${DISK}
+          rate: 60000000
+      device_read_iops:
+        - path: ${DISK}
+          rate: 150
+      device_write_iops:
+        - path: ${DISK}
+          rate: 150
+    cpu_shares: 512
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
     restart: always
 volumes:
   rsyslog_logs:
-#networks:
-#rsyslog:

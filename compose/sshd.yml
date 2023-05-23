@@ -48,12 +48,12 @@ services:
       context: ./build/sshd
     networks:
       - ssh
-        #- rsyslog
     ports:
       - ${SSH_PORT:-22}:${SSH_PORT:-22}
     logging:
       driver: syslog
       options:
+        mode: non-blocking
         syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
         tag: "sshd"
     volumes:

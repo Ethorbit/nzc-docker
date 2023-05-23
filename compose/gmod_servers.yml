@@ -93,6 +93,12 @@ services:
       - gmod_shared:/shared:slave
     ports:
       - ${GMOD_1_PORT:-27015}:${GMOD_1_PORT:-27015}/udp
+    logging:
+      driver: syslog
+      options:
+        mode: non-blocking
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        tag: "gmod_1"
   gmod-2:
     <<: [ *gmod ]
     cpuset: "${GMOD_2_CPU}"
@@ -111,6 +117,12 @@ services:
       - gmod_shared:/shared:slave
     ports:
       - ${GMOD_2_PORT:-27016}:${GMOD_2_PORT:-27016}/udp
+    logging:
+      driver: syslog
+      options:
+        mode: non-blocking
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        tag: "gmod_2"
   gmod-3:
     <<: [ *gmod ]
     cpuset: "${GMOD_3_CPU}"
@@ -129,6 +141,12 @@ services:
       - gmod_shared:/shared:slave
     ports:
       - ${GMOD_3_PORT:-27017}:${GMOD_3_PORT:-27017}/udp
+    logging:
+      driver: syslog
+      options:
+        mode: non-blocking
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        tag: "gmod_3"
 volumes:
   gmod_shared:
   gmod_1:

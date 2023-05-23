@@ -4,9 +4,6 @@ x-php_fpm: &php_fpm
   networks:
     - nginx
     - mysql
-      #- ssh
-      #- gmod
-      #- svencoop
   dns:
     - 172.10.1.1
   volumes:
@@ -29,30 +26,18 @@ x-php_fpm: &php_fpm
     && chown ${php_u}:${php_g} /var/run/php-fpm/sock
     && chmod 770 /var/run/php-fpm/sock
     && php-fpm"
-  #depends_on:
-  #  php_fpm_permissions:
-  #    condition:
-  #      service_completed_successfully
   cpuset: ${NGINX_CPU} # Since we handle the workloads of php (which is closely tied to webserver), we might as well use the same cores..
   cpu_shares: 2048
+  # This for some reason breaks this container and stops it as well as others from running.
+  # It should be fine since PHP scripts run from Nginx are actually logged in the Nginx container.
+  #logging:
+  #  driver: syslog
+  #  options:
+  #    mode: non-blocking
+  #    syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+  #    tag: "php_fpm"
   restart: always
 services:
-  #php_fpm_permissions:
-  #  build:
-  #    context: ./build/permissions
-  #  command: >
-  #    /bin/sh -c 'mkdir /mnt/admin
-  #    && chmod 755 /mnt/admin'
-  #  cap_drop:
-  #    - ALL 
-  #  cap_add:
-  #    - CAP_DAC_OVERRIDE
-  #    - CAP_CHOWN
-  #    - CAP_FOWNER
-  #    - CAP_FSETID
-  #  network_mode: none
-  #  restart: on-failure
-
   php_fpm_development:
     <<: [ *php_fpm ]
     profiles: 

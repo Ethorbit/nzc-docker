@@ -39,6 +39,8 @@ services:
           memory: 64M
         reservations:
           memory: 32M
+    logging:
+      driver: "none"
   searxng:
     image: searxng/searxng:2023.4.25-216751da
     networks:

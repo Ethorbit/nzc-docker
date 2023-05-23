@@ -60,6 +60,12 @@ x-nginx: &nginx
       - path: ${DISK}
         rate: 100
   <<: [*labels]
+  logging:
+    driver: syslog
+    options:
+      mode: non-blocking
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      tag: "nginx"
   restart: always
 x-nginx_envsubst_conf: &nginx_envsubst_conf
   build:

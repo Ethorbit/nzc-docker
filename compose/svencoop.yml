@@ -75,6 +75,12 @@ services:
       device_write_iops:
         - path: ${DISK}
           rate: 100
+    logging:
+      driver: syslog
+      options:
+        mode: non-blocking
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        tag: "svencoop"
     restart: always
 volumes:
   svencoop:
