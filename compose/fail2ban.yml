@@ -1,17 +1,38 @@
 version: "3.9"
-#services:
-#  fail2ban:
-#    build:
-#      context: ./build/fail2ban 
-#    cap_add:
-#      - NET_ADMIN
-#      - NET_RAW
-#    network_mode: host
-#    command: '-f -x -v'
-#    volumes:
-#      - ./data/configs/fail2ban/jail.d:/etc/fail2ban/jail.d
-#      - rsyslog_logs:/mnt/logs:ro
-#    depends_on:
-#      rsyslog:
-#       condition: service_started
-#    restart: unless-stopped
+services:
+  fail2ban:
+    build:
+      context: ./build/fail2ban 
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    network_mode: host
+    command: '-f -x -v'
+    volumes:
+      - ./data/configs/fail2ban/jail.d:/etc/fail2ban/jail.d
+      - rsyslog_logs:/logs:ro
+    depends_on:
+      rsyslog:
+       condition: service_started
+    blkio_config:
+      weight: 500
+      device_write_bps:
+        - path: ${DISK}
+          rate: 30000000
+      device_read_bps:
+        - path: ${DISK}
+          rate: 60000000
+      device_read_iops:
+        - path: ${DISK}
+          rate: 100
+      device_write_iops:
+        - path: ${DISK}
+          rate: 100
+    cpu_shares: 512
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+    restart: unless-stopped

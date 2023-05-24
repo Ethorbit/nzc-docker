@@ -306,6 +306,8 @@ services:
         condition: service_started
       php_fpm_production:
         condition: service_started
+      rsyslog:
+        condition: service_started
   # Development nginx (because Let's Encrypt only works on the actual domain)
   mkcert:
     image: ethorbit/mkcert:latest
@@ -375,6 +377,8 @@ services:
       nginx_dnsmasq:
         condition: service_started
       php_fpm_development:
+        condition: service_started
+      rsyslog:
         condition: service_started
 volumes:
   nginx_cache:

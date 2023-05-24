@@ -7,6 +7,8 @@ x-defaults: &defaults
       condition: service_healthy
     gmod_permissions:
       condition: service_completed_successfully
+    rsyslog:
+      condition: service_started
   blkio_config:
     weight: 500
     device_write_bps:

@@ -62,6 +62,8 @@ services:
     depends_on:
       discord_permissions:
         condition: service_completed_successfully
+      rsyslog:
+        condition: service_started
     logging:
       driver: syslog
       options:
