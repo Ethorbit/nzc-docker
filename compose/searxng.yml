@@ -50,6 +50,7 @@ services:
       args:
         FILE_EXTENSION: "yml"
     environment:
+      - REDIS_PORT=${REDIS_PORT}
       - SEARXNG_SECRET_KEY=${SEARXNG_SECRET_KEY}
     volumes:
       - ./data/configs/searxng/template:/mnt/input
