@@ -2,10 +2,11 @@ version: "3.9"
 x-php_fpm: &php_fpm
   #container_name: ${CONTAINER_NAME_PREFIX}-php_fpm-${CONTAINER_NAME_SUFFIX}
   networks:
-    - nginx
     - mysql
-  dns:
-    - 172.10.1.1
+  # - nginx
+  # - dnsmasq
+  #dns:
+  #- 172.100.1.1
   volumes:
     - /etc/localtime:/etc/localtime:ro
     - /etc/timezone:/etc/timezone:ro

@@ -21,8 +21,9 @@ services:
   redis:
     image: redis:6-alpine
     command: redis-server --save "" --appendonly "no"
-    networks:
-      - searxng
+    #networks:
+    #- searxng
+    network_mode: host
     tmpfs:
       - /var/lib/redis
     cap_drop:
@@ -31,6 +32,8 @@ services:
       - SETGID
       - SETUID
       - DAC_OVERRIDE
+    ports:
+      - 127.0.0.1:${REDIS_PORT:-6379}:6379/tcp
     <<: [ *cpu-limits, *io-limits ]
     restart: always
     deploy:
@@ -43,12 +46,23 @@ services:
       driver: "none"
   searxng:
     image: searxng/searxng:2023.4.25-216751da
-    networks:
-      searxng:
-        ipv4_address: 172.50.10.1
-      nginx:
+    #networks:
+      #searxng:
+      #ipv4_address: 172.50.10.1
+      #nginx:
+      #ports:
+      #- "8080:8080"
+    hostname: searxng
+    network_mode: host
     ports:
-      - "8080:8080"
+      - 127.0.0.1:${SEARXNG_PORT:-8080}:8080/tcp
+    # Docker team is incompetent, this hangs forever w/ no errors. Why?
+    # So, for the time being this cointainer has entire access to the entire host network...
+    #ports:
+    #  - target: 8080
+    #    published: 127.0.0.1:8080
+    #    protocol: tcp
+    #    mode: host
     volumes:
       - ./data/configs/searxng:/etc/searxng:rw
     cap_drop:

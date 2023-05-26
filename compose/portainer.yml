@@ -34,17 +34,20 @@ services:
       -H unix:///var/run/docker.sock 
       --no-analytics 
       --ssl 
-    networks:
-      portainer:
-        ipv4_address: 172.60.10.1
-      #nginx:
-    dns:
-      - 172.10.1.1
+    #networks:
+    #dnsmasq:
+    #portainer:
+    #ipv4_address: 172.60.10.1
+    #nginx:
+    #dns:
+    #- 172.100.1.1
     environment:
       - PORTAINER_ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - WEB_PAGE=https://portainer:9443 #https://admin.${PRIVATE_DOMAIN_NAME}/portainer
+      - WEB_PAGE=https://127.0.0.1:9443 #https://admin.${PRIVATE_DOMAIN_NAME}/portainer
+    hostname: portainer
+    network_mode: host
     ports:
-      - 9443:9443/tcp
+      - 127.0.0.1:${PORTAINER_PORT:-9443}:9443/tcp
     cpuset: ${PORTAINER_CPU}
     cpu_shares: 60
     deploy:

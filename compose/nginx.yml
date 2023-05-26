@@ -10,24 +10,45 @@ x-nginx: &nginx
     args:
       UID: ${nginx_u}
       GID: ${nginx_g}
-  user: "${nginx_u}:${nginx_g}"
+  # I'm aware this is poor security, but we cannot use ports 80 nor 443 
+  # without root nor another reverse proxy which has root.
+  # This is not an issue with isolated networks, but we have to use
+  # host network to see client IPs correctly. Feel free to improve.
+  # Note: privileges are still dropped to nginx_u while running.
+  user: root:${nginx_g} #"${nginx_u}:${nginx_g}"
+  privileged: true
   group_add:
     - ${php_g}
     - ${gmod_g}
     - ${svencoop_g}
     - ${websites_g}
-  networks:
-    nginx:
-      ipv4_address: 172.10.1.2
-    searxng:
-    portainer:
+  hostname: nginx
+  network_mode: host
+  #networks:
+    #dnsmasq:
+    #nginx:
+    #  ipv4_address: 172.10.1.2
+    #network_mode: host
+    #searxng:
+    #portainer:
+  #dns:
+    #- 172.100.1.1
+    #ports:
+    #  - target: 80
+    #    published: 80
+    #    protocol: tcp
+    #    mode: host
+    #  - target: 443
+    #    published: 443
+    #    protocol: tcp
+    #    mode: host
   ports:
-    - ${NGINX_HTTP_PORT:-80}:80
-    - ${NGINX_HTTPS_PORT:-443}:443
-  extra_hosts:
-    - "searxng:172.50.10.1"
-    - "portainer:172.60.10.1"
-    - "phpmyadmin:172.70.10.1"
+    - ${NGINX_HTTP_PORT:-80}:80/tcp
+    - ${NGINX_HTTPS_PORT:-443}:443/tcp
+  #extra_hosts:
+  #  - "searxng:172.50.10.1"
+  #  - "portainer:172.60.10.1"
+  #  - "phpmyadmin:172.70.10.1"
   healthcheck:
     test: "curl -f http://${PRIVATE_DOMAIN_NAME} || exit 1"
     start_period: 5s
@@ -102,6 +123,8 @@ x-nginx_envsubst_snippets: &nginx_envsubst_snippets
 x-nginx_envsubst_production: &nginx_envsubst_production
   profiles:
     - production
+  env_file:
+    - ../.ports.env
   environment:  
     - PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}
     - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
@@ -119,6 +142,8 @@ x-nginx_envsubst_production: &nginx_envsubst_production
 x-nginx_envsubst_development: &nginx_envsubst_development
   profiles:
     - development
+  env_file:
+    - ../.ports.env
   environment:
     - PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}
     - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
@@ -133,35 +158,6 @@ x-nginx_envsubst_development: &nginx_envsubst_development
     - NGINX_SEARCH_CACHE_PATH=/mnt/cache/search
   restart: on-failure
 services:
-  nginx_dnsmasq:
-    image: ethorbit/dnsmasq:latest
-    volumes:
-      - ./data/configs/nginx/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
-    ports:
-      - 53/udp
-    networks:
-      nginx:
-        ipv4_address: 172.10.1.1
-    depends_on:
-      nginx_envsubst_dnsmasq:
-        condition: service_completed_successfully
-    <<: [*labels]
-    restart: on-failure
-  nginx_envsubst_dnsmasq:
-    image: ethorbit/envsubst:latest
-    volumes:
-      - ./data/configs/nginx/dnsmasq:/mnt
-    command: >
-      /bin/sh -c "envsubst `printf '$${%s}\n' PRIVATE_DOMAIN_NAME` 
-      < /mnt/dnsmasq.conf.template > /mnt/dnsmasq.conf"
-    environment:
-      - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
-    network_mode: none
-    cap_drop:
-      - ALL
-    <<: [*labels]
-    restart: on-failure
-  
   nginx_links:
     image: alpine:3.17.2
     volumes:
@@ -249,8 +245,9 @@ services:
     volumes:
       - certbot_conf:/etc/letsencrypt
       - certbot_www:/var/www/certbot
-    networks:
-      - nginx
+    network_mode: host
+    #networks:
+      #- nginx
     <<: [*labels]
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
@@ -302,8 +299,6 @@ services:
         condition: service_completed_successfully
       nginx_permissions:
         condition: service_completed_successfully
-      nginx_dnsmasq:
-        condition: service_started
       php_fpm_production:
         condition: service_started
       rsyslog:
@@ -365,8 +360,6 @@ services:
       - ./data/configs/nginx/snippets:/etc/nginx/snippets:ro
       - ./data/configs/nginx/conf.d:/etc/nginx/conf.d:ro
       - mkcert:/etc/mkcert
-    dns:
-      - 172.10.1.1
     depends_on:
       nginx_envsubst_conf_development:
         condition: service_completed_successfully 
@@ -374,8 +367,6 @@ services:
         condition: service_completed_successfully
       nginx_permissions:
         condition: service_completed_successfully
-      nginx_dnsmasq:
-        condition: service_started
       php_fpm_development:
         condition: service_started
       rsyslog:
@@ -389,24 +380,24 @@ volumes:
   certbot_www:
   mkcert:
   svencoop:
-networks:
-  nginx:
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.10.0.0/23
-  searxng:
-    ipam:
-      driver: default 
-      config:
-        - subnet: 172.50.10.0/22
-  portainer:
-    ipam:
-      driver: default 
-      config:
-        - subnet: 172.60.10.0/22
-  phpmyadmin:
-    ipam:
-      driver: default 
-      config:
-        - subnet: 172.70.10.0/22
+#networks:
+  #nginx:
+  #  ipam:
+  #    driver: default
+  #    config:
+  #      - subnet: 172.10.0.0/23
+  #searxng:
+  #  ipam:
+  #    driver: default 
+  #    config:
+  #      - subnet: 172.50.10.0/22
+  #portainer:
+  #  ipam:
+  #    driver: default 
+  #    config:
+  #      - subnet: 172.60.10.0/22
+  #phpmyadmin:
+  #  ipam:
+  #    driver: default 
+  #    config:
+  #      - subnet: 172.70.10.0/22

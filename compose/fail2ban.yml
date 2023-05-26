@@ -1,5 +1,22 @@
 version: "3.9"
 services:
+  fail2ban_jail_envsubst:
+    build:
+      context: ./build/input_output_envsubst
+      args:
+        FILE_EXTENSION: "conf"
+    env_file:
+      - ../.ports.env
+    volumes:
+      - ./data/configs/fail2ban/template/jail.d:/mnt/input
+      - ./data/configs/fail2ban/jail.d:/mnt/output
+    network_mode: none
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_FOWNER
+    restart: on-failure
   fail2ban:
     build:
       context: ./build/fail2ban 
@@ -12,6 +29,8 @@ services:
       - ./data/configs/fail2ban/jail.d:/etc/fail2ban/jail.d
       - rsyslog_logs:/logs:ro
     depends_on:
+      fail2ban_jail_envsubst:
+        condition: service_completed_successfully
       rsyslog:
        condition: service_started
     blkio_config:

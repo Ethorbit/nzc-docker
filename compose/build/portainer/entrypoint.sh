@@ -105,7 +105,6 @@ start_install()
             
             # endpoint ID 1 exists by default because that's the primary / local one.
             for endpoint_id in $(echo "$row" | jq -r '.EndpointIDs | .[1:1] |= [1] | .[]'); do
-                echo "Is this a valid endpoint ID? $endpoint_id"
                 # Append each teamid to each endpoint id in the $request which we parse later
                 request=$(echo "$request" | jq ".[\"${endpoint_id}\"] += { \"$team_id\": { \"RoleID\": 0 } }")
             done
@@ -129,20 +128,6 @@ start_install()
             echo "Successfully granted ${team_name} access to environments."
         done
     }
-
-    #setup_resource_controls()
-    #{
-    #    echo "Adding resource controls.."
-    #
-    #    #for row in $(jq -c '.[]' /configs/resource_controls.json); do 
-    #    #    response=$(curl -ksLf -X POST -H "Content-Type: application/json" -H "Authorization: Bearer ${jwt_token}" \
-    #    #        -o /dev/null -w "%{http_code}\n" -c "$c_loc" -b "$c_loc" \
-    #    #        -d "$row" "${WEB_PAGE}/api/resource_controls")
-    #
-    #    #    [ "$response" -ne 200 ] && echo -e "Failed to add resource_control ($?) - $response\n$row" >&2 &&\
-    #    #        sleep 2 && setup_resource_controls && return
-    #    #done
-    #}
 
     login_to_admin()
     {
