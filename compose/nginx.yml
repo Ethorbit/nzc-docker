@@ -11,7 +11,7 @@ x-nginx: &nginx
       UID: ${nginx_u}
       GID: ${nginx_g}
   # I'm aware this is poor security, but we cannot use ports 80 nor 443 
-  # without root nor another reverse proxy which has root.
+  # without root or another reverse proxy which has root.
   # This is not an issue with isolated networks, but we have to use
   # host network to see client IPs correctly. Feel free to improve.
   # Note: privileges are still dropped to nginx_u while running.
@@ -94,7 +94,7 @@ x-nginx_envsubst_conf: &nginx_envsubst_conf
     args:
       FILE_EXTENSION: "conf"
   volumes:
-    - ./data/configs/nginx/conf.d.template:/mnt/input
+    - ./data/configs/nginx/template/conf.d:/mnt/input
     - ./data/configs/nginx/conf.d:/mnt/output
   network_mode: none
   cap_drop:
@@ -110,7 +110,7 @@ x-nginx_envsubst_snippets: &nginx_envsubst_snippets
     args:
       FILE_EXTENSION: "conf"
   volumes:
-    - ./data/configs/nginx/snippets.template:/mnt/input
+    - ./data/configs/nginx/template/snippets:/mnt/input
     - ./data/configs/nginx/snippets:/mnt/output
   network_mode: none
   cap_drop:
