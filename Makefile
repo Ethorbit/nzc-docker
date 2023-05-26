@@ -92,6 +92,8 @@ setup:
 	check_cmd envsubst; \
 	check_cmd openssl; \
 	check_cmd find; \
+	mkdir -p $(config_dir)/nginx/snippets/private; \
+	echo "allow 0.0.0.0/0;" | tee -a $(config_dir)/nginx/snippets/private/admin_ips.conf; \
 	export PHPMYADMIN_BLOWFISH_SECRET="$(call gen_pass,15)"; \
 	export SEARXNG_SECRET_KEY="$(call gen_pass,15)"; \
 	find "$(CURDIR)/install/" -mindepth 1 -maxdepth 1 -type f -name "*env.template" \
