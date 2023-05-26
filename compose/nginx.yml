@@ -317,12 +317,8 @@ services:
       || exit 0"
     restart: on-failure
   nginx_envsubst_conf_development:
-    #<<: *nginx_envsubst_conf
-    #<<: *nginx_envsubst_development
     <<: [ *nginx_envsubst_conf, *nginx_envsubst_development ]
   nginx_envsubst_snippets_development:
-    #<<: *nginx_envsubst_snippets
-    #<<: *nginx_envsubst_development
     <<: [ *nginx_envsubst_snippets, *nginx_envsubst_development ]
   nginx_development:
     <<: [ *nginx ]
