@@ -4,6 +4,12 @@ Docker infrastructure used by the nZombies Chronicles community. Runs a database
 ## Installing 
 Run `make install` and it should generate env files for you. Change them as needed.
 
+### Optimizing
+Everything runs on a single machine, so edit: `.limits.env` and change which CPU cores each service runs off of. It is already optimized for a 2 core system by default.
+Keep in mind that Garry's Mod and Sven Co-op are single-threaded.
+
+Note that IO limits, RAM limits, and CPU weights are already configured in the yaml files with no variables provided, they should already be optimized well enough.
+
 ### Managing Users and groups
 You can modify passwords in the .users.env file.
 
