@@ -5,10 +5,10 @@ Docker infrastructure used by the nZombies Chronicles community. Runs a database
 Run `make install` and it should generate env files for you. Change them as needed.
 
 ### Managing Users and groups
-You can modify passwords in the .env files.
+You can modify passwords in the .users.env file.
 
 You can edit the container user configuration inside `compose/data`, but be careful not to override users and groups that containers rely on to function and to only change the optional
-ones (There is usually comments inside config files to indicate where custom users are, but just use your best judgement).
+ones (There is usually comments inside config files to indicate where custom users are, but just use your best judgement). If there's a template for a file, **use it** or else your changes will get overriden.
 
 Unix users and groups are shared between all containers to make permission management easier, you can configure them in: `compose/data/configs/users/settings.yml`
 **Make sure all ids are unique**. If you want to change ids (AKA UID/GID), then you'll need to re-create all containers as well as volumes, or you'll need to manually exec into each affected container and correct their permissions - that's tedious, so make sure not to change ids if you don't want to ever deal with that.
@@ -39,7 +39,7 @@ Pass -v after down to also remove the volumes
 ## Production
 * Set DEVELOPING to 0 in .env 
 * Set PUBLIC\_DOMAIN to the domain you own 
-* Make your domain point to your server
+* Make your domain point to your server's IP address
 
 ## Maintenance
 Because this project consists of many different containers, it is not feasible to take all the containers offline every time you need to make changes. It is also not appropriate to re-create individual containers as some have dependency services. You should re-create entire files instead of individual containers, this will ensure things like file permissions are set and configuration files are generated from templates when needed.
@@ -52,7 +52,7 @@ To update users and groups: `make update-users`
 Note: for Development there's nothing wrong with removing and re-creating everything: `make args='down -v' cmd && make args='up --build' cmd` - however that results in full data loss, so that's dangerous and unacceptable for a Production instance!
 
 ### Admin Webpanels
-Provided from the nginx webserver is an admin page with Portainer and PHPMyAdmin to manage most stuff in the browser. 
+Provided from the nginx webserver is an admin page with Portainer and PHPMyAdmin to manage most stuff in the browser. - `https://admin.domain/`
 
 You can use PHPMyAdmin to manage MySQL and Portainer to manage all the containers.
 
