@@ -24,8 +24,8 @@ A basic understanding of SQL syntax will be required.
 
 Lastly, you'll want to manage the Portainer web panel's users and teams in: `compose/data/configs/portainer/templates`
 
-Optionally, if you care about the included SearxNG instance (A privacy respecting search engine), add a list of trusted IP or IP ranges in: `compose/data/configs/nginx/snippets/admin_ips.conf`
-Or if you prefer, you can choose to make SearxNG public by removing the `deny all` in: `compose/data/configs/nginx/conf.d/nzc.conf`
+Optionally, if you care about the included SearxNG instance (A privacy respecting meta-search engine), you can add a list of trusted IPs or IP CIDR ranges in: `compose/data/configs/nginx/snippets/admin_ips.conf`
+By default, anyone can connect to SearxNG.
 
 In case anything was missed, look around in the configs directory.
 
