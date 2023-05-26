@@ -50,7 +50,7 @@ general:
   donation_url: false
 server:
   # base_url is defined in the SEARXNG_BASE_URL environment variable, see .env and docker-compose.yml
-  secret_key: "c2c60b0d0b963577f64424afe830768585224906cdfd89152f593aed35815930"  # change this!
+  secret_key: "${SEARXNG_SECRET_KEY}"
   limiter: false  # can be disabled for a private instance
   image_proxy: false
 outgoing:

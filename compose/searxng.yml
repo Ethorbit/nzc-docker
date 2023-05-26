@@ -44,6 +44,23 @@ services:
           memory: 32M
     logging:
       driver: "none"
+  searxng_envsubst:
+    build:
+      context: ./build/input_output_envsubst
+      args:
+        FILE_EXTENSION: "yml"
+    environment:
+      - SEARXNG_SECRET_KEY=${SEARXNG_SECRET_KEY}
+    volumes:
+      - ./data/configs/searxng/template:/mnt/input
+      - ./data/configs/searxng:/mnt/output
+    network_mode: none
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_FOWNER
+    restart: on-failure
   searxng:
     image: searxng/searxng:2023.4.25-216751da
     #networks:
@@ -56,13 +73,6 @@ services:
     network_mode: host
     ports:
       - 127.0.0.1:${SEARXNG_PORT:-8080}:8080/tcp
-    # Docker team is incompetent, this hangs forever w/ no errors. Why?
-    # So, for the time being this cointainer has entire access to the entire host network...
-    #ports:
-    #  - target: 8080
-    #    published: 127.0.0.1:8080
-    #    protocol: tcp
-    #    mode: host
     volumes:
       - ./data/configs/searxng:/etc/searxng:rw
     cap_drop:
@@ -80,4 +90,9 @@ services:
           memory: 156M 
         reservations:
           memory: 128M
+    depends_on:
+      searxng_envsubst:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
     restart: always

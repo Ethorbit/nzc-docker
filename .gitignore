@@ -15,4 +15,5 @@ compose/data/configs/nginx/snippets/ssl.conf
 compose/data/configs/rsyslog/rsyslog.conf
 compose/data/configs/fail2ban/jail.d/*
 compose/data/configs/fail2ban/filter.extras.d/*
+compose/data/configs/searxng/*.yml
 build_docker
