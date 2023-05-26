@@ -60,6 +60,10 @@ To update users and groups: `make update-users`
 
 Note: for Development there's nothing wrong with removing and re-creating everything: `make args='down -v' cmd && make args='up --build' cmd` - however that results in full data loss, so that's dangerous and unacceptable for a Production instance!
 
+### SSH / SFTP
+Every user has their own SSH / SFTP access.
+This is how you'll manage the files for every service.
+
 ### Admin Webpanels
 Provided from the nginx webserver is an admin page with Portainer and PHPMyAdmin to manage most stuff in the browser. - `https://admin.domain/`
 
