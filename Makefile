@@ -15,11 +15,6 @@ define newline
 
 endef
 
-# Used to add equal signs into other defines
-define equals
-=
-endef
-
 bs := $(strip \) # Used to add literal newlines into other defines
 
 # We need to save the disk that named docker volumes get created on,
