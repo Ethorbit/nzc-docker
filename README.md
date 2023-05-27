@@ -96,6 +96,6 @@ You can use PHPMyAdmin to manage MySQL and Portainer to manage all the container
 This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you **do not** use Portainer to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
 
 ## Help 
-If you need more info on the makefile: use `make help`
+If you need more info on the makefile, use: `make help`
 
 For understanding cmd arguments, check the [docker compose docs](https://docs.docker.com/compose/reference/).
