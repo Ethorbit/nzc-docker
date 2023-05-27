@@ -53,17 +53,6 @@ By default, anyone can connect to SearxNG.
 
 In case anything was missed, look around in the configs directory.
 
-## Creating/Removing the containers
-To start:
-`make args='up' cmd`
-
-If it works, add a -d after up to keep it in the background.
-
-To remove:
-`make args='down' cmd`
-
-Pass -v after down to also remove the volumes
-
 ## Development / Local Environment
 * In .env set DEVELOPING to 1 and set PRIVATE\_DOMAIN\_NAME to "chronicles.local"
 * In your host, either use dnsmasq and add `address=/chronicles.local/127.0.0.1` to /etc/dnsmasq.conf OR add an /etc/hosts entry `127.0.0.1 chronicles.local` for each subdomain
@@ -73,6 +62,17 @@ Pass -v after down to also remove the volumes
 * Set DEVELOPING to 0 in .env 
 * Set PUBLIC\_DOMAIN to the domain you own 
 * Make your domain point to your server's IP address
+
+## Starting/Stopping
+To start:
+`make args='up' cmd`
+
+If it works, add a -d after up to keep it in the background.
+
+To remove:
+`make args='down' cmd`
+
+Pass -v after down to also remove the volumes
 
 ## Maintenance
 Because this project consists of many different containers, it is not feasible to take all the containers offline every time you need to make changes. It is also not appropriate to re-create individual containers as some have dependency services. You should re-create entire files instead of individual containers, this will ensure things like file permissions are set and configuration files are generated from templates when needed.
