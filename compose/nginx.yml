@@ -10,36 +10,25 @@ x-nginx: &nginx
     args:
       UID: ${nginx_u}
       GID: ${nginx_g}
-  # I'm aware this is poor security, but we cannot use ports 80 nor 443 
-  # without root or another reverse proxy which has root.
-  # This is not an issue with isolated networks, but we have to use
-  # host network to see client IPs correctly. Feel free to improve.
-  # Note: privileges are still dropped to nginx_u while running.
-  user: root:${nginx_g} #"${nginx_u}:${nginx_g}"
-  privileged: true
+  user: ${nginx_u}:${nginx_g}
   group_add:
     - ${php_g}
     - ${gmod_g}
     - ${svencoop_g}
     - ${websites_g}
   hostname: nginx
-  network_mode: host
-  #networks:
-    #dnsmasq:
-    #nginx:
-    #  ipv4_address: 172.10.1.2
-    #network_mode: host
-    #searxng:
-    #portainer:
-  #dns:
-    #- 172.100.1.1
+  networks:
+    nginx:
+      ipv4_address: 172.10.1.2
+    searxng:
+    portainer:
   ports:
     - ${NGINX_HTTP_PORT:-80}:80/tcp
     - ${NGINX_HTTPS_PORT:-443}:443/tcp
-  #extra_hosts:
-  #  - "searxng:172.50.10.1"
-  #  - "portainer:172.60.10.1"
-  #  - "phpmyadmin:172.70.10.1"
+  extra_hosts:
+    - "searxng:172.50.10.1"
+    - "portainer:172.60.10.1"
+    - "phpmyadmin:172.70.10.1"
   healthcheck:
     test: "curl -f http://${PRIVATE_DOMAIN_NAME} || exit 1"
     start_period: 5s
@@ -231,25 +220,22 @@ services:
     volumes:
       - certbot_conf:/etc/letsencrypt
       - certbot_www:/var/www/certbot
-    network_mode: host
-    #networks:
-      #- nginx
+    networks:
+      - nginx
     <<: [*labels]
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
-    # Use --standalone if current webserver isn't working out for this.
-    # standalone:
-    #   Spin up a temporary webserver
+    # We need to use DNS method for wildcard domains.
     command: >
       --agree-tos 
       --renew-by-default 
       --email "${ADMIN_EMAIL}" 
       --rsa-key-size 4096 
       --keep-until-expiring 
-      --preferred-challenges=http 
-      --verbose 
-      -d ${PRIVATE_DOMAIN_NAME} 
-      -d *.${PRIVATE_DOMAIN_NAME}
+      --preferred-challenges=dns
+      --verbose
+      -d "${PUBLIC_DOMAIN_NAME}"
+      -d "*.${PUBLIC_DOMAIN_NAME}"
     restart: unless-stopped       
   nginx_envsubst_conf_production:
     <<: [*nginx_envsubst_conf, *nginx_envsubst_production]
@@ -362,24 +348,24 @@ volumes:
   certbot_www:
   mkcert:
   svencoop:
-#networks:
-  #nginx:
-  #  ipam:
-  #    driver: default
-  #    config:
-  #      - subnet: 172.10.0.0/23
-  #searxng:
-  #  ipam:
-  #    driver: default 
-  #    config:
-  #      - subnet: 172.50.10.0/22
-  #portainer:
-  #  ipam:
-  #    driver: default 
-  #    config:
-  #      - subnet: 172.60.10.0/22
-  #phpmyadmin:
-  #  ipam:
-  #    driver: default 
-  #    config:
-  #      - subnet: 172.70.10.0/22
+networks:
+  nginx:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.10.0.0/23
+  searxng:
+    ipam:
+      driver: default 
+      config:
+        - subnet: 172.50.10.0/22
+  portainer:
+    ipam:
+      driver: default 
+      config:
+        - subnet: 172.60.10.0/22
+  phpmyadmin:
+    ipam:
+      driver: default 
+      config:
+        - subnet: 172.70.10.0/22
