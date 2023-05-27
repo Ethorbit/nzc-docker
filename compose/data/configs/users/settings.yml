@@ -45,7 +45,7 @@ users:
       - svencoop
       - discord
       - rsyslog
-    password: ${ADMIN_PASSWORD}
+    password: "${ADMIN_PASSWORD}"
   php:
     id: 1799
     home: false
@@ -91,31 +91,31 @@ users:
     groups:
       - fastdl
       - gmod
-    password: ${DOORMATT_PASSWORD}
+    password: "${DOORMATT_PASSWORD}"
   blunto:
     id: 1902
     <<: *staff-defaults
     groups:
       - fastdl
       - gmod
-    password: ${BLUNTO_PASSWORD}
+    password: "${BLUNTO_PASSWORD}"
   berb:
     id: 1903
     <<: *staff-defaults
     groups:
       - fastdl
       - gmod
-    password: ${BERB_PASSWORD}
+    password: "${BERB_PASSWORD}"
   pepe:
     id: 1904
     <<: *staff-defaults
     groups:
       - svencoop
-    password: ${PEPE_PASSWORD}
+    password: "${PEPE_PASSWORD}"
   freeman:
     id: 1905
     <<: *staff-defaults
     groups:
       - svencoop
-    password: ${FREEMAN_PASSWORD}
+    password: "${FREEMAN_PASSWORD}"
 
