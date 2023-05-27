@@ -2,19 +2,31 @@
 Docker infrastructure used by the nZombies Chronicles community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
 
 ## Prerequisites
+* a Linux install on baremetal or inside a virtual machine
+* a domain
+
+Packages:
 * make
 * iptables
-* Docker with a minimum version of 20.10.5+dfsg1
-* Docker Compose with a minimum version of 2.18.1
+* docker with a minimum version of 20.10.5+dfsg1
+* docker-compose with a minimum version of 2.18.1
 
 Check your versions:
-`docker -v`
-`docker-compose -v`
+* `docker -v`
+* `docker-compose -v`
 
 You can possibly use earlier versions, but if things don't work as expected - that's why.
 
-## Installing 
-Run `make install` and it should generate env files for you. Change them as needed.
+## Installing
+* `git clone https://github.com/Ethorbit/nzombies-chronicles-docker.git .`
+* `cd nzombies-chronicles-docker`
+* `make install` 
+
+env files will be generated.
+
+`ls -l .*env`
+
+Open them and change their values as needed.
 
 ### Optimizing
 Everything runs on a single machine, so edit: `.limits.env` and change which CPU cores each service runs off of. It is already optimized for a 2 core system by default.
@@ -52,7 +64,7 @@ To remove:
 
 Pass -v after down to also remove the volumes
 
-## Development / Local Testing
+## Development / Local Environment
 * In .env set DEVELOPING to 1 and set PRIVATE\_DOMAIN\_NAME to "chronicles.local"
 * In your host, either use dnsmasq and add `address=/chronicles.local/127.0.0.1` to /etc/dnsmasq.conf OR add an /etc/hosts entry `127.0.0.1 chronicles.local` for each subdomain
 * After bringing the containers up, restart your browser and then inside set the mkcert certificate (located in CA\_TRUST\_STORE\_DIR) to be trusted
