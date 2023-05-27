@@ -72,7 +72,7 @@ If it works, add a -d after up to keep it in the background.
 To remove:
 `make args='down' cmd`
 
-Pass -v after down to also remove the volumes
+Pass -v after down to also remove the volumes (which will erase all persistent data).
 
 ## Maintenance
 Because this project consists of many different containers, it is not feasible to take all the containers offline every time you need to make changes. It is also not appropriate to re-create individual containers as some have dependency services. You should re-create entire files instead of individual containers, this will ensure things like file permissions are set and configuration files are generated from templates when needed.
