@@ -65,7 +65,7 @@ In case anything was missed, look around in the configs directory.
 
 ## Starting/Stopping
 To start:
-`make args='up' cmd`
+`make args='up --build' cmd`
 
 If it works, add a -d after up to keep it in the background.
 
