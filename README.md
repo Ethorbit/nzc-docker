@@ -3,6 +3,7 @@ Docker infrastructure used by the nZombies Chronicles community. Runs a database
 
 ## Prerequisites
 * make
+* iptables
 * Docker with a minimum version of 20.10.5+dfsg1
 * Docker Compose with a minimum version of 2.18.1
 
@@ -10,7 +11,7 @@ Check your versions:
 `docker -v`
 `docker-compose -v`
 
-You can possibly use earlier versions, but they will have a different command syntax which the Makefile is not designed for.
+You can possibly use earlier versions, but if things don't work as expected - that's why.
 
 ## Installing 
 Run `make install` and it should generate env files for you. Change them as needed.
