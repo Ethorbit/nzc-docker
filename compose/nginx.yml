@@ -214,7 +214,8 @@ services:
   #restart: on-failure
   # Production nginx, for use only on a machine the real domain is pointing to.
   certbot:
-    image: certbot/certbot:v2.3.0
+    build:
+      context: ./build/certbot
     profiles:
       - production
     volumes:
@@ -225,18 +226,19 @@ services:
     <<: [*labels]
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
-    # We need to use DNS method for wildcard domains.
+    # We need to use DNS method for wildcard domains. Not optional.
     command: >
       --agree-tos 
       --renew-by-default 
+      --keep-until-expiring 
       --email "${ADMIN_EMAIL}" 
       --rsa-key-size 4096 
-      --keep-until-expiring 
-      --preferred-challenges=dns
-      --verbose
-      -d "${PUBLIC_DOMAIN_NAME}"
+      --preferred-challenges=dns 
+      --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py 
+      --verbose 
+      -d "${PUBLIC_DOMAIN_NAME}" 
       -d "*.${PUBLIC_DOMAIN_NAME}"
-    restart: unless-stopped       
+    restart: always
   nginx_envsubst_conf_production:
     <<: [*nginx_envsubst_conf, *nginx_envsubst_production]
   nginx_envsubst_snippets_production:
