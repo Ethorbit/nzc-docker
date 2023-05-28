@@ -228,12 +228,14 @@ services:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
     # We need to use DNS method for wildcard domains. Not optional.
     command: >
+      certonly 
+      --non-interactive 
       --agree-tos 
       --renew-by-default 
       --keep-until-expiring 
       --email "${ADMIN_EMAIL}" 
       --rsa-key-size 4096 
-      --preferred-challenges=dns 
+      --preferred-challenges dns 
       --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py 
       --verbose 
       -d "${PUBLIC_DOMAIN_NAME}" 
