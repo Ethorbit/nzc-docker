@@ -230,6 +230,7 @@ services:
     command: >
       certonly 
       --non-interactive 
+      --manual 
       --agree-tos 
       --renew-by-default 
       --keep-until-expiring 
