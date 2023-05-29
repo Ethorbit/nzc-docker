@@ -37,7 +37,7 @@ services:
       mysql_envsubst:
         condition: service_completed_successfully
       rsyslog:
-        condition: service_started
+        condition: service_healthy
     logging:
       driver: syslog
       options:

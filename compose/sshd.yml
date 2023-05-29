@@ -84,7 +84,7 @@ services:
         condition: 
           service_completed_successfully
       rsyslog:
-        condition: service_started
+        condition: service_healthy
     cpu_shares: 256
     deploy:
       resources:

@@ -46,7 +46,7 @@ services:
       nginx_development:
         condition: service_healthy
       rsyslog:
-        condition: service_started
+        condition: service_healthy
     ports:
       - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/udp
     networks:

@@ -36,6 +36,12 @@ services:
     depends_on:
       rsyslog_envsubst:
         condition: service_completed_successfully
+    healthcheck:
+      test: "pidof rsyslogd > /dev/null || exit 1"
+      start_period: 5s
+      interval: 5s
+      timeout: 10s
+      retries: 3
     blkio_config:
       weight: 700
       device_write_bps:

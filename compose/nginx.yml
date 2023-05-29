@@ -250,7 +250,7 @@ services:
       php_fpm_production:
         condition: service_started
       rsyslog:
-        condition: service_started
+        condition: service_healthy
   # Development nginx (because Let's Encrypt only works on the actual domain)
   nginx_envsubst_conf_development:
     <<: [ *nginx_envsubst_conf, *nginx_envsubst_development ]
@@ -288,7 +288,7 @@ services:
       php_fpm_development:
         condition: service_started
       rsyslog:
-        condition: service_started
+        condition: service_healthy
 volumes:
   nginx_cache:
   nginx_websites:
