@@ -1,5 +1,8 @@
 version: "3.9"
-
+x-labels: &labels
+  labels:
+    - "io.portainer.accesscontrol.teams=websites"
+  
 # Certificate for Development
 mkcert:
   image: ethorbit/mkcert:latest
@@ -42,6 +45,7 @@ acme_dns_envsubst:
     - ./data/configs/acme_dns/template:/mnt/input
     - ./data/configs/acme_dns:/mnt/output
   network_mode: none
+  <<: [*labels]
   cap_drop:
     - ALL
   cap_add:
@@ -55,6 +59,7 @@ acme_dns:
   networks:
     - acme_dns
   hostname: acme_dns
+  <<: [*labels]
   volumes:
     - ./data/configs/acme_dns:/etc/acme-dns
     - acme_dns_storage:/var/lib/acme-dns
