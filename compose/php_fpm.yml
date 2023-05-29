@@ -29,14 +29,16 @@ x-php_fpm: &php_fpm
     && php-fpm"
   cpuset: ${NGINX_CPU} # Since we handle the workloads of php (which is closely tied to webserver), we might as well use the same cores..
   cpu_shares: 2048
-  # This for some reason breaks this container and stops it as well as others from running.
-  # It should be fine since PHP scripts run from Nginx are actually logged in the Nginx container.
-  #logging:
-  #  driver: syslog
-  #  options:
-  #    mode: non-blocking
-  #    syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-  #    tag: "php_fpm"
+  # Website PHP scripts are actually logged to nginx, this only logs the php-fpm process itself (so kinda useless)
+  depends_on:
+    rsyslog:
+      condition: service_healthy
+  logging:
+    driver: syslog
+    options:
+      mode: non-blocking
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      tag: "php_fpm"
   restart: always
 services:
   php_fpm_development:

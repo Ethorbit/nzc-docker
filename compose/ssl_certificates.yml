@@ -113,6 +113,14 @@ services:
     depends_on:
       acme_dns:
         condition: service_started
+      rsyslog:
+        condition: service_healthy
+    logging:
+      driver: syslog
+      options:
+        mode: non-blocking
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        tag: "certbot"
     restart: always
 
 volumes:
