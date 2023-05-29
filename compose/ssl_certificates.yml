@@ -72,6 +72,8 @@ services:
     depends_on:
       acme_dns_envsubst:
         condition: service_completed_successfully
+      rsyslog:
+        condition: service_started
     logging:
       driver: syslog
       options:
