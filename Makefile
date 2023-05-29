@@ -38,7 +38,7 @@ endef
 profile := $(shell [[ "$(DEVELOPING)" -ge 1 ]] && echo "development" || echo "production")
 command_base := set -a && source <(cat .*env "$(config_dir)/users/env") > /dev/null 2>&1 &&\
 				nofiles=$(nofiles) \
-				DISK=$(DISK) HUID=$(shell id -u) HGID=$(shell id -g) \
+				DISK=$(DISK) HUID=$(shell id -u) HGID=$(shell id -g) PUBLIC_IP=$(shell curl ifconfig.me) \
 				CONTAINER_NAME_PREFIX=$(CONTAINER_NAME_PREFIX) CONTAINER_NAME_SUFFIX=$(CONTAINER_NAME_SUFFIX) \
 				docker-compose --profile $(profile) -p $(CONTAINER_NAME_PREFIX)
 command_update := $(command_base) --profile update -f $(compose_dir)/update.yml up
@@ -83,6 +83,7 @@ setup:
 		exit 1; \
 	fi; \
 	check_cmd() { if ! command -v "$$1" > /dev/null; then echo "$$1 not found, install it." >&2 && exit 1; fi; }; \
+	check_cmd curl; \
 	check_cmd docker-compose; \
 	check_cmd envsubst; \
 	check_cmd openssl; \

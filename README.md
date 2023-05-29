@@ -30,17 +30,21 @@ env files will be generated.
 
 Open them and change their values as needed.
 
-### Optimizing
+## Optimizing
 Everything runs on a single machine, so edit: `.limits.env` and change which CPU cores each service runs off of. It is already optimized for a 2 core system by default.
 Keep in mind that Garry's Mod and Sven Co-op are single-threaded.
 
 Note that IO limits, RAM limits, and CPU weights are already configured in the yaml files with no variables provided, they should already be optimized well enough.
 
-### Managing Users and groups
-You can modify passwords in the .users.env file.
+## Configuring
+
+You can configure the services in `compose/data`. If there's a template for a file, **use it** or else your changes will get overriden.
+
+### Users and groups
+You can modify passwords in the .users.env file. All containers would need to be restarted after changes.
 
 You can edit the container user configuration inside `compose/data`, but be careful not to override users and groups that containers rely on to function and to only change the optional
-ones (There is usually comments inside config files to indicate where custom users are, but just use your best judgement). If there's a template for a file, **use it** or else your changes will get overriden.
+ones (There is usually comments inside config files to indicate where custom users are, but just use your best judgement).
 
 Unix users and groups are shared between all containers to make permission management easier, you can configure them in: `compose/data/configs/users/settings.yml`
 **Make sure all ids are unique**. If you want to change ids (AKA UID/GID), then you'll need to re-create all containers as well as volumes, or you'll need to manually exec into each affected container and correct their permissions - that's tedious, so make sure not to change ids if you don't want to ever deal with that.
@@ -56,16 +60,24 @@ By default, anyone can connect to SearxNG.
 In case anything was missed, look around in the configs directory.
 
 ## Development / Local Environment
-* In .env set DEVELOPING to 1 and set PRIVATE\_DOMAIN\_NAME to "chronicles.local"
-* In your host, either use dnsmasq and add `address=/chronicles.local/127.0.0.1` to /etc/dnsmasq.conf OR add an /etc/hosts entry `127.0.0.1 chronicles.local` for each subdomain
-* After bringing the containers up, restart your browser and then inside set the mkcert certificate (located in CA\_TRUST\_STORE\_DIR) to be trusted
+* In .env set `DEVELOPING` to 1 and set `PRIVATE_DOMAIN_NAME` to "chronicles.local"
+* In your host, either use dnsmasq and add `address=/chronicles.local/127.0.0.1` to /etc/dnsmasq.conf OR add an /etc/hosts entry `127.0.0.1 chronicles.local` and an entry for every subdomain used as well.
+* After bringing the containers up, go into your browser and set the mkcert certificate (located in CA\_TRUST\_STORE\_DIR) to be trusted. You may need to restart your browser for this to work.
 
-## Production
-* Set DEVELOPING to 0 in .env 
-* Set PUBLIC\_DOMAIN to the domain you own 
-* Make your domain point to your server's IP address
+## Production / Public
+* In .env set `DEVELOPING` to 0
+* Set `PUBLIC_DOMAIN_NAME` to the domain you own
+* Add the following DNS records for your domain:
+    * `Record Type A <IP address>`
+    * `Subdomain * Record Type A <IP address>`
+    * `Subdomain auth Record Type NS auth.<domain name>`
+    * `Subdomain _acme-challenge Record Type CNAME <domain name>`
 
-## Starting/Stopping
+Note: if the IP of the server changes, you may need to re-create the `acme_dns` container or certificate renewal may fail.
+
+## Creating/Removing
+
+### Everything
 To start:
 `make args='up --build' cmd`
 
@@ -75,6 +87,18 @@ To remove:
 `make args='down' cmd`
 
 Pass -v after down to also remove the volumes (which will erase all persistent data).
+
+### Entire file(s)
+This project organizes containers in individual files for better readability. The Makefile targets all files by default, but you can override that and specify individual files if needed. Keep in mind that some files rely on others, but an error message should appear indicating what other files you may need to include.
+
+* `nofiles=1 make args='-f "./compose/file name.yml" down' cmd`
+* `nofiles=1 make args='-f "./compose/file name.yml" up --build' cmd`
+
+### A single service
+* `docker container ps`
+* `make args='stop name' cmd`
+* `make args='rm -f name' cmd`
+* `make args='up name' cmd`
 
 ## Maintenance
 Because this project consists of many different containers, it is not feasible to take all the containers offline every time you need to make changes. It is also not appropriate to re-create individual containers as some have dependency services. You should re-create entire files instead of individual containers, this will ensure things like file permissions are set and configuration files are generated from templates when needed.

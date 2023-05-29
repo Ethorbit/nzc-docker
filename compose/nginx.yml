@@ -213,35 +213,6 @@ services:
     <<: [*labels]
   #restart: on-failure
   # Production nginx, for use only on a machine the real domain is pointing to.
-  certbot:
-    build:
-      context: ./build/certbot
-    profiles:
-      - production
-    volumes:
-      - certbot_conf:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
-    networks:
-      - nginx
-    <<: [*labels]
-    environment:
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-    # We need to use DNS method for wildcard domains. Not optional.
-    command: >
-      certonly 
-      --non-interactive 
-      --manual 
-      --agree-tos 
-      --renew-by-default 
-      --keep-until-expiring 
-      --email "${ADMIN_EMAIL}" 
-      --rsa-key-size 4096 
-      --preferred-challenges dns 
-      --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py 
-      --verbose 
-      -d "${PUBLIC_DOMAIN_NAME}" 
-      -d "*.${PUBLIC_DOMAIN_NAME}"
-    restart: always
   nginx_envsubst_conf_production:
     <<: [*nginx_envsubst_conf, *nginx_envsubst_production]
   nginx_envsubst_snippets_production:
@@ -281,32 +252,6 @@ services:
       rsyslog:
         condition: service_started
   # Development nginx (because Let's Encrypt only works on the actual domain)
-  mkcert:
-    image: ethorbit/mkcert:latest
-    profiles:
-      - development
-    volumes:
-      - ${CA_TRUST_STORE_DIR:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates
-      - mkcert:/mnt
-    command: > 
-      /bin/sh -c "[[ ! -s /mnt/mkcert.pem || ! -s /mnt/mkcert.key ]]
-      && mkcert -install
-      && mkcert -cert-file /mnt/mkcert.pem -key-file /mnt/mkcert.key
-      ${PRIVATE_DOMAIN_NAME} *.${PRIVATE_DOMAIN_NAME} 
-      || exit 0" 
-    network_mode: none 
-    restart: on-failure
-  openssl:
-    image: ethorbit/openssl:latest
-    profiles:
-      - development
-    volumes:
-      - mkcert:/mnt
-    command: >
-      /bin/sh -c "[[ ! -s /mnt/mkcert.dh ]]
-      && openssl dhparam -out /mnt/mkcert.dh 2048
-      || exit 0"
-    restart: on-failure
   nginx_envsubst_conf_development:
     <<: [ *nginx_envsubst_conf, *nginx_envsubst_development ]
   nginx_envsubst_snippets_development:

@@ -10,6 +10,7 @@ RUN apk add --no-cache git &&\
     mkdir /hook_scripts/post
 
 FROM certbot as acme-dns
+ARG PUBLIC_DOMAIN_NAME
 RUN mkdir acme-dns &&\
     cd acme-dns &&\
     git clone https://github.com/joohoi/acme-dns-certbot-joohoi . &&\
@@ -17,6 +18,8 @@ RUN mkdir acme-dns &&\
     chmod +x acme-dns-auth.py &&\
     echo "Making sure acme-dns-auth uses python3" &&\
     sed -i '1 s|#!/usr/bin/env python|#!/usr/bin/env python3|' acme-dns-auth.py &&\
+    echo "Making sure acme-dns-auth uses correct domain" &&\
+    sed -i "s|^ACMEDNS_URL.*|ACMEDNS_URL = \"$PUBLIC_DOMAIN_NAME\"|" acme-dns-auth.py &&\
     mv acme-dns-auth.py /hook_scripts/
 
 FROM acme-dns as finish
