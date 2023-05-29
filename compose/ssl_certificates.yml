@@ -2,115 +2,116 @@ version: "3.9"
 x-labels: &labels
   labels:
     - "io.portainer.accesscontrol.teams=websites"
-  
-# Certificate for Development
-mkcert:
-  image: ethorbit/mkcert:latest
-  profiles:
-    - development
-  volumes:
-    - ${CA_TRUST_STORE_DIR:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates
-    - mkcert:/mnt
-  command: > 
-    /bin/sh -c "[[ ! -s /mnt/mkcert.pem || ! -s /mnt/mkcert.key ]]
-    && mkcert -install
-    && mkcert -cert-file /mnt/mkcert.pem -key-file /mnt/mkcert.key
-    ${PRIVATE_DOMAIN_NAME} *.${PRIVATE_DOMAIN_NAME} 
-    || exit 0" 
-  network_mode: none 
-  restart: on-failure
-openssl:
-  image: ethorbit/openssl:latest
-  profiles:
-    - development
-  volumes:
-    - mkcert:/mnt
-  command: >
-    /bin/sh -c "[[ ! -s /mnt/mkcert.dh ]]
-    && openssl dhparam -out /mnt/mkcert.dh 2048
-    || exit 0"
-  restart: on-failure
-  
-# Certificate for Production w/ renewal
-acme_dns_envsubst:
-  build:
-    context: ./build/acme_dns_input_output_envsubst
-    args:
-      FILE_EXTENSION: "cfg"
-  environment:
-    - ADMIN_EMAIL=${ADMIN_EMAIL}
-    - PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}
-    - PUBLIC_IP=${PUBLIC_IP}
-  volumes:
-    - ./data/configs/acme_dns/template:/mnt/input
-    - ./data/configs/acme_dns:/mnt/output
-  network_mode: none
-  <<: [*labels]
-  cap_drop:
-    - ALL
-  cap_add:
-    - DAC_OVERRIDE
-    - FOWNER
-  restart: on-failure
-acme_dns:
-  image: joohoi/acme-dns:v1.0
-  profiles:
-    - production
-  networks:
-    - acme_dns
-  hostname: acme_dns
-  <<: [*labels]
-  volumes:
-    - ./data/configs/acme_dns:/etc/acme-dns
-    - acme_dns_storage:/var/lib/acme-dns
-  ports:
-    - ${ACME_DNS_DNS_PORT:-5300}:53/tcp
-    - ${ACME_DNS_DNS_PORT:-5300}:53/udp
-    - ${ACME_DNS_HTTP_PORT:-1800}:80/tcp
-    - ${ACME_DNS_HTTPS_PORT:-4400}:443/tcp
-  depends_on:
-    acme_dns_envsubst:
-      condition: service_completed_successfully
-  logging:
-    driver: syslog
-    options:
-      mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "acme_dns"
-  restart: always
-certbot:
-  build:
-    context: ./build/certbot
-  profiles:
-    - production
-  volumes:
-    - certbot_conf:/etc/letsencrypt
-    - certbot_www:/var/www/certbot
-  networks:
-    - acme_dns
-  <<: [*labels]
-  environment:
-    - ADMIN_EMAIL=${ADMIN_EMAIL}
-  # We need to use DNS method for wildcard domains. Not optional.
-  command: >
-    certonly 
-    --test-cert
-    --non-interactive 
-    --manual 
-    --agree-tos 
-    --renew-by-default 
-    --keep-until-expiring 
-    --email "${ADMIN_EMAIL}" 
-    --rsa-key-size 4096 
-    --preferred-challenges dns 
-    --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py 
-    --verbose 
-    -d "${PUBLIC_DOMAIN_NAME}" 
-    -d "*.${PUBLIC_DOMAIN_NAME}"
-  depends_on:
-    acme_dns:
-      condition: service_started
-  restart: always
+
+services:
+  # Certificate for Development
+  mkcert:
+    image: ethorbit/mkcert:latest
+    profiles:
+      - development
+    volumes:
+      - ${CA_TRUST_STORE_DIR:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates
+      - mkcert:/mnt
+    command: > 
+      /bin/sh -c "[[ ! -s /mnt/mkcert.pem || ! -s /mnt/mkcert.key ]]
+      && mkcert -install
+      && mkcert -cert-file /mnt/mkcert.pem -key-file /mnt/mkcert.key
+      ${PRIVATE_DOMAIN_NAME} *.${PRIVATE_DOMAIN_NAME} 
+      || exit 0" 
+    network_mode: none 
+    restart: on-failure
+  openssl:
+    image: ethorbit/openssl:latest
+    profiles:
+      - development
+    volumes:
+      - mkcert:/mnt
+    command: >
+      /bin/sh -c "[[ ! -s /mnt/mkcert.dh ]]
+      && openssl dhparam -out /mnt/mkcert.dh 2048
+      || exit 0"
+    restart: on-failure
+    
+  # Certificate for Production w/ renewal
+  acme_dns_envsubst:
+    build:
+      context: ./build/acme_dns_input_output_envsubst
+      args:
+        FILE_EXTENSION: "cfg"
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}
+      - PUBLIC_IP=${PUBLIC_IP}
+    volumes:
+      - ./data/configs/acme_dns/template:/mnt/input
+      - ./data/configs/acme_dns:/mnt/output
+    network_mode: none
+    <<: [*labels]
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_OVERRIDE
+      - FOWNER
+    restart: on-failure
+  acme_dns:
+    image: joohoi/acme-dns:v1.0
+    profiles:
+      - production
+    networks:
+      - acme_dns
+    hostname: acme_dns
+    <<: [*labels]
+    volumes:
+      - ./data/configs/acme_dns:/etc/acme-dns
+      - acme_dns_storage:/var/lib/acme-dns
+    ports:
+      - ${ACME_DNS_DNS_PORT:-5300}:53/tcp
+      - ${ACME_DNS_DNS_PORT:-5300}:53/udp
+      - ${ACME_DNS_HTTP_PORT:-1800}:80/tcp
+      - ${ACME_DNS_HTTPS_PORT:-4400}:443/tcp
+    depends_on:
+      acme_dns_envsubst:
+        condition: service_completed_successfully
+    logging:
+      driver: syslog
+      options:
+        mode: non-blocking
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        tag: "acme_dns"
+    restart: always
+  certbot:
+    build:
+      context: ./build/certbot
+    profiles:
+      - production
+    volumes:
+      - certbot_conf:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    networks:
+      - acme_dns
+    <<: [*labels]
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+    # We need to use DNS method for wildcard domains. Not optional.
+    command: >
+      certonly 
+      --test-cert
+      --non-interactive 
+      --manual 
+      --agree-tos 
+      --renew-by-default 
+      --keep-until-expiring 
+      --email "${ADMIN_EMAIL}" 
+      --rsa-key-size 4096 
+      --preferred-challenges dns 
+      --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py 
+      --verbose 
+      -d "${PUBLIC_DOMAIN_NAME}" 
+      -d "*.${PUBLIC_DOMAIN_NAME}"
+    depends_on:
+      acme_dns:
+        condition: service_started
+    restart: always
 
 volumes:
   acme_dns_storage:  
