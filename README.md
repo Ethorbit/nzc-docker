@@ -6,7 +6,7 @@ Docker infrastructure used by the nZombies Chronicles community. Runs a database
 * a domain
 
 Packages:
-* docker with a minimum version of 20.10.5+dfsg1
+* docker with a minimum version of 24.0.0, build 98fdcd769b
 * docker-compose with a minimum version of 2.18.1
 * envsubst
 * iptables
