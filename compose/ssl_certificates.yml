@@ -110,6 +110,17 @@ services:
       --verbose 
       -d "${PUBLIC_DOMAIN_NAME}" 
       -d "*.${PUBLIC_DOMAIN_NAME}"
+    healthcheck:
+      test: >
+        /bin/sh -c '[ -f "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/cert.pem" ] 
+        && [ -f "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/privkey.pem" ] 
+        && [ -f "/etc/letsencrypt/ssl-dhparams.pem" ] 
+        || exit 1
+        '
+      start_period: 10s
+      interval: 5s
+      timeout: 5s
+      retries: 3
     depends_on:
       acme_dns:
         condition: service_started
