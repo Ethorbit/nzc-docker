@@ -44,6 +44,20 @@ services:
     hostname: portainer
     ports:
       - 127.0.0.1:${PORTAINER_PORT:-9443}:9443/tcp
+    blkio_config:
+      weight: 450
+      device_write_bps:
+        - path: ${DISK}
+          rate: '80m'
+      device_read_bps:
+        - path: ${DISK}
+          rate: '100m'
+      device_read_iops:
+        - path: ${DISK}
+          rate: 300
+      device_write_iops:
+        - path: ${DISK}
+          rate: 220
     cpuset: ${PORTAINER_CPU}
     cpu_shares: 60
     deploy:

@@ -96,10 +96,10 @@ services:
       weight: 450
       device_write_bps:
         - path: ${DISK}
-          rate: 83886080
+          rate: '80m'
       device_read_bps:
         - path: ${DISK}
-          rate: 104857600
+          rate: '100m'
       device_read_iops:
         - path: ${DISK}
           rate: 300

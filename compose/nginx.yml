@@ -50,16 +50,16 @@ x-nginx: &nginx
     weight: 800
     device_write_bps:
       - path: ${DISK}
-        rate: 50000000
+        rate: '300m'
     device_read_bps:
       - path: ${DISK}
-        rate: 50000000
+        rate: '300m'
     device_read_iops:
       - path: ${DISK}
-        rate: 100
+        rate: 2000
     device_write_iops:
       - path: ${DISK}
-        rate: 100
+        rate: 2000
   <<: [*labels]
   logging:
     driver: syslog

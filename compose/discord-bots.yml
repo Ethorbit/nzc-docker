@@ -49,10 +49,10 @@ services:
       weight: 50
       device_write_bps:
         - path: ${DISK}
-          rate: 10000000
+          rate: '10m'
       device_read_bps:
         - path: ${DISK}
-          rate: 20000000
+          rate: '20m'
       device_read_iops:
         - path: ${DISK}
           rate: 120

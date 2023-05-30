@@ -7,16 +7,16 @@ x-io-limits: &io-limits
     weight: 25
     device_write_bps:
       - path: ${DISK}
-        rate: 10000000
+        rate: '10m'
     device_read_bps:
       - path: ${DISK}
-        rate: 10000000
+        rate: '10m'
     device_read_iops:
       - path: ${DISK}
-        rate: 50
+        rate: 95
     device_write_iops:
       - path: ${DISK}
-        rate: 50  
+        rate: 95
 services:
   redis:
     image: redis:6-alpine

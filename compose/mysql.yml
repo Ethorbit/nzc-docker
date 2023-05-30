@@ -44,6 +44,20 @@ services:
         mode: non-blocking
         syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
         tag: "mysql"
+    blkio_config:
+      weight: 1000
+      device_write_bps:
+        - path: ${DISK}
+          rate: '250m'
+      device_read_bps:
+        - path: ${DISK}
+          rate: '250m'
+      device_read_iops:
+        - path: ${DISK}
+          rate: 4000
+      device_write_iops:
+        - path: ${DISK}
+          rate: 4000
     restart: always
 volumes:
   mysql:
