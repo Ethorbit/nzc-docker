@@ -83,6 +83,8 @@ setup:
 		exit 1; \
 	fi; \
 	check_cmd() { if ! command -v "$$1" > /dev/null; then echo "$$1 not found, install it." >&2 && exit 1; fi; }; \
+	check_cmd df; \
+	check_cmd lsblk; \
 	check_cmd curl; \
 	check_cmd docker-compose; \
 	check_cmd envsubst; \

@@ -36,6 +36,8 @@ Keep in mind that Garry's Mod and Sven Co-op are single-threaded.
 
 Note that IO limits, RAM limits, and CPU weights are already configured in the yaml files with no variables provided, they should already be optimized well enough.
 
+IO limits are applied only to the disk device set by `DISK`. This is because all IO heavy operations take place in volumes, and there is (or should only be) one disk for volumes.
+
 ## Configuring
 
 You can configure the services in `compose/data`. If there's a template for a file, **use it** or else your changes will get overriden.
