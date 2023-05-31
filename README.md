@@ -31,12 +31,16 @@ env files will be generated.
 Open them and change their values as needed.
 
 ## Optimizing
-Everything runs on a single machine, so edit: `.limits.env` and change which CPU cores each service runs off of. It is already optimized for a 2 core system by default.
-Keep in mind that Garry's Mod and Sven Co-op are single-threaded.
+Everything runs on a single machine, so edit: `.limits.env` 
 
-Note that IO limits, RAM limits, and CPU weights are already configured in the yaml files with no variables provided, they should already be optimized well enough.
+**Warning: if Docker is installed on a partition, you need to set the DISK manually or containers can't start/stop**
 
 IO limits are applied only to the disk device set by `DISK`. This is because all IO heavy operations take place in volumes, and there is (or should only be) one disk for volumes.
+
+Change which CPU cores each service runs off of. It is already optimized for a 2 core system by default.
+Keep in mind that Garry's Mod and Sven Co-op are single-threaded.
+
+Note that IO speed limits, RAM limits, and CPU weights are already configured in the yaml files with no variables provided, they should already be optimized well enough.
 
 ## Configuring
 
