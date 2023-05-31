@@ -65,10 +65,10 @@ services:
       - ./data/configs/acme_dns:/etc/acme-dns
       - acme_dns_storage:/var/lib/acme-dns
     ports:
-      - ${ACME_DNS_DNS_PORT:-5300}:53/tcp
-      - ${ACME_DNS_DNS_PORT:-5300}:53/udp
-      - ${ACME_DNS_HTTP_PORT:-1800}:80/tcp
-      - ${ACME_DNS_HTTPS_PORT:-4400}:443/tcp
+      - 127.0.0.1:${ACME_DNS_DNS_PORT:-5300}:53/tcp
+      - 127.0.0.1:${ACME_DNS_DNS_PORT:-5300}:53/udp
+      - 127.0.0.1:${ACME_DNS_HTTP_PORT:-1800}:80/tcp
+      - 127.0.0.1:${ACME_DNS_HTTPS_PORT:-4400}:443/tcp
     depends_on:
       acme_dns_envsubst:
         condition: service_completed_successfully
