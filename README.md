@@ -33,7 +33,7 @@ Open them and change their values as needed.
 ## Optimizing
 Everything runs on a single machine, so edit: `.limits.env` 
 
-**Warning: if Docker is installed on a partition, you need to set the DISK manually or containers can't start/stop**
+**Warning: if Docker stores volumes on a partition, you need to set the DISK manually or containers can't start/stop**
 
 IO limits are applied only to the disk device set by `DISK`. This is because all IO heavy operations take place in volumes, and there is (or should only be) one disk for volumes.
 
