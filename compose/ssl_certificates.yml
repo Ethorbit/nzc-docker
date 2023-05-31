@@ -80,6 +80,13 @@ services:
         mode: non-blocking
         syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
         tag: "acme_dns"
+    # Don't know yet what the healthcheck command should be..
+    #healthcheck:
+    #  test: ''
+    #  interval: 10s
+    #  timeout: 5s
+    #  retries: 3
+    #  start_period: 10s
     restart: always
   certbot:
     build:
@@ -94,7 +101,7 @@ services:
     <<: [*labels]
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
-    # We need to use DNS method for wildcard domains. Not optional.
+    # We need to use the DNS-01 method for wildcard domains. Not optional.
     command: >
       certonly 
       --test-cert
@@ -112,18 +119,23 @@ services:
       -d "*.${PUBLIC_DOMAIN_NAME}"
     healthcheck:
       test: >
-        /bin/sh -c '[ -f "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/cert.pem" ] 
-        && [ -f "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/privkey.pem" ] 
-        && [ -f "/etc/letsencrypt/ssl-dhparams.pem" ] 
-        || exit 1
-        '
-      start_period: 10s
-      interval: 5s
-      timeout: 5s
+        /bin/sh -c 'PUBLIC_KEY="/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/cert.pem" 
+        && PRIVATE_KEY="/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/privkey.pem" 
+        && DHPARAMS="/etc/letsencrypt/ssl-dhparams.pem" 
+        && [ -f "$$PUBLIC_KEY" ] && [ -s "$$PUBLIC_KEY" ] 
+        && [ -f "$$PRIVATE_KEY" ] && [ -s "$$PRIVATE_KEY" ] 
+        && [ -f "$$DHPARAMS" ] && [ -s "$$DHPARAMS" ] 
+        && openssl x509 -noout -pubkey -in "$$PUBLIC_KEY" > /dev/null 
+        && openssl pkey -pubout -noout -in "$$PRIVATE_KEY" > /dev/null 
+        && openssl dhparam -check < "$$DHPARAMS" > /dev/null 
+        || exit 1'
+      interval: 1m30s
+      timeout: 10s
       retries: 3
+      start_period: 12s
     depends_on:
       acme_dns:
-        condition: service_started
+        condition: service_healthy
       rsyslog:
         condition: service_healthy
     logging:
