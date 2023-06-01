@@ -27,7 +27,7 @@ services:
     command: '-f -x -v'
     volumes:
       - ./data/configs/fail2ban/jail.d:/etc/fail2ban/jail.d
-      - rsyslog_logs:/logs:ro
+      - rsyslog_logs:/logs
     depends_on:
       fail2ban_jail_envsubst:
         condition: service_completed_successfully
