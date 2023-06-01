@@ -8,7 +8,7 @@
 for jail_file in /etc/fail2ban/jail.d/*; do
     [ ! -f "$jail_file" ] && continue
 
-    for log_file in $(cat "$jail_file" | grep 'logpath' | cut -d '=' -f 2 | cut -d ' ' -f 2 | sed 's|^[\s]*||'); do
+    for log_file in $(cat "$jail_file" | grep 'logpath' | cut -d '=' -f 2 | sed 's|^[\s]*||'); do
         [ ! -f "$log_file" ] && touch "$log_file" 2> /dev/null &&\
             echo "Created $log_file because it didn't exist."
     done
