@@ -92,7 +92,7 @@ services:
     build:
       context: ./build/certbot
       args:
-        - ACMEDNS_URL="https://acme_dns:${ACME_DNS_HTTPS_PORT}"
+        - ACMEDNS_URL="https://acme_dns:${ACME_DNS_HTTPS_PORT:-4400}"
     profiles:
       - production
     volumes:
