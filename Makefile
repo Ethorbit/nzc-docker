@@ -90,6 +90,7 @@ setup:
 	check_cmd envsubst; \
 	check_cmd openssl; \
 	check_cmd find; \
+	check_cmd script; \
 	mkdir -p $(config_dir)/nginx/snippets/private; \
 	echo -e '# allow 127.0.0.0/8;\nallow all;' | tee -a $(config_dir)/nginx/snippets/private/admin_ips.conf; \
 	export PHPMYADMIN_BLOWFISH_SECRET="$(call gen_pass,15)"; \
@@ -122,7 +123,9 @@ update-containers:
 install: setup set-passwords list-passwords
 
 cmd: setup_users build_docker
-	$(command) $(args)
+	script -q -c "$(command) $(args)" $(CURDIR)/cmd_output.txt
+#$(command) $(args)
+#$(command) $(args) 2>&1 | tee $(CURDIR)/cmd.output
 
 # Because Docker likes to make removing volumes an annoying task
 define rm-vol_cmd
@@ -152,12 +155,13 @@ Makefile: a wrapper script created to overcome Docker Compose limitations.
    make list-passwords
       - Lists a bunch of random and very secure passwords to choose from.
 
-   make args='Docker compose command' cmd
+   make args='Docker compose command' cmd 
+      - Runs a docker-compose command with all the necessary environment variables set and saves the output to cmd_output.txt
 	Examples:
 	    make args='up' cmd
 	    nofiles=1 make args='-f ./compose/nginx.yml down' cmd
 
-	Note: unless nofiles=1 is specified, ALL yaml files are used.
+	Note: unless nofiles=1 is specified, ALL yaml files are automatically used.
 
    make update-containers 
       - Updates containers and then restarts those affected.
