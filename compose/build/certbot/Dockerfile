@@ -19,7 +19,7 @@ RUN mkdir acme-dns &&\
     echo "Making sure acme-dns-auth uses python3" &&\
     sed -i '1 s|#!/usr/bin/env python|#!/usr/bin/env python3|' acme-dns-auth.py &&\
     echo "Making sure acme-dns-auth uses correct domain" &&\
-    sed -i "s|^ACMEDNS_URL.*|ACMEDNS_URL = \"$ACMEDNS_URL\"|" acme-dns-auth.py &&\
+    sed -i "s|^ACMEDNS_URL.*|ACMEDNS_URL = $ACMEDNS_URL|" acme-dns-auth.py &&\
     mv acme-dns-auth.py /hook_scripts/
 
 FROM acme-dns as finish
