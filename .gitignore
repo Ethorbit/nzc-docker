@@ -18,4 +18,4 @@ compose/data/configs/fail2ban/filter.extras.d/*
 compose/data/configs/searxng/*.yml
 compose/data/configs/acme_dns/*.cfg
 build_docker
-cmd_output.txt
+*.log

@@ -47,7 +47,7 @@ command_build := $(command_base) --profile setup_users $(yml_files_build) build 
 command := $(command_base) $(yml_files)
 
 build_docker: $(dir $(wildcard $(build_dir)/**/*))
-	$(command_build)
+	$(command_build) 2>&1 | tee -i $(CURDIR)/update-containers.log
 	touch $@
 
 # The containers' users and groups are managed by a service and isolated from the host
@@ -55,7 +55,7 @@ build_docker: $(dir $(wildcard $(build_dir)/**/*))
 # we will run this separately
 setup_users: #$(compose_dir)/users_and_groups.yml $(shell find $(data_dir)/users/ -type f)
 	$(info We must configure users and groups first)
-	$(command_setup_users)
+	$(command_setup_users) 2>&1 | tee -i $(CURDIR)/setup-users.log
 #	touch $@
 
 # This really shouldn't matter because people should be doing 
@@ -103,6 +103,8 @@ list-passwords:
 	@echo "Here are some passwords you can use:"
 	@for i in {1..20}; do echo "$$i. $(call gen_pass,$(call rand_int,6,17))"; done
 
+# TODO: finish this. It needs to update any PASSWORD variable in all .env files with a gen_pass value
+# For now people can just use list-passwords and copy paste the values, it's pretty easy to do anyway.
 set-passwords:
 	@change_file_passwords() { \
 		file="$$1" &&\
@@ -115,17 +117,15 @@ set-passwords:
 	echo "Assigned random passwords."
 	
 update-users:
-	$(command_setup_users)
+	$(command_setup_users) 2>&1 | tee -i $(CURDIR)/update-users.log
 
 update-containers:
-	$(command_update)
+	$(command_update) 2>&1 | tee -i $(CURDIR)/update-containers.log
 
 install: setup set-passwords list-passwords
 
 cmd: setup_users build_docker
-	script -q -c "$(command) $(args)" $(CURDIR)/cmd_output.txt
-#$(command) $(args)
-#$(command) $(args) 2>&1 | tee $(CURDIR)/cmd.output
+	$(command) $(args) 2>&1 | tee -i $(CURDIR)/cmd.log
 
 # Because Docker likes to make removing volumes an annoying task
 define rm-vol_cmd
@@ -140,7 +140,8 @@ rm-vol:
 	$(rm-vol_cmd)
 
 define help_text
-Makefile: a wrapper script created to overcome Docker Compose limitations.
+Makefile: a wrapper script created to overcome Docker Compose limitations. Due to issues of crucial error messages not showing, everything is displayed in plaintext instead.
+   
    make install 
       - Sets up the necessary .env configuration as a template for you to modify.
 	  
@@ -148,15 +149,11 @@ Makefile: a wrapper script created to overcome Docker Compose limitations.
 	    All .env files are passed to compose, meaning they can be referenced in the yaml files.
 	    You can also use env_file to pass them to individual containers.
 		
-   make set-passwords 
-      - Applies a random password to every PASSWORD variable. Additionally lists a bunch of short, but very secure passwords to choose from. When finished, users are updated.
-      NOTE: This does not actually do anything currently, the functionality has not been implemented!
-	
    make list-passwords
       - Lists a bunch of random and very secure passwords to choose from.
 
    make args='Docker compose command' cmd 
-      - Runs a docker-compose command with all the necessary environment variables set and saves the output to cmd_output.txt
+      - Runs a docker-compose command with all the necessary environment variables set
 	Examples:
 	    make args='up' cmd
 	    nofiles=1 make args='-f ./compose/nginx.yml down' cmd
@@ -172,6 +169,7 @@ Makefile: a wrapper script created to overcome Docker Compose limitations.
 
    make args='volume name' rm-vol 
       - Removes a single Docker volume even if there are conflicting docker containers (It removes those too). This is only useful if you find yourself needing to repeatedly remove volumes.
+
 endef
 
 help:
