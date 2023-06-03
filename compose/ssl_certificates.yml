@@ -68,7 +68,7 @@ services:
       - 127.0.0.1:${ACME_DNS_DNS_PORT:-5300}:53/tcp
       - 127.0.0.1:${ACME_DNS_DNS_PORT:-5300}:53/udp
       - 127.0.0.1:${ACME_DNS_HTTP_PORT:-1800}:80/tcp
-      - 127.0.0.1:${ACME_DNS_HTTPS_PORT:-4400}:443/tcp
+      #- 127.0.0.1:${ACME_DNS_HTTPS_PORT:-4400}:443/tcp
     depends_on:
       acme_dns_envsubst:
         condition: service_completed_successfully
@@ -80,19 +80,18 @@ services:
         mode: non-blocking
         syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
         tag: "acme_dns"
-    # Don't know yet what the healthcheck command should be..
-    #healthcheck:
-    #  test: ''
-    #  interval: 10s
-    #  timeout: 5s
-    #  retries: 3
-    #  start_period: 10s
+    healthcheck:
+      test: 'curl -I -X HEAD http://acme_dns 2> /dev/null > /dev/null || exit 1'
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     restart: always
   certbot:
     build:
       context: ./build/certbot
       args:
-        - ACMEDNS_URL="https://acme_dns:${ACME_DNS_HTTPS_PORT:-4400}"
+        - ACMEDNS_URL="http://acme_dns"
     profiles:
       - production
     volumes:
