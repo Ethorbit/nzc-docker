@@ -62,7 +62,7 @@ services:
     hostname: acme_dns
     <<: [*labels]
     volumes:
-      - ./data/configs/acme_dns:/etc/acme-dns
+      - ./data/configs/acme_dns:/etc/acme-dns:ro
       - acme_dns_storage:/var/lib/acme-dns
     ports:
       - 127.0.0.1:${ACME_DNS_DNS_PORT:-5300}:53/tcp
