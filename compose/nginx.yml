@@ -247,6 +247,8 @@ services:
         condition: service_completed_successfully
       nginx_permissions:
         condition: service_completed_successfully
+      certbot:
+        condition: service_healthy
       php_fpm_production:
         condition: service_started
       rsyslog:
