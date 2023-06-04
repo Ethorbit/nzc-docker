@@ -76,10 +76,16 @@ In case anything was missed, look around in the configs directory.
 * Add the following DNS records for your domain:
     * `Record Type A <IP address>`
     * `Subdomain * Record Type A <IP address>`
-    * `Subdomain auth Record Type NS auth.<domain name>`
-    * `Subdomain _acme-challenge Record Type CNAME <domain name>`
+    * `Subdomain _acme-challenge Record Type CNAME (with nothing as the value for now)`
+    * `Subdomain auth Record Type NS ns-auth.<domain name>`
 
-Note: if the IP of the server changes, you may need to re-create the `acme_dns` container or certificate renewal may fail.
+Make sure `CERTBOT_TESTING` is set to 1 in the .env file.
+
+Now, when you create/start the project (the commands for that are covered in the next topic) you are going to see the acme\_dns container start up, and **it's going to instruct you to set the value of the** \_**acme-challenge subdomain**. It's going to be something similar to this: `1934c552-0197-12a5-1049-6y84931y217.ns-auth.nzcservers.com` Change `.ns-auth.domain` to `.auth.domain`. After adding what it says, wait about a minute. Certbot and acme\_dns containers may fail and restart a few times before your CNAME changes propagate fully. Once it has propagated, certbot should be able to succeed in its testing, but since we are using CERTBOT\_TESTING, no certificates will actually be made and thus no other containers will start yet.
+
+If you're 100% confident that the certbot test's errors have stopped and that Certbot succeeded in its test (Note: healthchecks will fail because they look for certificates which can't be generated in testing mode, just ignore them), go ahead and stop the project. Inside .env change `CERTBOT_TESTING` from 1 to 0 and then start the project up again. (If Certbot errors out after this, it won't issue any certificate for ~1 hour) Certbot should be able to issue a wildcard domain certificate, which will then allow Nginx along with the rest of the containers to finally start up. Once everything starts, visit https://admin.domain and the HTTPS certificate should be valid.
+
+Note: if the IP of the server changes, you may need to re-create the `acme_dns` container or certificate renewal may fail. 
 
 ## Creating/Removing
 
@@ -120,12 +126,20 @@ Note: for Development there's nothing wrong with removing and re-creating everyt
 Every user has their own SSH / SFTP access.
 This is how you'll manage the files for every service.
 
+### Viewing logs
+Beyond using `docker logs` (Documented on Docker's website), you can also do:
+* `docker exec -it nzc-rsyslog-1 /bin/sh` 
+* `ls -laht /logs/` 
+* `cat <file>`
+
+Staff members can also view rsyslog log files from inside SFTP.
+
 ### Admin Webpanels
 Provided from the nginx webserver is an admin page with Portainer and PHPMyAdmin to manage most stuff in the browser. - `https://admin.domain/`
 
 You can use PHPMyAdmin to manage MySQL and Portainer to manage all the containers.
 
-This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you **do not** use Portainer to re-create containers and only use it to start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
+This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you **do not** use Portainer to re-create containers and **only use it to** start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
 
 ## Help 
 If you need more info on the makefile, use: `make help`

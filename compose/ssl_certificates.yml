@@ -104,8 +104,8 @@ services:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
     # We need to use the DNS-01 method for wildcard domains. Not optional.
     command: >
-      certonly 
-      --test-cert
+      certonly
+      ${CERTBOT_TEST_FLAG}
       --non-interactive 
       --manual 
       --agree-tos 
@@ -115,9 +115,9 @@ services:
       --rsa-key-size 4096 
       --preferred-challenges dns 
       --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py 
+      --debug-challenges 
       --verbose 
-      -d "${PUBLIC_DOMAIN_NAME}" 
-      -d "*.${PUBLIC_DOMAIN_NAME}"
+      -d "${PUBLIC_DOMAIN_NAME},*.${PUBLIC_DOMAIN_NAME}"
     healthcheck:
       test: >
         /bin/sh -c 'PUBLIC_KEY="/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/cert.pem" 
