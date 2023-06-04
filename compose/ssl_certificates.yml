@@ -54,7 +54,8 @@ services:
       - FOWNER
     restart: on-failure
   acme_dns:
-    image: joohoi/acme-dns:v1.0
+    build:
+      context: ./build/acme_dns
     profiles:
       - production
     networks:
