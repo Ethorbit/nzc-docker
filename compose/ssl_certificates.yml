@@ -81,7 +81,7 @@ services:
         syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
         tag: "acme_dns"
     healthcheck:
-      test: 'curl -I -X HEAD http://acme_dns 2> /dev/null > /dev/null || exit 1'
+      test: 'curl -f -X GET http://acme_dns/health || exit 1'
       interval: 10s
       timeout: 5s
       retries: 3
