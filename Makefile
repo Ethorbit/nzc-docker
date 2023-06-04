@@ -27,8 +27,6 @@ endif
 
 CERTBOT_TEST_FLAG=$(shell [ "$(CERTBOT_TESTING)" -ge 1 ] && echo "--test-cert " || echo " ") \
 
-$(info Is it working? $(CERTBOT_TEST_FLAG))
-
 list_yml_command := ls $(compose_dir)/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /"
 
 define yml_files
