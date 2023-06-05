@@ -4,6 +4,18 @@ x-labels: &labels
     - "io.portainer.accesscontrol.teams=websites"
 
 services:
+  dhparam:
+    image: ethorbit/openssl:latest
+    profiles:
+      - development
+    volumes:
+      - dhparam:/mnt
+    command: >
+      /bin/sh -c "[[ ! -s /mnt/dhparam.dh ]]
+      && openssl dhparam -out /mnt/dhparam.dh 2048
+      || exit 0"
+    restart: on-failure
+  
   # Certificate for Development
   mkcert:
     image: ethorbit/mkcert:latest
@@ -19,17 +31,6 @@ services:
       ${PRIVATE_DOMAIN_NAME} *.${PRIVATE_DOMAIN_NAME} 
       || exit 0" 
     network_mode: none 
-    restart: on-failure
-  openssl:
-    image: ethorbit/openssl:latest
-    profiles:
-      - development
-    volumes:
-      - mkcert:/mnt
-    command: >
-      /bin/sh -c "[[ ! -s /mnt/mkcert.dh ]]
-      && openssl dhparam -out /mnt/mkcert.dh 2048
-      || exit 0"
     restart: on-failure
     
   # Certificate for Production w/ renewal
@@ -130,7 +131,7 @@ services:
         && openssl pkey -pubout -noout -in "$$PRIVATE_KEY" > /dev/null 
         && openssl dhparam -check < "$$DHPARAMS" > /dev/null 
         || exit 1'
-      interval: 1m30s
+      interval: 20s
       timeout: 10s
       retries: 3
       start_period: 12s
@@ -148,6 +149,10 @@ services:
     restart: always
 
 volumes:
-  acme_dns_storage:  
+  dhparam:
+  acme_dns_storage:
+  mkcert:
+  certbot_conf:
+  certbot_www:
 networks:
   acme_dns:

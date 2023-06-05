@@ -109,6 +109,7 @@ x-nginx_envsubst_environment: &nginx_envsubst_environment
   NGINX_PORTAINER_CACHE_PATH: /mnt/cache/portainer
   NGINX_PHPMYADMIN_CACHE_PATH: /mnt/cache/phpmyadmin
   NGINX_SEARCH_CACHE_PATH: /mnt/cache/search
+  NGINX_SSL_DHPARAM: "/etc/dhparam/dhparam.dh"
 x-nginx_envsubst_production: &nginx_envsubst_production
   profiles:
     - production
@@ -118,7 +119,6 @@ x-nginx_envsubst_production: &nginx_envsubst_production
     <<: [ *nginx_envsubst_environment ]
     NGINX_SSL_CERT: "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/cert.pem"
     NGINX_SSL_CERT_KEY: "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/privkey.pem"
-    NGINX_SSL_DHPARAM: "/etc/letsencrypt/ssl-dhparams.pem"
   <<: [*labels]
   restart: on-failure
 x-nginx_envsubst_development: &nginx_envsubst_development
@@ -130,7 +130,6 @@ x-nginx_envsubst_development: &nginx_envsubst_development
     <<: [ *nginx_envsubst_environment ]
     NGINX_SSL_CERT: "/etc/mkcert/mkcert.pem"
     NGINX_SSL_CERT_KEY: "/etc/mkcert/mkcert.key"
-    NGINX_SSL_DHPARAM: "/etc/mkcert/mkcert.dh"
   restart: on-failure
 services:
   nginx_links:
@@ -165,6 +164,7 @@ services:
       - ./data/configs/nginx/cpu:/mnt/nginx_cpu
       - ./data/configs/nginx:/mnt/nginx_conf
       - mkcert:/mnt/mkcert
+      - dhparam:/mnt/dhparam
       - certbot_conf:/mnt/certbot_conf
       - certbot_www:/mnt/certbot_www
     command: >
@@ -185,8 +185,8 @@ services:
       && chown -R root:${admin_g} /mnt/nginx_conf/
       && chmod -R 775 /mnt/nginx_conf/
       && chown -fR ${nginx_u}:root /mnt/mkcert/
-      && if [ -f '/mnt/certbot_conf/ssl-dhparams.pem' ]; then
-        chown -f nginx:${admin_g} /mnt/certbot_conf/ssl-dhparams.pem
+      && if [ -f '/mnt/dhparam/dhparam.dh' ]; then
+        chown -fR nginx:${admin_g} /mnt/dhparam/
       fi
       && if [ -d '/mnt/certbot_conf/live/' ]; then
         chown -fR nginx:${admin_g} /mnt/certbot_conf/live/
@@ -205,10 +205,10 @@ services:
       nginx_links:
         condition: service_completed_successfully
       certbot:
-        condition: service_started
+        condition: service_healthy
       mkcert:
         condition: service_completed_successfully
-      openssl:
+      dhparam:
         condition: service_completed_successfully
     <<: [*labels]
   #restart: on-failure
@@ -238,6 +238,7 @@ services:
       - ./data/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/configs/nginx/snippets:/etc/nginx/snippets:ro
       - ./data/configs/nginx/conf.d:/etc/nginx/conf.d:ro
+      - dhparam:/etc/dhparam
       - certbot_conf:/etc/letsencrypt
       - certbot_www:/var/www/certbot
     depends_on:
@@ -247,8 +248,6 @@ services:
         condition: service_completed_successfully
       nginx_permissions:
         condition: service_completed_successfully
-      certbot:
-        condition: service_healthy
       php_fpm_production:
         condition: service_started
       rsyslog:
@@ -279,6 +278,7 @@ services:
       - ./data/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/configs/nginx/snippets:/etc/nginx/snippets:ro
       - ./data/configs/nginx/conf.d:/etc/nginx/conf.d:ro
+      - dhparam:/etc/dhparam
       - mkcert:/etc/mkcert
     depends_on:
       nginx_envsubst_conf_development:
@@ -296,9 +296,6 @@ volumes:
   nginx_websites:
   nginx_fastdl:
   phpmyadmin:
-  certbot_conf:
-  certbot_www:
-  mkcert:
   svencoop:
 networks:
   nginx:
