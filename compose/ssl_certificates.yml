@@ -14,6 +14,8 @@ services:
       /bin/sh -c "[[ ! -s /mnt/dhparam.dh ]]
       && openssl dhparam -out /mnt/dhparam.dh 2048
       || exit 0"
+    <<: [*labels]
+    network_mode: none
     restart: on-failure
   
   # Certificate for Development
