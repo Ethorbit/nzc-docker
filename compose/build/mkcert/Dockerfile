@@ -1,4 +1,5 @@
 FROM ethorbit/mkcert:latest
-COPY ./healthcheck.sh /
-RUN chmod +x /healthcheck.sh &&\
+COPY ./*.sh /
+RUN chmod +x /*.sh &&\
     apk add --no-cache openssl
+ENTRYPOINT [ "/entrypoint.sh" ]

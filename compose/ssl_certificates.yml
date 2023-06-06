@@ -35,13 +35,8 @@ services:
     volumes:
       - ${CA_TRUST_STORE_DIR:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates
       - mkcert:/mnt
-    command: > 
-      /bin/sh -c '[[ ! -s "$$PRIVATE_KEY" || ! -s "$$PUBLIC_KEY" ]]
-      && mkcert -install
-      && mkcert -cert-file /mnt/mkcert.pem -key-file /mnt/mkcert.key
-      ${PRIVATE_DOMAIN_NAME} *.${PRIVATE_DOMAIN_NAME}
-      && /healthcheck.sh && sleep inf || rm -f "$$PUBLIC_KEY" && rm -f "$$PRIVATE_KEY" && exit 1'
     environment:
+      - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
       - PUBLIC_KEY=/mnt/mkcert.pem
       - PRIVATE_KEY=/mnt/mkcert.key
     <<: [ *healthcheck ]
@@ -54,6 +49,8 @@ services:
       context: ./build/acme_dns_input_output_envsubst
       args:
         FILE_EXTENSION: "cfg"
+    profiles:
+      - production
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}
