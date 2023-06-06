@@ -204,12 +204,12 @@ services:
     depends_on: 
       nginx_links:
         condition: service_completed_successfully
+      dhparam:
+        condition: service_completed_successfully
       certbot:
         condition: service_healthy
       mkcert:
-        condition: service_completed_successfully
-      dhparam:
-        condition: service_completed_successfully
+        condition: service_healthy
     <<: [*labels]
   #restart: on-failure
   # Production nginx, for use only on a machine the real domain is pointing to.
@@ -242,6 +242,10 @@ services:
       - certbot_conf:/etc/letsencrypt
       - certbot_www:/var/www/certbot
     depends_on:
+      dhparam:
+        condition: service_completed_successfully
+      certbot:
+        condition: service_healthy
       nginx_envsubst_conf_production:
         condition: service_completed_successfully 
       nginx_envsubst_snippets_production:
@@ -281,6 +285,10 @@ services:
       - dhparam:/etc/dhparam
       - mkcert:/etc/mkcert
     depends_on:
+      dhparam:
+        condition: service_completed_successfully
+      mkcert:
+        condition: service_healthy
       nginx_envsubst_conf_development:
         condition: service_completed_successfully 
       nginx_envsubst_snippets_development:
