@@ -10,9 +10,9 @@ RUN chmod +x /entrypoint.sh &&\
     mkdir /socks &&\
     mkdir /logs &&\
     chmod 770 /socks &&\
-    chmod 770 /logs &&\
+    chmod 750 /logs &&\
     chown rsyslog:root /socks &&\
-    chown rsyslog:root /logs
+    chown rsyslog:rsyslog /logs
 VOLUME /socks
 VOLUME /logs
 EXPOSE 514/tcp

@@ -22,7 +22,7 @@ services:
       context: ./build/rsyslog
       args:
         - UID=${rsyslog_u}
-        - GID=${rsyslog_g}
+        - GID=${staff_g}
     command: '-n'
     tty: true
     stdin_open: true

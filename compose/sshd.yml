@@ -76,6 +76,7 @@ services:
       - discord_sticky_bot:/mnt/discord_bots/stickies
       - phpmyadmin:/mnt/admin_websites/phpmyadmin
       - portainer_data:/mnt/admin_websites/portainer
+      - rsyslog_logs:/mnt/logs:ro
     depends_on:
       sshd_permissions:
         condition:
@@ -122,3 +123,4 @@ volumes:
   gmod_3:
   gmod_shared:
   home:
+  rsyslog_logs:
