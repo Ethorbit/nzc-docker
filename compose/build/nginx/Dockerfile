@@ -2,7 +2,9 @@ FROM nginxinc/nginx-unprivileged:1.23-alpine-perl
 ARG UID
 ARG GID
 USER root
-RUN apk add --no-cache shadow &&\
+COPY ./*.sh /docker-entrypoint.d/
+RUN chmod +x /docker-entrypoint.d/*.sh &&\
+    apk add --no-cache shadow inotify-tools &&\
     rm /usr/share/nginx/html/*.html &&\
     usermod -u "$UID" nginx &&\
     groupmod -g "$GID" nginx &&\

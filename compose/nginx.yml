@@ -2,7 +2,11 @@ version: "3.9"
 x-labels: &labels
   labels:
     - "io.portainer.accesscontrol.teams=websites"
-  
+ 
+x-nginx_environment: &nginx_environment
+  PUBLIC_DOMAIN_NAME: ${PUBLIC_DOMAIN_NAME}
+  PRIVATE_DOMAIN_NAME: ${PRIVATE_DOMAIN_NAME}
+
 x-nginx: &nginx
   #container_name: ${CONTAINER_NAME_PREFIX}-nginx-${CONTAINER_NAME_SUFFIX}
   build:
@@ -35,9 +39,6 @@ x-nginx: &nginx
     interval: 10s
     timeout: 10s
     retries: 3
-  environment:
-    - PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}
-    - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
   cpuset: ${NGINX_CPU}
   cpu_shares: 2048
   deploy:
@@ -110,26 +111,34 @@ x-nginx_envsubst_environment: &nginx_envsubst_environment
   NGINX_PHPMYADMIN_CACHE_PATH: /mnt/cache/phpmyadmin
   NGINX_SEARCH_CACHE_PATH: /mnt/cache/search
   NGINX_SSL_DHPARAM: "/etc/dhparam/dhparam.dh"
+
+x-nginx_envsubst_production_environment: &nginx_envsubst_production_environment
+  <<: [ *nginx_envsubst_environment ]
+  NGINX_SSL_CERT: "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/cert.pem"
+  NGINX_SSL_CERT_KEY: "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/privkey.pem"
+
 x-nginx_envsubst_production: &nginx_envsubst_production
   profiles:
     - production
   env_file:
     - ../.ports.env
   environment:  
-    <<: [ *nginx_envsubst_environment ]
-    NGINX_SSL_CERT: "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/cert.pem"
-    NGINX_SSL_CERT_KEY: "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/privkey.pem"
+    <<: [ *nginx_envsubst_production_environment ]
   <<: [*labels]
   restart: on-failure
+
+x-nginx_envsubst_development_environment: &nginx_envsubst_development_environment
+  <<: [ *nginx_envsubst_environment ]
+  NGINX_SSL_CERT: "/etc/mkcert/mkcert.pem"
+  NGINX_SSL_CERT_KEY: "/etc/mkcert/mkcert.key"
+
 x-nginx_envsubst_development: &nginx_envsubst_development
   profiles:
     - development
   env_file:
     - ../.ports.env
   environment:
-    <<: [ *nginx_envsubst_environment ]
-    NGINX_SSL_CERT: "/etc/mkcert/mkcert.pem"
-    NGINX_SSL_CERT_KEY: "/etc/mkcert/mkcert.key"
+    <<: [ *nginx_envsubst_development_environment ]
   restart: on-failure
 services:
   nginx_links:
@@ -241,6 +250,8 @@ services:
       - dhparam:/etc/dhparam
       - certbot_conf:/etc/letsencrypt
       - certbot_www:/var/www/certbot
+    environment:
+      <<: [ *nginx_environment, *nginx_envsubst_production_environment ]
     depends_on:
       dhparam:
         condition: service_completed_successfully
@@ -284,6 +295,8 @@ services:
       - ./data/configs/nginx/conf.d:/etc/nginx/conf.d:ro
       - dhparam:/etc/dhparam
       - mkcert:/etc/mkcert
+    environment:
+      <<: [ *nginx_environment, *nginx_envsubst_development_environment ]
     depends_on:
       dhparam:
         condition: service_completed_successfully
