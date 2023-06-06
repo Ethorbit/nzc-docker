@@ -1,9 +1,9 @@
 FROM certbot/certbot:v2.3.0 as certbot
-COPY ./entrypoint.sh /
+COPY ./*.sh /
 VOLUME /etc/letsencrypt
 VOLUME /var/www/certbot
-RUN apk add --no-cache git &&\
-    chmod +x /entrypoint.sh &&\
+RUN chmod +x /*.sh &&\
+    apk add --no-cache git &&\
     mkdir /hook_scripts &&\
     mkdir /hook_scripts/pre &&\
     mkdir /hook_scripts/deploy &&\

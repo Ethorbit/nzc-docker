@@ -3,35 +3,50 @@ x-labels: &labels
   labels:
     - "io.portainer.accesscontrol.teams=websites"
 
+x-healthcheck: &healthcheck
+  healthcheck:
+    test: /bin/sh -c '/healthcheck.sh || exit 1' 
+    interval: 15s
+    timeout: 8s
+    retries: 2
+    start_period: 15s
+
+#rm -f "$$PUBLIC_KEY" && rm -f "$$PRIVATE_KEY" && exit 1'
+
 services:
+  # I don't think it's even possible to healthcheck this like we do with the pub and priv keys..
+  # healthcheck command: openssl dhparam -check < /mnt/dhparam.dh 
   dhparam:
     image: ethorbit/openssl:latest
-    profiles:
-      - development
     volumes:
       - dhparam:/mnt
     command: >
-      /bin/sh -c "[[ ! -s /mnt/dhparam.dh ]]
-      && openssl dhparam -out /mnt/dhparam.dh 2048
+      /bin/sh -c "[[ ! -s /mnt/dhparam.dh ]] 
+      && openssl dhparam -out /mnt/dhparam.dh 2048 
       || exit 0"
-    <<: [*labels]
+    <<: [ *labels ]
     network_mode: none
     restart: on-failure
   
   # Certificate for Development
   mkcert:
-    image: ethorbit/mkcert:latest
+    build:
+      context: ./build/mkcert
     profiles:
       - development
     volumes:
       - ${CA_TRUST_STORE_DIR:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates
       - mkcert:/mnt
     command: > 
-      /bin/sh -c "[[ ! -s /mnt/mkcert.pem || ! -s /mnt/mkcert.key ]]
+      /bin/sh -c '[[ ! -s "$$PRIVATE_KEY" || ! -s "$$PUBLIC_KEY" ]]
       && mkcert -install
       && mkcert -cert-file /mnt/mkcert.pem -key-file /mnt/mkcert.key
-      ${PRIVATE_DOMAIN_NAME} *.${PRIVATE_DOMAIN_NAME} 
-      || exit 0" 
+      ${PRIVATE_DOMAIN_NAME} *.${PRIVATE_DOMAIN_NAME}
+      && /healthcheck.sh && sleep inf || rm -f "$$PUBLIC_KEY" && rm -f "$$PRIVATE_KEY" && exit 1'
+    environment:
+      - PUBLIC_KEY=/mnt/mkcert.pem
+      - PRIVATE_KEY=/mnt/mkcert.key
+    <<: [ *healthcheck ]
     network_mode: none 
     restart: on-failure
     
@@ -102,9 +117,11 @@ services:
       - certbot_www:/var/www/certbot
     networks:
       - acme_dns
-    <<: [*labels]
+    <<: [ *healthcheck, *labels ]
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - PUBLIC_KEY=""
+      - PRIVATE_KEY=""
     # We need to use the DNS-01 method for wildcard domains. Not optional.
     command: >
       certonly
@@ -121,25 +138,9 @@ services:
       --debug-challenges 
       --verbose 
       -d "${PUBLIC_DOMAIN_NAME},*.${PUBLIC_DOMAIN_NAME}"
-    healthcheck:
-      test: >
-        /bin/sh -c 'PUBLIC_KEY="/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/cert.pem" 
-        && PRIVATE_KEY="/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/privkey.pem" 
-        && DHPARAMS="/etc/letsencrypt/ssl-dhparams.pem" 
-        && [ -f "$$PUBLIC_KEY" ] && [ -s "$$PUBLIC_KEY" ] 
-        && [ -f "$$PRIVATE_KEY" ] && [ -s "$$PRIVATE_KEY" ] 
-        && [ -f "$$DHPARAMS" ] && [ -s "$$DHPARAMS" ] 
-        && openssl x509 -noout -pubkey -in "$$PUBLIC_KEY" > /dev/null 
-        && openssl pkey -pubout -noout -in "$$PRIVATE_KEY" > /dev/null 
-        && openssl dhparam -check < "$$DHPARAMS" > /dev/null 
-        || exit 1'
-      interval: 20s
-      timeout: 10s
-      retries: 3
-      start_period: 12s
     depends_on:
       acme_dns:
-        condition: service_started
+        condition: service_healthy
       rsyslog:
         condition: service_healthy
     logging:
