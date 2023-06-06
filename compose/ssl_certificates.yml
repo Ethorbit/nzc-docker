@@ -11,8 +11,6 @@ x-healthcheck: &healthcheck
     retries: 2
     start_period: 15s
 
-#rm -f "$$PUBLIC_KEY" && rm -f "$$PRIVATE_KEY" && exit 1'
-
 services:
   # I don't think it's even possible to healthcheck this like we do with the pub and priv keys..
   # healthcheck command: openssl dhparam -check < /mnt/dhparam.dh 
