@@ -20,7 +20,7 @@ Check your versions:
 You can possibly use earlier versions, but if things don't work as expected - that's why.
 
 ## Installing
-* `git clone https://github.com/Ethorbit/nzombies-chronicles-docker.git .`
+* `git clone https://github.com/Ethorbit/nzombies-chronicles-docker.git`
 * `cd nzombies-chronicles-docker`
 * `make install` 
 
