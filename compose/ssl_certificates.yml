@@ -124,7 +124,6 @@ services:
       --non-interactive 
       --manual 
       --agree-tos 
-      --renew-by-default 
       --keep-until-expiring 
       --email "${ADMIN_EMAIL}" 
       --rsa-key-size 4096 
