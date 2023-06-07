@@ -247,9 +247,9 @@ services:
       - ./data/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/configs/nginx/snippets:/etc/nginx/snippets:ro
       - ./data/configs/nginx/conf.d:/etc/nginx/conf.d:ro
-      - dhparam:/etc/dhparam
-      - certbot_conf:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
+      - dhparam:/etc/dhparam:ro
+      - certbot_conf:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
     environment:
       <<: [ *nginx_environment, *nginx_envsubst_production_environment ]
     depends_on:
@@ -293,8 +293,8 @@ services:
       - ./data/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/configs/nginx/snippets:/etc/nginx/snippets:ro
       - ./data/configs/nginx/conf.d:/etc/nginx/conf.d:ro
-      - dhparam:/etc/dhparam
-      - mkcert:/etc/mkcert
+      - dhparam:/etc/dhparam:ro
+      - mkcert:/etc/mkcert:ro
     environment:
       <<: [ *nginx_environment, *nginx_envsubst_development_environment ]
     depends_on:
