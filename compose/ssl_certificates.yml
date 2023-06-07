@@ -115,8 +115,8 @@ services:
     <<: [ *healthcheck, *labels ]
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - PUBLIC_KEY=""
-      - PRIVATE_KEY=""
+      - PUBLIC_KEY=/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/cert.pem
+      - PRIVATE_KEY=/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/privkey.pem
     # We need to use the DNS-01 method for wildcard domains. Not optional.
     command: >
       certonly
