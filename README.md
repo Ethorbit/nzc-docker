@@ -85,7 +85,7 @@ Now, when you create/start the project (the commands for that are covered in the
 
 If you're 100% confident that the certbot test's errors have stopped and that Certbot succeeded in its test (Note: healthchecks will fail because they look for certificates which can't be generated in testing mode, just ignore them), go ahead and stop the project. Inside .env change `CERTBOT_TESTING` from 1 to 0 and then start the project up again. (If Certbot errors out after this, it won't issue any real certificate for ~1 hour) Certbot should now be able to issue a valid wildcard domain certificate. Once everything starts, visit https://admin.domain and the HTTPS certificate should show as valid.
 
-Note: if the acme\_dns volume is removed, you'll need to redo the whole process. If the IP of the server changes, you may need to re-create the `acme_dns` container or certificate renewal may fail.
+Note: if the acme\_dns or certbot\_conf volumes are removed, you'll need to redo the whole process. If the IP of the server changes, you may need to re-create the `acme_dns` container or certificate renewal may fail.
 
 ## Creating/Removing
 
