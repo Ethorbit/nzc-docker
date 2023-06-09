@@ -22,7 +22,8 @@ services:
     image: redis:6-alpine
     command: redis-server --save "" --appendonly "no"
     networks:
-      - searxng
+      searxng:
+        ipv4_address: 172.50.10.2
     tmpfs:
       - /var/lib/redis
     cap_drop:
@@ -68,6 +69,8 @@ services:
         ipv4_address: 172.50.10.1
       nginx:
     hostname: searxng
+    extra_hosts:
+      - "redis:172.50.10.2"
     ports:
       - 127.0.0.1:${SEARXNG_PORT:-8080}:8080/tcp
     volumes:

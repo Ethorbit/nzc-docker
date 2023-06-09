@@ -62,4 +62,4 @@ ui:
   theme_args:
     simple_style: dark
 redis:
-  url: redis://127.0.0.1:${REDIS_PORT}/
+  url: redis://redis:${REDIS_PORT}/
