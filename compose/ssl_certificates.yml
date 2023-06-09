@@ -106,6 +106,8 @@ services:
   certbot_permissions:
     build:
       context: ./build/permissions
+    profiles:
+      - production
     volumes:
       - certbot_conf:/etc/letsencrypt
       - certbot_www:/var/www/certbot
