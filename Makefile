@@ -25,7 +25,7 @@ ifndef DISK
 	DISK := $(shell df "$(VOLUME_DIR)" | tail -1 | cut -d " " -f 1)
 endif
 
-CERTBOT_TEST_FLAG=$(shell [ "$(CERTBOT_TESTING)" -ge 1 ] && echo "--test-cert " || echo " ") \
+CERTBOT_TEST_FLAG=$(shell [ "$(CERTBOT_TESTING)" -ge 1 ] && echo "--test-cert --dry-run " || echo " ") \
 
 list_yml_command := ls $(compose_dir)/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /"
 
@@ -42,7 +42,7 @@ command_base := set -a && source <(cat .*env "$(config_dir)/users/env") > /dev/n
 				nofiles=$(nofiles) \
 				DISK=$(DISK) HUID=$(shell id -u) HGID=$(shell id -g) PUBLIC_IP=$(shell curl -sS ifconfig.me) \
 				CONTAINER_NAME_PREFIX=$(CONTAINER_NAME_PREFIX) CONTAINER_NAME_SUFFIX=$(CONTAINER_NAME_SUFFIX) \
-				CERTBOT_TEST_FLAG=$(CERTBOT_TEST_FLAG) \
+				CERTBOT_TEST_FLAG="$(CERTBOT_TEST_FLAG)" \
 				docker-compose --profile $(profile) -p $(CONTAINER_NAME_PREFIX)
 command_update := $(command_base) --profile update -f $(compose_dir)/update.yml up
 command_setup_users := $(command_base) --profile setup_users -f $(compose_dir)/users_and_groups.yml up
