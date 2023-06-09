@@ -111,7 +111,8 @@ services:
       - certbot_www:/var/www/certbot
     command: >
       /bin/sh -c 'chown -fR "${cert_u}":"${websites_g}" /etc/letsencrypt/
-      && chown -fR "${cert_u}":"${websites_g}" /var/www/certbot/'
+      && chown -fR "${cert_u}":"${websites_g}" /var/www/certbot/
+      && chmod 750 -R /etc/letsencrypt/'
     cap_drop:
       - ALL
     cap_add:
