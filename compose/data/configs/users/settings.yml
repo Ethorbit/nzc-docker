@@ -25,6 +25,8 @@ groups:
     id: 1809
   rsyslog:
     id: 1810
+  cert:
+    id: 1811
       
 x-staff-defaults: &staff-defaults
   primarygroup: staff
@@ -84,6 +86,10 @@ users:
     id: 1804
     home: false
     primarygroup: rsyslog
+  cert:
+    id: 1805
+    home: false
+    primarygroup: cert
   # Custom users below, replace with your own.
   doormatt:
     id: 1901

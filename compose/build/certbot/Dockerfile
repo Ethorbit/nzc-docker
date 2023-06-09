@@ -1,13 +1,23 @@
 FROM certbot/certbot:v2.3.0 as certbot
+ARG UID
+ARG GID
 COPY ./*.sh /
-VOLUME /etc/letsencrypt
-VOLUME /var/www/certbot
 RUN chmod +x /*.sh &&\
     apk add --no-cache git coreutils &&\
     mkdir /hook_scripts &&\
     mkdir /hook_scripts/pre &&\
     mkdir /hook_scripts/deploy &&\
-    mkdir /hook_scripts/post
+    mkdir /hook_scripts/post &&\
+    addgroup -g "${GID}" certbot &&\
+    adduser -D -u "${UID}" -G certbot certbot &&\
+    chown certbot:certbot /opt/certbot &&\
+    chown certbot:certbot -R /hook_scripts/ &&\
+    chown certbot:certbot /etc/letsencrypt/ &&\
+    mkdir -p /var/www/certbot &&\
+    chown certbot:certbot /var/www/certbot
+VOLUME /etc/letsencrypt
+VOLUME /var/www/certbot
+USER certbot
 
 FROM certbot as acme-dns
 ARG ACMEDNS_URL
@@ -23,5 +33,7 @@ RUN mkdir acme-dns &&\
     mv acme-dns-auth.py /hook_scripts/
 
 FROM acme-dns as finish
+USER root
 RUN apk del git
+USER certbot
 ENTRYPOINT [ "/entrypoint.sh" ]

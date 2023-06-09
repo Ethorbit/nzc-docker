@@ -172,10 +172,6 @@ services:
       - nginx_fastdl:/mnt/nginx_fastdl
       - ./data/configs/nginx/cpu:/mnt/nginx_cpu
       - ./data/configs/nginx:/mnt/nginx_conf
-      - mkcert:/mnt/mkcert
-      - dhparam:/mnt/dhparam
-      - certbot_conf:/mnt/certbot_conf
-      - certbot_www:/mnt/certbot_www
     command: >
       /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
       && chown ${nginx_u}:${websites_g} /mnt/nginx_websites
@@ -193,13 +189,6 @@ services:
       && chmod 2771 /mnt/nginx_fastdl/gmod
       && chown -R root:${admin_g} /mnt/nginx_conf/
       && chmod -R 775 /mnt/nginx_conf/
-      && chown -fR ${nginx_u}:root /mnt/mkcert/
-      && if [ -f '/mnt/dhparam/dhparam.dh' ]; then
-        chown -fR nginx:${admin_g} /mnt/dhparam/
-      fi
-      && if [ -d '/mnt/certbot_conf/live/' ]; then
-        chown -fR nginx:${admin_g} /mnt/certbot_conf/live/
-      fi
       && setfacl -d -m u::rwx,g::rwx,o::- /mnt/nginx_websites
       && setfacl -d -m u::rwx,g::rwx,o::- /mnt/nginx_fastdl"
     cap_drop:
@@ -213,12 +202,6 @@ services:
     depends_on: 
       nginx_links:
         condition: service_completed_successfully
-      dhparam:
-        condition: service_completed_successfully
-      certbot:
-        condition: service_healthy
-      mkcert:
-        condition: service_healthy
     <<: [*labels]
   #restart: on-failure
   # Production nginx, for use only on a machine the real domain is pointing to.

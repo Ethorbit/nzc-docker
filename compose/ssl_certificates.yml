@@ -21,7 +21,7 @@ services:
     command: >
       /bin/sh -c "[[ ! -s /mnt/dhparam.dh ]] 
       && openssl dhparam -out /mnt/dhparam.dh 2048 
-      || exit 0"
+      || chown '${cert_u}':'${websites_g}' /mnt/dhparam.dh && exit 0"
     <<: [ *labels ]
     network_mode: none
     restart: on-failure
@@ -30,6 +30,9 @@ services:
   mkcert:
     build:
       context: ./build/mkcert
+      args:
+        - UID=${cert_u}
+        - GID=${websites_g}
     profiles:
       - development
     volumes:
@@ -100,10 +103,30 @@ services:
       retries: 3
       start_period: 10s
     restart: always
+  certbot_permissions:
+    build:
+      context: ./build/permissions
+    volumes:
+      - certbot_conf:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    command: >
+      /bin/sh -c 'chown -fR "${cert_u}":"${websites_g}" /etc/letsencrypt/
+      && chown -fR "${cert_u}":"${websites_g}" /var/www/certbot/'
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_CHOWN
+      - CAP_FOWNER
+      - CAP_FSETID
+    network_mode: none
+    restart: on-failure
   certbot:
     build:
       context: ./build/certbot
       args:
+        - UID=${cert_u}
+        - GID=${websites_g}
         - ACMEDNS_URL="http://acme_dns"
     profiles:
       - production
@@ -133,6 +156,8 @@ services:
       --verbose 
       -d "${PUBLIC_DOMAIN_NAME},*.${PUBLIC_DOMAIN_NAME}"
     depends_on:
+      certbot_permissions:
+        condition: service_completed_successfully
       acme_dns:
         condition: service_healthy
       rsyslog:
