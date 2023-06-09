@@ -98,7 +98,7 @@ If it works, add a -d after up to keep it in the background.
 To remove:
 `make args='down' cmd`
 
-Pass -v after down to also remove the volumes (which will erase all persistent data).
+Pass -v after down to also remove the volumes (**which will erase all persistent data!**).
 
 ### Entire file(s)
 This project organizes containers in individual files for better readability. The Makefile targets all files by default, but you can override that and specify individual files if needed. Keep in mind that some files rely on others, but an error message should appear indicating what other files you may need to include.
