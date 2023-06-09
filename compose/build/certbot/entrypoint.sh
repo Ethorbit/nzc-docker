@@ -5,7 +5,7 @@ cp -rap /hook_scripts/* /etc/letsencrypt/
 
 reset_on_invalid_cert()
 {
-    /healthcheck.sh || rm -f "$PUBLIC_KEY" && rm -f "$PRIVATE_KEY" && exit 1
+    /healthcheck.sh 2> /dev/null > /dev/null || exit 1
 }
 
 # If container is set to always restart and the command is set to renew by default, 

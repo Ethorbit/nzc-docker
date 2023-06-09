@@ -3,7 +3,7 @@ COPY ./*.sh /
 VOLUME /etc/letsencrypt
 VOLUME /var/www/certbot
 RUN chmod +x /*.sh &&\
-    apk add --no-cache git &&\
+    apk add --no-cache git coreutils &&\
     mkdir /hook_scripts &&\
     mkdir /hook_scripts/pre &&\
     mkdir /hook_scripts/deploy &&\
