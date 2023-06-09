@@ -10,11 +10,13 @@ RUN chmod +x /*.sh &&\
     mkdir /hook_scripts/post &&\
     addgroup -g "${GID}" certbot &&\
     adduser -D -u "${UID}" -G certbot certbot &&\
-    chown certbot:certbot /opt/certbot &&\
+    chown certbot:certbot -R /opt/certbot &&\
     chown certbot:certbot -R /hook_scripts/ &&\
     chown certbot:certbot /etc/letsencrypt/ &&\
     mkdir -p /var/www/certbot &&\
-    chown certbot:certbot /var/www/certbot
+    chown certbot:certbot /var/www/certbot &&\
+    chown certbot:certbot -R /var/log &&\
+    chown certbot:certbot -R /var/lib/letsencrypt/
 VOLUME /etc/letsencrypt
 VOLUME /var/www/certbot
 USER certbot
