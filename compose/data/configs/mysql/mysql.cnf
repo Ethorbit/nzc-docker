@@ -1,0 +1,4 @@
+[mysqld]
+table_definition_cache = 400
+
+[mysql]

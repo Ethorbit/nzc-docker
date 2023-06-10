@@ -31,6 +31,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - mysql:/var/lib/mysql
       - ./data/configs/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./data/configs/mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
     ports:
       - 127.0.0.1:${MYSQL_PORT:-3306}:3306/tcp
     depends_on:
@@ -44,6 +45,11 @@ services:
         mode: non-blocking
         syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
         tag: "mysql"
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
     blkio_config:
       weight: 1000
       device_write_bps:
