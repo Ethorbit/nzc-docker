@@ -42,9 +42,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 50M  
+          memory: 90M
         reservations:
-          memory: 20M 
+          memory: 30M
     blkio_config:
       weight: 50
       device_write_bps:
