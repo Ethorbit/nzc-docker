@@ -2,7 +2,7 @@
 Docker infrastructure used by the nZombies Chronicles community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
 
 ## Prerequisites
-* a Linux install on baremetal or inside a virtual machine
+* a Linux install on baremetal or inside a virtual machine with at least 25GB of free disk space and 3GB of RAM available
 * a domain
 
 Packages:
