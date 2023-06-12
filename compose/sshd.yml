@@ -77,6 +77,7 @@ services:
       - phpmyadmin:/mnt/admin_websites/phpmyadmin
       - portainer_data:/mnt/admin_websites/portainer
       - rsyslog_logs:/mnt/logs:ro
+      - mysql:/mnt/mysql
     depends_on:
       sshd_permissions:
         condition:
@@ -124,3 +125,4 @@ volumes:
   gmod_shared:
   home:
   rsyslog_logs:
+  mysql:

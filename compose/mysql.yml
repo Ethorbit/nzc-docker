@@ -18,7 +18,11 @@ services:
       - CAP_FOWNER
     restart: on-failure
   mysql:
-    image: mysql:8.0.32-debian
+    build:
+      context: ./build/mysql
+      args:
+        - UID=${mysql_u}
+        - GID=${admin_g}
     command: '--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci'
     networks:
       - mysql

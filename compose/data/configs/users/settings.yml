@@ -27,6 +27,8 @@ groups:
     id: 1810
   cert:
     id: 1811
+  mysql:
+    id: 1812
       
 x-staff-defaults: &staff-defaults
   primarygroup: staff
@@ -90,6 +92,10 @@ users:
     id: 1805
     home: false
     primarygroup: cert
+  mysql:
+    id: 1806
+    home: false
+    primarygroup: mysql
   # Custom users below, replace with your own.
   doormatt:
     id: 1901
