@@ -17,5 +17,6 @@ compose/data/configs/fail2ban/jail.d/*
 compose/data/configs/fail2ban/filter.extras.d/*
 compose/data/configs/searxng/*.yml
 compose/data/configs/acme_dns/*.cfg
+compose/data/configs/ssh/sshd_config
 build_docker
 *.log
