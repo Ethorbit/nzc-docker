@@ -34,22 +34,27 @@ x-staff-defaults: &staff-defaults
   primarygroup: staff
   keys:
     - UMASK=027
+x-admin-defaults: &admin-defaults
+  password: "${ADMIN_PASSWORD}"
+  groups:
+    - staff
+    - websites
+    - fastdl
+    - steam
+    - nginx
+    - gmod
+    - svencoop
+    - discord
+    - rsyslog
 users:
   admin:
-    <<: *staff-defaults
     id: ${HUID}
+    <<: [ *staff-defaults, *admin-defaults ]
     primarygroup: admin
-    groups:
-      - staff
-      - websites
-      - fastdl
-      - steam
-      - nginx
-      - gmod
-      - svencoop
-      - discord
-      - rsyslog
-    password: "${ADMIN_PASSWORD}"
+  backups:
+    id: 1900
+    <<: [ *staff-defaults, *admin-defaults ]
+    primarygroup: admin
   php:
     id: 1799
     home: false
