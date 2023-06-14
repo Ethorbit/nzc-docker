@@ -11,10 +11,12 @@ GRANT ALL ON `gmod%`.* TO gmod;
 GRANT ALL ON `svencoop%`.* TO svencoop;
 
 /* Internal users */
-CREATE USER 'gmod'@'gmod' IDENTIFIED BY '${GMOD_PASSWORD}';
-CREATE USER 'svencoop'@'svencoop' IDENTIFIED BY '${SVENCOOP_PASSWORD}';
-GRANT gmod TO 'gmod'@'gmod';
-GRANT svencoop TO 'svencoop'@'svencoop';
+CREATE USER 'gmod'@'${GMOD_1_IP}' IDENTIFIED BY '${GMOD_PASSWORD}';
+CREATE USER 'gmod'@'${GMOD_2_IP}' IDENTIFIED BY '${GMOD_PASSWORD}';
+CREATE USER 'gmod'@'${GMOD_3_IP}' IDENTIFIED BY '${GMOD_PASSWORD}'; 
+CREATE USER 'svencoop'@'${SVENCOOP_IP}' IDENTIFIED BY '${SVENCOOP_PASSWORD}';
+GRANT gmod TO 'gmod'@'${GMOD_1_IP}', 'gmod'@'${GMOD_2_IP}', 'gmod'@'${GMOD_3_IP}';
+GRANT svencoop TO 'svencoop'@'${SVENCOOP_IP}';
 
 /* Your custom users AKA staff members */
 CREATE USER 'doormatt'@'%' IDENTIFIED BY '${DOORMATT_PASSWORD}';
@@ -27,3 +29,5 @@ GRANT gmod TO 'doormatt'@'%', 'blunto'@'%', 'berb'@'%';
 GRANT svencoop TO 'freeman'@'%', 'pepe'@'%';
 SET DEFAULT ROLE gmod TO 'doormatt', 'blunto', 'berb';
 SET DEFAULT ROLE svencoop TO 'freeman', 'pepe';
+
+FLUSH PRIVILEGES;

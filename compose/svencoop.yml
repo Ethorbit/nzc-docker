@@ -51,8 +51,10 @@ services:
     ports:
       - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/udp
     networks:
-      - svencoop
-      - mysql
+      svencoop:
+        ipv4_address: 172.151.1.1
+      mysql:
+    hostname: svencoop
     labels:
       - "io.portainer.accesscontrol.teams=svencoop"
     cpuset: ${SVENCOOP_CPU}
@@ -89,4 +91,7 @@ volumes:
   svencoop:
 networks: 
   svencoop:
-    driver: "bridge"
+    ipam:
+      driver: default 
+      config:
+        - subnet: 172.151.1.0/22
