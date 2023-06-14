@@ -82,8 +82,9 @@ services:
     cpuset: "${GMOD_1_CPU}"
     cpu_shares: 1024
     environment:
-      <<: [ *gmod-env ] 
+      <<: [ *gmod-env ]
       PORT: ${GMOD_1_PORT:-27015}
+      STEAM_LOGIN_TOKEN: ${GMOD_1_LOGIN_TOKEN}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -108,6 +109,7 @@ services:
     environment:
       <<: [ *gmod-env ] 
       PORT: ${GMOD_2_PORT:-27016}
+      STEAM_LOGIN_TOKEN: ${GMOD_2_LOGIN_TOKEN}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -130,8 +132,9 @@ services:
     cpuset: "${GMOD_3_CPU}"
     cpu_shares: 1024
     environment:
-      <<: [ *gmod-env ] 
+      <<: [ *gmod-env ]
       PORT: ${GMOD_3_PORT:-27017}
+      STEAM_LOGIN_TOKEN: ${GMOD_3_LOGIN_TOKEN}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
