@@ -50,6 +50,7 @@ services:
       - ssh
     ports:
       - ${SSH_PORT:-22}:${SSH_PORT:-22}
+    hostname: sshd
     logging:
       driver: syslog
       options:

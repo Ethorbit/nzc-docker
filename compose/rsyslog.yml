@@ -26,6 +26,7 @@ services:
     command: '-n'
     tty: true
     stdin_open: true
+    hostname: rsyslog
     ports:
       - 127.0.0.1:${RSYSLOG_PORT}:514/tcp
     volumes:

@@ -24,6 +24,7 @@ services:
       - NET_ADMIN
       - NET_RAW
     network_mode: host
+    hostname: fail2ban
     command: '-f -x -v'
     volumes:
       - ./data/configs/fail2ban/jail.d:/etc/fail2ban/jail.d
