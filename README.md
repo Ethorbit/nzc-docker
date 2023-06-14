@@ -46,6 +46,9 @@ Note that IO speed limits, RAM limits, and CPU weights are already configured in
 
 You can configure the services in `compose/data`. If there's a template for a file, **use it** or else your changes will get overriden.
 
+### Tokens
+Tokens can be modified in the .tokens.env file.
+
 ### Users and groups
 You can modify passwords in the .users.env file. All containers would need to be restarted after changes.
 
