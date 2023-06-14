@@ -13,10 +13,10 @@ x-defaults: &defaults
     weight: 500
     device_write_bps:
       - path: ${DISK}
-        rate: '50m'
+        rate: '15m'
     device_read_bps:
       - path: ${DISK}
-        rate: '60m'
+        rate: '35m'
     device_read_iops:
       - path: ${DISK}
         rate: 200
