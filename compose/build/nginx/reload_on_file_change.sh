@@ -4,7 +4,7 @@ check_changes() {
     
     inotifywait -m -r \
         -e modify,attrib,move,create,delete \
-        --exclude '.*(template).*' \
+        --exclude '\.swp$|.*template.*' \
         /etc/nginx/snippets/ \
         /etc/nginx/conf.d/ \
         ${NGINX_SSL_DHPARAM} \
@@ -14,7 +14,7 @@ check_changes() {
             nginx -t && nginx -s reload
         done
 
-    check_changes # It should never stop.
+    sleep 1 && check_changes # It should never stop.
 }
 
 check_changes &
