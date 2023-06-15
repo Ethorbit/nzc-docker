@@ -53,7 +53,6 @@ services:
     networks:
       svencoop:
         ipv4_address: 172.151.1.1
-      mysql:
     hostname: svencoop
     labels:
       - "io.portainer.accesscontrol.teams=svencoop"

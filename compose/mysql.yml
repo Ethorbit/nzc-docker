@@ -8,6 +8,7 @@ services:
     env_file:
       - ../.users.env
     environment:
+      - PHP_FPM_IP=172.119.1.1
       - GMOD_1_IP=172.150.1.1
       - GMOD_2_IP=172.150.1.2
       - GMOD_3_IP=172.150.1.3
@@ -31,6 +32,7 @@ services:
     command: '--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci'
     networks:
       - mysql
+      - php
       - gmod
       - svencoop
     hostname: mysql
