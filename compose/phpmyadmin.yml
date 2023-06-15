@@ -7,8 +7,8 @@ services:
         FILE_EXTENSION: "php"
     environment:
       - PHPMYADMIN_BLOWFISH_SECRET=${PHPMYADMIN_BLOWFISH_SECRET}
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=${ADMIN_PASSWORD}
+      - MYSQL_USER=php
+      - MYSQL_PASSWORD=${PHP_PASSWORD}
       - PMA_HOST=mysql
     volumes:
       - ./data/configs/phpmyadmin/template:/mnt/input
@@ -55,7 +55,7 @@ services:
       phpmyadmin_permissions:
         condition:
           service_completed_successfully
-    network_mode: none 
+    network_mode: none
     restart: on-failure
 volumes:
   phpmyadmin:

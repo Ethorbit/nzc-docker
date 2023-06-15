@@ -2,11 +2,8 @@ version: "3.9"
 x-php_fpm: &php_fpm
   #container_name: ${CONTAINER_NAME_PREFIX}-php_fpm-${CONTAINER_NAME_SUFFIX}
   networks:
-    - mysql
-  # - nginx
-  # - dnsmasq
-  #dns:
-  #- 172.100.1.1
+    php:
+      ipv4_address: 172.119.1.1
   hostname: php_fpm
   volumes:
     - /etc/localtime:/etc/localtime:ro
@@ -66,3 +63,9 @@ services:
         - GID=${php_g}
 volumes:
   php_fpm_run:
+networks:
+  php:
+    ipam:
+      driver: default 
+      config:
+        - subnet: 172.119.1.0/22

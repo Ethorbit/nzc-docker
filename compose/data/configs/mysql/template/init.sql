@@ -11,10 +11,12 @@ GRANT ALL ON `gmod%`.* TO gmod;
 GRANT ALL ON `svencoop%`.* TO svencoop;
 
 /* Internal users */
+CREATE USER 'php'@'${PHP_FPM_IP}' IDENTIFIED BY '${PHP_PASSWORD}';
 CREATE USER 'gmod'@'${GMOD_1_IP}' IDENTIFIED BY '${GMOD_PASSWORD}';
 CREATE USER 'gmod'@'${GMOD_2_IP}' IDENTIFIED BY '${GMOD_PASSWORD}';
 CREATE USER 'gmod'@'${GMOD_3_IP}' IDENTIFIED BY '${GMOD_PASSWORD}'; 
 CREATE USER 'svencoop'@'${SVENCOOP_IP}' IDENTIFIED BY '${SVENCOOP_PASSWORD}';
+GRANT ALL PRIVILEGES ON *.* TO 'php'@'${PHP_FPM_IP}' WITH GRANT OPTION;
 GRANT gmod TO 'gmod'@'${GMOD_1_IP}', 'gmod'@'${GMOD_2_IP}', 'gmod'@'${GMOD_3_IP}';
 GRANT svencoop TO 'svencoop'@'${SVENCOOP_IP}';
 
