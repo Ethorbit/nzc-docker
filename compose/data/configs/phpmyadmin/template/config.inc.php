@@ -35,6 +35,15 @@ $cfg['Servers'][$i]['password'] = '${MYSQL_PASSWORD}';
 $cfg['Servers'][$i]['compress'] = false;
 $cfg['Servers'][$i]['AllowNoPassword'] = false;
 
+/* Block logging into internal users */
+$cfg['Servers'][$i]['AllowRoot'] = false;
+$cfg['Servers'][$i]['AllowDeny']['order'] = 'deny,allow';
+$cfg['Servers'][$i]['AllowDeny']['rules'] = array(
+    'deny php from all',
+    'deny gmod from all',
+    'deny svencoop from all'
+);
+
 /**
  * phpMyAdmin configuration storage settings.
  */
