@@ -53,6 +53,10 @@ services:
     networks:
       svencoop:
         ipv4_address: 172.151.1.1
+      nginx:
+    extra_hosts:
+      - "nginx:172.10.1.2"
+      - "site.nginx:172.10.1.2"
     hostname: svencoop
     labels:
       - "io.portainer.accesscontrol.teams=svencoop"
