@@ -7,6 +7,12 @@ x-nginx_environment: &nginx_environment
   PUBLIC_DOMAIN_NAME: ${PUBLIC_DOMAIN_NAME}
   PRIVATE_DOMAIN_NAME: ${PRIVATE_DOMAIN_NAME}
 
+x-nginx_dependencies: &nginx_dependencies
+  rsyslog:
+    condition: service_healthy
+  dhparam:
+    condition: service_completed_successfully
+
 x-nginx: &nginx
   #container_name: ${CONTAINER_NAME_PREFIX}-nginx-${CONTAINER_NAME_SUFFIX}
   build:
@@ -235,8 +241,7 @@ services:
     environment:
       <<: [ *nginx_environment, *nginx_envsubst_production_environment ]
     depends_on:
-      dhparam:
-        condition: service_completed_successfully
+      <<: [ *nginx_dependencies ]
       certbot:
         condition: service_healthy
       nginx_envsubst_conf_production:
@@ -247,8 +252,6 @@ services:
         condition: service_completed_successfully
       php_fpm_production:
         condition: service_started
-      rsyslog:
-        condition: service_healthy
   # Development nginx (because Let's Encrypt only works on the actual domain)
   nginx_envsubst_conf_development:
     <<: [ *nginx_envsubst_conf, *nginx_envsubst_development ]
@@ -280,8 +283,7 @@ services:
     environment:
       <<: [ *nginx_environment, *nginx_envsubst_development_environment ]
     depends_on:
-      dhparam:
-        condition: service_completed_successfully
+      <<: [ *nginx_dependencies ]
       mkcert:
         condition: service_healthy
       nginx_envsubst_conf_development:
@@ -292,8 +294,6 @@ services:
         condition: service_completed_successfully
       php_fpm_development:
         condition: service_started
-      rsyslog:
-        condition: service_healthy
 volumes:
   nginx_cache:
   nginx_websites:
