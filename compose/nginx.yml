@@ -114,6 +114,7 @@ x-nginx_envsubst_environment: &nginx_envsubst_environment
   NGINX_SSL_DHPARAM: "/etc/dhparam/dhparam.dh"
 
 x-nginx_envsubst_production_environment: &nginx_envsubst_production_environment
+  <<: [ *nginx_envsubst_environment ]
   NGINX_SSL_CERT: "/etc/letsencrypt/live/${DOMAIN_NAME}/cert.pem"
   NGINX_SSL_CERT_KEY: "/etc/letsencrypt/live/${DOMAIN_NAME}/privkey.pem"
 
