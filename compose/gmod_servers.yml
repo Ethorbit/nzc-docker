@@ -42,8 +42,9 @@ x-gmod: &gmod
         memory: 256M
   hostname: gmod
   extra_hosts:
-    - "nginx:172.10.1.2"
-    - "site.nginx:172.10.1.2"
+    - "${DOMAIN_NAME}:172.10.1.2"
+    - "${WEBSITE_SUBDOMAIN}.${DOMAIN}:172.10.1.2"
+    - "${FASTDL_SUBDOMAIN}.${DOMAIN}:172.10.1.2"
   labels:
     - "io.portainer.accesscontrol.teams=gmod"
   restart: always

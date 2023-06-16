@@ -39,7 +39,7 @@ services:
       - ${CA_TRUST_STORE_DIR:-/usr/local/share/ca-certificates}:/usr/local/share/ca-certificates
       - mkcert:/mnt
     environment:
-      - PRIVATE_DOMAIN_NAME=${PRIVATE_DOMAIN_NAME}
+      - DOMAIN_NAME=${DOMAIN_NAME}
       - PUBLIC_KEY=/mnt/mkcert.pem
       - PRIVATE_KEY=/mnt/mkcert.key
     <<: [ *healthcheck ]
@@ -56,7 +56,7 @@ services:
       - production
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - PUBLIC_DOMAIN_NAME=${PUBLIC_DOMAIN_NAME}
+      - DOMAIN_NAME=${DOMAIN_NAME}
       - PUBLIC_IP=${PUBLIC_IP}
     volumes:
       - ./data/configs/acme_dns/template:/mnt/input
@@ -141,8 +141,8 @@ services:
     <<: [ *healthcheck, *labels ]
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - PUBLIC_KEY=/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/cert.pem
-      - PRIVATE_KEY=/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/privkey.pem
+      - PUBLIC_KEY=/etc/letsencrypt/live/${DOMAIN_NAME}/cert.pem
+      - PRIVATE_KEY=/etc/letsencrypt/live/${DOMAIN_NAME}/privkey.pem
     # We need to use the DNS-01 method for wildcard domains. Not optional.
     command: >
       certonly
@@ -157,7 +157,7 @@ services:
       --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py 
       --debug-challenges 
       --verbose 
-      -d "${PUBLIC_DOMAIN_NAME},*.${PUBLIC_DOMAIN_NAME}"
+      -d "${DOMAIN_NAME},*.${DOMAIN_NAME}"
     depends_on:
       certbot_permissions:
         condition: service_completed_successfully

@@ -3,10 +3,6 @@ x-labels: &labels
   labels:
     - "io.portainer.accesscontrol.teams=websites"
  
-x-nginx_environment: &nginx_environment
-  PUBLIC_DOMAIN_NAME: ${PUBLIC_DOMAIN_NAME}
-  PRIVATE_DOMAIN_NAME: ${PRIVATE_DOMAIN_NAME}
-
 x-nginx_dependencies: &nginx_dependencies
   rsyslog:
     condition: service_healthy
@@ -38,6 +34,8 @@ x-nginx: &nginx
   extra_hosts:
     - "searxng:172.50.10.1"
     - "portainer:172.60.10.1"
+  env_file:
+    - ../.domain.env
   healthcheck:
     test: "curl -f http://127.0.0.1 || exit 1"
     start_period: 5s
@@ -107,8 +105,6 @@ x-nginx_envsubst_snippets: &nginx_envsubst_snippets
   <<: [*labels]
   restart: on-failure
 x-nginx_envsubst_environment: &nginx_envsubst_environment
-  PUBLIC_DOMAIN_NAME: ${PUBLIC_DOMAIN_NAME}
-  PRIVATE_DOMAIN_NAME: ${PRIVATE_DOMAIN_NAME}
   WEBSITES_ROOT: "/mnt/websites"
   FASTDL_ROOT: "/mnt/fastdl"
   PHPMYADMIN_ROOT: "/mnt/admin/phpmyadmin"
@@ -118,15 +114,15 @@ x-nginx_envsubst_environment: &nginx_envsubst_environment
   NGINX_SSL_DHPARAM: "/etc/dhparam/dhparam.dh"
 
 x-nginx_envsubst_production_environment: &nginx_envsubst_production_environment
-  <<: [ *nginx_envsubst_environment ]
-  NGINX_SSL_CERT: "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/cert.pem"
-  NGINX_SSL_CERT_KEY: "/etc/letsencrypt/live/${PUBLIC_DOMAIN_NAME}/privkey.pem"
+  NGINX_SSL_CERT: "/etc/letsencrypt/live/${DOMAIN_NAME}/cert.pem"
+  NGINX_SSL_CERT_KEY: "/etc/letsencrypt/live/${DOMAIN_NAME}/privkey.pem"
 
 x-nginx_envsubst_production: &nginx_envsubst_production
   profiles:
     - production
   env_file:
     - ../.ports.env
+    - ../.domain.env
   environment:  
     <<: [ *nginx_envsubst_production_environment ]
   <<: [*labels]
@@ -142,6 +138,7 @@ x-nginx_envsubst_development: &nginx_envsubst_development
     - development
   env_file:
     - ../.ports.env
+    - ../.domain.env
   environment:
     <<: [ *nginx_envsubst_development_environment ]
   restart: on-failure
@@ -239,7 +236,7 @@ services:
       - certbot_conf:/etc/letsencrypt:ro
       - certbot_www:/var/www/certbot:ro
     environment:
-      <<: [ *nginx_environment, *nginx_envsubst_production_environment ]
+      <<: [ *nginx_envsubst_production_environment ]
     depends_on:
       <<: [ *nginx_dependencies ]
       certbot:
@@ -281,7 +278,7 @@ services:
       - dhparam:/etc/dhparam:ro
       - mkcert:/etc/mkcert:ro
     environment:
-      <<: [ *nginx_environment, *nginx_envsubst_development_environment ]
+      <<: [ *nginx_envsubst_development_environment ]
     depends_on:
       <<: [ *nginx_dependencies ]
       mkcert:

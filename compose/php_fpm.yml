@@ -4,6 +4,11 @@ x-php_fpm: &php_fpm
   networks:
     php:
       ipv4_address: 172.119.1.1
+    nginx:
+  extra_hosts:
+    - "${DOMAIN_NAME}:172.10.1.2"
+    - "${WEBSITE_SUBDOMAIN}.${DOMAIN}:172.10.1.2"
+    - "${FASTDL_SUBDOMAIN}.${DOMAIN}:172.10.1.2"
   hostname: php_fpm
   volumes:
     - /etc/localtime:/etc/localtime:ro

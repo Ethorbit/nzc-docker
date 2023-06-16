@@ -2,7 +2,7 @@
 [ ! -f "$PRIVATE_KEY" ] && [ ! -f "$PUBLIC_KEY" ] &&\
     mkcert -install &&\
     mkcert -cert-file /mnt/mkcert.pem -key-file /mnt/mkcert.key \
-    ${PRIVATE_DOMAIN_NAME} *.${PRIVATE_DOMAIN_NAME}
+    ${DOMAIN_NAME} *.${DOMAIN_NAME}
 
 chown mkcert:mkcert "$PUBLIC_KEY"
 chown mkcert:mkcert "$PRIVATE_KEY"
