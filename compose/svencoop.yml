@@ -50,6 +50,7 @@ services:
         condition: service_healthy
     ports:
       - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/udp
+      - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/tcp
     networks:
       svencoop:
         ipv4_address: 172.151.1.1

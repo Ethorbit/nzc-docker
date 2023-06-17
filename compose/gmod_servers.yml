@@ -101,6 +101,7 @@ services:
       - gmod_shared:/shared:slave
     ports:
       - ${GMOD_1_PORT:-27015}:${GMOD_1_PORT:-27015}/udp
+      - ${GMOD_1_PORT:-27015}:${GMOD_1_PORT:-27015}/tcp
     logging:
       driver: syslog
       options:
@@ -130,6 +131,7 @@ services:
       - gmod_shared:/shared:slave
     ports:
       - ${GMOD_2_PORT:-27016}:${GMOD_2_PORT:-27016}/udp
+      - ${GMOD_2_PORT:-27016}:${GMOD_2_PORT:-27016}/tcp
     logging:
       driver: syslog
       options:
@@ -159,6 +161,7 @@ services:
       - gmod_shared:/shared:slave
     ports:
       - ${GMOD_3_PORT:-27017}:${GMOD_3_PORT:-27017}/udp
+      - ${GMOD_3_PORT:-27017}:${GMOD_3_PORT:-27017}/tcp
     logging:
       driver: syslog
       options:
