@@ -54,6 +54,7 @@ services:
       svencoop:
         ipv4_address: 172.151.1.1
       nginx:
+      mysql:
     extra_hosts:
       - "${DOMAIN_NAME}:172.10.1.2"
       - "${WEBSITE_SUBDOMAIN}.${DOMAIN}:172.10.1.2"

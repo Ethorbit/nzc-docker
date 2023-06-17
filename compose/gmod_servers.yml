@@ -53,6 +53,7 @@ x-gmod-env: &gmod-env
   RCON_PASSWORD: ${GMOD_PASSWORD} 
 x-gmod-networks: &gmod-networks
   nginx:
+  mysql:
 services:
   gmod_permissions:
     build:

@@ -4,6 +4,7 @@ x-php_fpm: &php_fpm
   networks:
     php:
       ipv4_address: 172.119.1.1
+    mysql:
     nginx:
     gmod:
     svencoop:
