@@ -13,8 +13,8 @@ x-php_fpm: &php_fpm
   #   Internal network -> gameserver container's IP:Port #
   extra_hosts:
     - "${DOMAIN_NAME}:172.10.1.2"
-    - "${WEBSITE_SUBDOMAIN}.${DOMAIN}:172.10.1.2"
-    - "${FASTDL_SUBDOMAIN}.${DOMAIN}:172.10.1.2"
+    - "${WEBSITE_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
+    - "${FASTDL_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
     - "gmod-1.${DOMAIN_NAME}:172.150.1.1"
     - "gmod-2.${DOMAIN_NAME}:172.150.1.2"
     - "gmod-3.${DOMAIN_NAME}:172.150.1.3"
