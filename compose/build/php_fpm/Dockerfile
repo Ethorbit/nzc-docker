@@ -6,7 +6,7 @@ RUN apk add --no-cache php-openssl php-curl \
         php-tokenizer oniguruma-dev \
         libzip-dev libxml2-dev &&\
     docker-php-ext-install mysqli mbstring \
-        zip simplexml xmlwriter xml
+        zip simplexml xmlwriter xml bcmath
 
 FROM modules_for_phpmyadmin as files
 RUN echo "error_log = /proc/1/fd/2" >> $PHP_INI_DIR/php.ini-production &&\
