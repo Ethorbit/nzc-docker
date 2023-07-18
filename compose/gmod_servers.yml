@@ -182,27 +182,27 @@ services:
       - CAP_FSETID
     network_mode: none
     restart: on-failure
-  gmod-1-production:
+  gmod_1_production:
     profiles:
       - production
     <<: [ *gmod-production ]
-  gmod-2-production:
+  gmod_2_production:
     profiles:
       - production
     <<: [ *gmod-production ]
-  gmod-3-production:
+  gmod_3_production:
     profiles:
       - production
     <<: [ *gmod-production ]
-  gmod-1-development:
+  gmod_1_development:
     profiles:
       - development
     <<: [ *gmod-development ]
-  gmod-2-development:
+  gmod_2_development:
     profiles:
       - development
     <<: [ *gmod-development ]
-  gmod-3-development:
+  gmod_3_development:
     profiles:
       - development
     <<: [ *gmod-development ]
