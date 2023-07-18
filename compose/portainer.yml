@@ -14,13 +14,13 @@ x-portainer: &portainer
     -H unix:///var/run/docker.sock 
     --no-analytics 
     --ssl 
-  networks:
-    portainer:
-      ipv4_address: 172.60.10.1
-    nginx:
   environment:
     - PORTAINER_ADMIN_PASSWORD=${ADMIN_PASSWORD}
     - WEB_PAGE=https://127.0.0.1:9443
+  networks:
+    nginx:
+    portainer:
+      ipv4_address: 172.60.10.1
   hostname: portainer
   ports:
     - 127.0.0.1:${PORTAINER_PORT:-9443}:9443/tcp
@@ -46,12 +46,10 @@ x-portainer: &portainer
         memory: 312M 
       reservations:
         memory: 250M
-  depends_on:
   restart: always
-x-portainer-depends: &portainer-depends
+x-portainer-depends: &portainer_depends
   portainer_envsubst:
     condition: service_completed_successfully
-
 services:
   portainer_envsubst:
     build:
@@ -79,7 +77,7 @@ services:
       - development
     <<: [ *portainer ]
     depends_on:
-      <<: [ *portainer-depends ]
+      <<: [ *portainer_depends ]
       nginx_development:
         condition: service_healthy
       php_fpm_development:
@@ -89,7 +87,7 @@ services:
       - production
     <<: [ *portainer ]
     depends_on:
-      <<: [ *portainer-depends ]
+      <<: [ *portainer_depends ]
       nginx_production: 
         condition: service_healthy
       php_fpm_production:
