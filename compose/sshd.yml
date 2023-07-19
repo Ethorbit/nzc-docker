@@ -65,6 +65,14 @@ services:
       - ./data/configs/users/group:/etc/group:ro
       - ./data/configs/users/shadow:/etc/shadow:ro
       - ./data/configs/users/gshadow:/etc/gshadow:ro
+      - /var/lib/lxcfs/proc/cpuinfo:/proc/cpuinfo:rw
+      - /var/lib/lxcfs/proc/diskstats:/proc/diskstats:rw
+      - /var/lib/lxcfs/proc/meminfo:/proc/meminfo:rw
+      - /var/lib/lxcfs/proc/stat:/proc/stat:rw
+      - /var/lib/lxcfs/proc/swaps:/proc/swaps:rw
+      - /var/lib/lxcfs/proc/uptime:/proc/uptime:rw
+      - /var/lib/lxcfs/proc/slabinfo:/proc/slabinfo:rw
+      - /var/lib/lxcfs/sys/devices/system/cpu:/sys/devices/system/cpu:rw
       - ./data/configs/ssh/sshd_config:/etc/ssh/sshd_config
       - sftp:/mnt
       - svencoop:/mnt/game_servers/svencoop
@@ -88,6 +96,7 @@ services:
           service_completed_successfully
       rsyslog:
         condition: service_healthy
+    cpuset: ${SSH_CPU}
     cpu_shares: 256
     deploy:
       resources:

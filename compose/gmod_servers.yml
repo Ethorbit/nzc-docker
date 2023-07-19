@@ -86,6 +86,14 @@ x-gmod_1: &gmod_1
     - ./data/configs/users/group:/etc/group:ro
     - ./data/configs/users/shadow:/etc/shadow:ro
     - ./data/configs/users/gshadow:/etc/gshadow:ro
+    - /var/lib/lxcfs/proc/cpuinfo:/proc/cpuinfo:rw
+    - /var/lib/lxcfs/proc/diskstats:/proc/diskstats:rw
+    - /var/lib/lxcfs/proc/meminfo:/proc/meminfo:rw
+    - /var/lib/lxcfs/proc/stat:/proc/stat:rw
+    - /var/lib/lxcfs/proc/swaps:/proc/swaps:rw
+    - /var/lib/lxcfs/proc/uptime:/proc/uptime:rw
+    - /var/lib/lxcfs/proc/slabinfo:/proc/slabinfo:rw
+    - /var/lib/lxcfs/sys/devices/system/cpu:/sys/devices/system/cpu:rw
     - gmod_1:/home/steam/server:slave
     - gmod_shared:/shared:slave
   ports:
@@ -116,6 +124,14 @@ x-gmod_2: &gmod_2
     - ./data/configs/users/group:/etc/group:ro
     - ./data/configs/users/shadow:/etc/shadow:ro
     - ./data/configs/users/gshadow:/etc/gshadow:ro
+    - /var/lib/lxcfs/proc/cpuinfo:/proc/cpuinfo:rw
+    - /var/lib/lxcfs/proc/diskstats:/proc/diskstats:rw
+    - /var/lib/lxcfs/proc/meminfo:/proc/meminfo:rw
+    - /var/lib/lxcfs/proc/stat:/proc/stat:rw
+    - /var/lib/lxcfs/proc/swaps:/proc/swaps:rw
+    - /var/lib/lxcfs/proc/uptime:/proc/uptime:rw
+    - /var/lib/lxcfs/proc/slabinfo:/proc/slabinfo:rw
+    - /var/lib/lxcfs/sys/devices/system/cpu:/sys/devices/system/cpu:rw
     - gmod_2:/home/steam/server:slave
     - gmod_shared:/shared:slave
   ports:
@@ -146,6 +162,14 @@ x-gmod_3: &gmod_3
     - ./data/configs/users/group:/etc/group:ro
     - ./data/configs/users/shadow:/etc/shadow:ro
     - ./data/configs/users/gshadow:/etc/gshadow:ro
+    - /var/lib/lxcfs/proc/cpuinfo:/proc/cpuinfo:rw
+    - /var/lib/lxcfs/proc/diskstats:/proc/diskstats:rw
+    - /var/lib/lxcfs/proc/meminfo:/proc/meminfo:rw
+    - /var/lib/lxcfs/proc/stat:/proc/stat:rw
+    - /var/lib/lxcfs/proc/swaps:/proc/swaps:rw
+    - /var/lib/lxcfs/proc/uptime:/proc/uptime:rw
+    - /var/lib/lxcfs/proc/slabinfo:/proc/slabinfo:rw
+    - /var/lib/lxcfs/sys/devices/system/cpu:/sys/devices/system/cpu:rw
     - gmod_3:/home/steam/server:slave
     - gmod_shared:/shared:slave
   ports:

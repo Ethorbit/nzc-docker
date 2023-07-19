@@ -2,12 +2,13 @@
 Docker infrastructure used by the nZombies Chronicles community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
 
 ## Prerequisites
-* a Linux install on baremetal or inside a virtual machine with at least 25GB of free disk space and 3GB of RAM available
+* a Linux install (outside of a container) with at least 4 CPU threads (for best performance), 25GB of free disk space and 3GB of RAM available.
 * a domain
 
 Packages:
 * docker with a minimum version of 24.0.0, build 98fdcd769b
 * docker-compose with a minimum version of 2.18.1
+* lxcfs
 * envsubst
 * iptables
 * make
@@ -18,6 +19,12 @@ Check your versions:
 * `docker-compose -v`
 
 You can possibly use earlier versions, but if things don't work as expected - that's why.
+
+Make sure lxcfs is running:
+* `sudo systemctl enable lxcfs --now`
+* `find /var/lib/lxcfs/` You should be seeing many files listed for things like cpu and whatnot
+
+We use lxcfs so that the containerized programs can see the container's resources rather than the host's resources, which helps with performance particularly with Nginx and MySQL. If you don't care and don't want to use lxcfs, you can remove the lxcfs volume mappings from all YAML files.
 
 ## Installing
 * `git clone https://github.com/Ethorbit/nzombies-chronicles-docker.git`
@@ -37,10 +44,10 @@ Everything runs on a single machine, so edit: `.limits.env`
 
 IO limits are applied only to the disk device set by `DISK`. This is because all IO heavy operations take place in volumes, and there is (or should only be) one disk for volumes.
 
-Change which CPU cores each service runs off of. It is already optimized for a 2 core system by default.
+Change which CPU threads each service runs off of. It is already optimized for a system with a maximum of 4 threads by default.
 Keep in mind that Garry's Mod and Sven Co-op are single-threaded.
 
-Note that IO speed limits, RAM limits, and CPU weights are already configured in the yaml files with no variables provided, they should already be optimized well enough.
+Note that IO speed limits, RAM limits and CPU weights are already configured in the yaml files with no variables provided, they should already be optimized well enough.
 
 ## Configuring
 

@@ -27,7 +27,15 @@ x-php_fpm: &php_fpm
     - ./data/configs/users/group:/etc/group:ro
     - ./data/configs/users/shadow:/etc/shadow:ro 
     - ./data/configs/users/gshadow:/etc/gshadow:ro
-    - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
+    #- ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
+    - /var/lib/lxcfs/proc/cpuinfo:/proc/cpuinfo:rw
+    - /var/lib/lxcfs/proc/diskstats:/proc/diskstats:rw
+    - /var/lib/lxcfs/proc/meminfo:/proc/meminfo:rw
+    - /var/lib/lxcfs/proc/stat:/proc/stat:rw
+    - /var/lib/lxcfs/proc/swaps:/proc/swaps:rw
+    - /var/lib/lxcfs/proc/uptime:/proc/uptime:rw
+    - /var/lib/lxcfs/proc/slabinfo:/proc/slabinfo:rw
+    - /var/lib/lxcfs/sys/devices/system/cpu:/sys/devices/system/cpu:rw
     - ./data/configs/php_fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
     - php_fpm_run:/var/run/php-fpm
     - nginx_websites:/mnt/websites
@@ -41,7 +49,7 @@ x-php_fpm: &php_fpm
     && chmod 770 /var/run/php-fpm/sock
     && php-fpm"
   cpuset: ${NGINX_CPU} # Since we handle the workloads of php (which is closely tied to webserver), we might as well use the same cores..
-  cpu_shares: 2048
+  cpu_shares: 1024
   # Website PHP scripts are actually logged to nginx, this only logs the php-fpm process itself (so kinda useless)
   depends_on:
     rsyslog:
