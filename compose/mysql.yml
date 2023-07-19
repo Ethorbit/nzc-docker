@@ -35,6 +35,14 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+      - /var/lib/lxcfs/proc/cpuinfo:/proc/cpuinfo:rw
+      - /var/lib/lxcfs/proc/diskstats:/proc/diskstats:rw
+      - /var/lib/lxcfs/proc/meminfo:/proc/meminfo:rw
+      - /var/lib/lxcfs/proc/stat:/proc/stat:rw
+      - /var/lib/lxcfs/proc/swaps:/proc/swaps:rw
+      - /var/lib/lxcfs/proc/uptime:/proc/uptime:rw
+      - /var/lib/lxcfs/proc/slabinfo:/proc/slabinfo:rw
+      - /var/lib/lxcfs/sys/devices/system/cpu:/sys/devices/system/cpu:rw
       - mysql:/var/lib/mysql
       - ./data/configs/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./data/configs/mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
@@ -57,6 +65,14 @@ services:
       nofile:
         soft: 20000
         hard: 40000
+    cpuset: ${MYSQL_CPU}
+    cpu_shares: 1024
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+        reservations:
+          memory: 512M
     blkio_config:
       weight: 1000
       device_write_bps:
