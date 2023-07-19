@@ -1,4 +1,55 @@
 version: "3.9"
+
+x-portainer: &portainer
+  build:
+    context: ./build/portainer
+  user: 0:${websites_g}
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+    - /var/run/docker.sock:/var/run/docker.sock
+    - portainer_data:/data
+    - ./data/configs/portainer:/configs
+  command: >
+    -H unix:///var/run/docker.sock 
+    --no-analytics 
+    --ssl 
+  environment:
+    - PORTAINER_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    - WEB_PAGE=https://127.0.0.1:9443
+  networks:
+    nginx:
+    portainer:
+      ipv4_address: 172.60.10.1
+  hostname: portainer
+  ports:
+    - 127.0.0.1:${PORTAINER_PORT:-9443}:9443/tcp
+  blkio_config:
+    weight: 450
+    device_write_bps:
+      - path: ${DISK}
+        rate: '80m'
+    device_read_bps:
+      - path: ${DISK}
+        rate: '100m'
+    device_read_iops:
+      - path: ${DISK}
+        rate: 300
+    device_write_iops:
+      - path: ${DISK}
+        rate: 220
+  cpuset: ${PORTAINER_CPU}
+  cpu_shares: 60
+  deploy:
+    resources:
+      limits:
+        memory: 312M 
+      reservations:
+        memory: 250M
+  restart: always
+x-portainer-depends: &portainer_depends
+  portainer_envsubst:
+    condition: service_completed_successfully
 services:
   portainer_envsubst:
     build:
@@ -20,63 +71,26 @@ services:
       - CONTAINER_NAME_PREFIX=${CONTAINER_NAME_PREFIX}
       - CONTAINER_NAME_SUFFIX=${CONTAINER_NAME_SUFFIX}
     restart: on-failure
-  portainer:
-    build:
-      context: ./build/portainer
-    user: 0:${websites_g}
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-      - ./data/configs/portainer:/configs
-    command: >
-      -H unix:///var/run/docker.sock 
-      --no-analytics 
-      --ssl 
-    networks:
-      portainer:
-        ipv4_address: 172.60.10.1
-      nginx:
-    environment:
-      - PORTAINER_ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - WEB_PAGE=https://127.0.0.1:9443
-    hostname: portainer
-    ports:
-      - 127.0.0.1:${PORTAINER_PORT:-9443}:9443/tcp
-    blkio_config:
-      weight: 450
-      device_write_bps:
-        - path: ${DISK}
-          rate: '80m'
-      device_read_bps:
-        - path: ${DISK}
-          rate: '100m'
-      device_read_iops:
-        - path: ${DISK}
-          rate: 300
-      device_write_iops:
-        - path: ${DISK}
-          rate: 220
-    cpuset: ${PORTAINER_CPU}
-    cpu_shares: 60
-    deploy:
-      resources:
-        limits:
-          memory: 312M 
-        reservations:
-          memory: 250M
+  
+  portainer_development:
+    profiles:
+      - development
+    <<: [ *portainer ]
     depends_on:
-      portainer_envsubst:
-        condition: service_completed_successfully
-      nginx_production: 
-        condition: service_healthy
+      <<: [ *portainer_depends ]
       nginx_development:
         condition: service_healthy
       php_fpm_development:
         condition: service_started
+  portainer_production:
+    profiles:
+      - production
+    <<: [ *portainer ]
+    depends_on:
+      <<: [ *portainer_depends ]
+      nginx_production: 
+        condition: service_healthy
       php_fpm_production:
         condition: service_started
-    restart: always
 volumes:
   portainer_data:

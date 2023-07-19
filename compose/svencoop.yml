@@ -1,4 +1,76 @@
 version: "3.9"
+x-svencoop: &svencoop
+  build:
+    context: ./build/svencoop-server
+    args:
+      PUID: ${steam_u}
+      PGID: ${svencoop_g} 
+      UMASK: "007"
+  tty: true
+  stdin_open: true
+  environment:
+    START_ARGS: "-port ${SVENCOOP_PORT:-28015} +maxplayers 12 +map uplink"
+    RCON_PASSWORD: ${SVENCOOP_PASSWORD}
+    STEAM_LOGIN_TOKEN: ${SVENCOOP_LOGIN_TOKEN}
+  volumes: 
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+    - ./data/configs/users/passwd:/etc/passwd:ro
+    - ./data/configs/users/group:/etc/group:ro
+    - ./data/configs/users/shadow:/etc/shadow:ro
+    - ./data/configs/users/gshadow:/etc/gshadow:ro
+    - svencoop:/home/steam/server
+  ports:
+    - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/udp
+    - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/tcp
+  networks:
+    svencoop:
+      ipv4_address: 172.151.1.1
+    nginx:
+    mysql:
+  extra_hosts:
+    - "${DOMAIN_NAME}:172.10.1.2"
+    - "${WEBSITE_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
+    - "${FASTDL_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
+  hostname: svencoop
+  labels:
+    - "io.portainer.accesscontrol.teams=svencoop"
+  cpuset: ${SVENCOOP_CPU}
+  cpu_count: 1
+  cpu_shares: 256
+  deploy:
+    resources:
+      limits:
+        memory: 512M 
+      reservations:
+        memory: 128M  
+  blkio_config:
+    weight: 150
+    device_write_bps:
+      - path: ${DISK}
+        rate: '10m'
+    device_read_bps:
+      - path: ${DISK}
+        rate: '20m'
+    device_read_iops:
+      - path: ${DISK}
+        rate: 120
+    device_write_iops:
+      - path: ${DISK}
+        rate: 100
+  logging:
+    driver: syslog
+    options:
+      mode: non-blocking
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      tag: "svencoop"
+  restart: always
+x-svencoop-depends: &svencoop-depends
+  svencoop_permissions:
+    condition: service_completed_successfully
+  rsyslog:
+    condition: service_healthy
+
 services:
   svencoop_permissions:
     build:
@@ -18,81 +90,22 @@ services:
       - CAP_FSETID
     network_mode: none
     restart: on-failure
-  svencoop:
-    build:
-      context: ./build/svencoop-server
-      args:
-        PUID: ${steam_u}
-        PGID: ${svencoop_g} 
-        UMASK: "007"
-    tty: true
-    stdin_open: true
-    environment:
-      START_ARGS: "-port ${SVENCOOP_PORT:-28015} +maxplayers 12 +map uplink"
-      RCON_PASSWORD: ${SVENCOOP_PASSWORD}
-      STEAM_LOGIN_TOKEN: ${SVENCOOP_LOGIN_TOKEN}
-    volumes: 
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/users/passwd:/etc/passwd:ro
-      - ./data/configs/users/group:/etc/group:ro
-      - ./data/configs/users/shadow:/etc/shadow:ro
-      - ./data/configs/users/gshadow:/etc/gshadow:ro
-      - svencoop:/home/steam/server
+  svencoop_production:
+    profiles:
+      - production
+    <<: [ *svencoop ]
     depends_on:
-      svencoop_permissions:
-        condition: service_completed_successfully
+      <<: [ *svencoop-depends ]
       nginx_production: 
         condition: service_healthy
+  svencoop_development:
+    profiles:
+      - development
+    <<: [ *svencoop ]
+    depends_on:
+      <<: [ *svencoop-depends ]
       nginx_development:
         condition: service_healthy
-      rsyslog:
-        condition: service_healthy
-    ports:
-      - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/udp
-      - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/tcp
-    networks:
-      svencoop:
-        ipv4_address: 172.151.1.1
-      nginx:
-      mysql:
-    extra_hosts:
-      - "${DOMAIN_NAME}:172.10.1.2"
-      - "${WEBSITE_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
-      - "${FASTDL_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
-    hostname: svencoop
-    labels:
-      - "io.portainer.accesscontrol.teams=svencoop"
-    cpuset: ${SVENCOOP_CPU}
-    cpu_count: 1
-    cpu_shares: 256
-    deploy:
-      resources:
-        limits:
-          memory: 512M 
-        reservations:
-          memory: 128M  
-    blkio_config:
-      weight: 150
-      device_write_bps:
-        - path: ${DISK}
-          rate: '10m'
-      device_read_bps:
-        - path: ${DISK}
-          rate: '20m'
-      device_read_iops:
-        - path: ${DISK}
-          rate: 120
-      device_write_iops:
-        - path: ${DISK}
-          rate: 100
-    logging:
-      driver: syslog
-      options:
-        mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-        tag: "svencoop"
-    restart: always
 volumes:
   svencoop:
 networks: 
