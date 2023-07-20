@@ -90,6 +90,7 @@ In case anything was missed, look around in the configs directory.
     * `Subdomain auth Record Type NS ns-auth.<domain name>`
 
 If something on your system is using port 53, **change it!** acme\_dns will only work on 53 because that is the port outside connections check when it comes to domain validation - It's not optional.
+
 Make sure `CERTBOT_TESTING` is set to 1 in the .env file.
 
 Now, when you create/start the project (the commands for that are covered in the next topic) you are going to see the acme\_dns container start up, and **it's going to instruct you to set the value of the** \_**acme-challenge subdomain**. It's going to be something similar to this: `1934c552-0197-12a5-1049-6y84931y217.ns-auth.nzcservers.com` Change `.ns-auth.domain` to `.auth.domain`. After adding what it says, wait about a minute. Certbot may fail the dry-run test a few times before your CNAME changes propagate fully. Once it has propagated, Certbot should tell you that the dry run has succeeded, which means it passed the test. There are no real certificates yet since it's in testing mode, so there will be failed healthchecks.
