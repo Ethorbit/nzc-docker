@@ -4,16 +4,16 @@ x-defaults: &defaults
     weight: 500
     device_write_bps:
       - path: ${DISK}
-        rate: '15m'
+        rate: '60m'
     device_read_bps:
       - path: ${DISK}
-        rate: '35m'
+        rate: '60m'
     device_read_iops:
       - path: ${DISK}
-        rate: 200
+        rate: 5000
     device_write_iops:
       - path: ${DISK}
-        rate: 200
+        rate: 5000
 x-defaults_depends: &defaults_depends
   gmod_permissions:
     condition: service_completed_successfully
@@ -46,7 +46,7 @@ x-gmod: &gmod
   deploy:
     resources:
       limits:
-        memory: 512M
+        memory: 660M
       reservations:
         memory: 256M
   hostname: gmod
