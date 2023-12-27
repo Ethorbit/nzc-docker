@@ -1,5 +1,5 @@
-# nZombies Chronicles
-Docker infrastructure used by the nZombies Chronicles community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
+# NZC Docker
+Docker infrastructure used by the NZC (nZombies Chronicles) game community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
 
 ## Prerequisites
 * a Linux install (outside of a container) with at least 4 CPU threads (for best performance), NVMe storage (For best performance) with 25GB of free disk space, and 3GB of RAM available.
