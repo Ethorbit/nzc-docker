@@ -1,6 +1,6 @@
 -include $(wildcard .*env)
 
-SHELL := /bin/bash 
+SHELL := bash 
 compose_dir := ./compose
 data_dir := $(compose_dir)/data
 config_dir := $(data_dir)/configs
@@ -99,7 +99,7 @@ setup:
 	export PHPMYADMIN_BLOWFISH_SECRET="$(call gen_pass,15)"; \
 	export SEARXNG_SECRET_KEY="$(call gen_pass,15)"; \
 	find "$(CURDIR)/install/" -mindepth 1 -maxdepth 1 -type f -name "*env.template" \
-	-exec /bin/sh -c 'envsubst < {} > $$(basename -s ".template" {}) && echo "Generated $$(basename {})"' \; ; \
+	-exec sh -c 'envsubst < {} > $$(basename -s ".template" {}) && echo "Generated $$(basename {})"' \; ; \
 	echo "Go ahead and fill them out and then start the containers. Use make help for more info."
 
 list-passwords:
@@ -116,7 +116,7 @@ set-passwords:
 	exit; \
 	export -f change_file_passwords; \
 	find "$(CURDIR)" -mindepth 1 -maxdepth 1 -type f -name ".*env" \
-	-exec /bin/sh -c "change_file_passwords {}" \; ; \
+	-exec sh -c "change_file_passwords {}" \; ; \
 	echo "Assigned random passwords."
 	
 update-users:
