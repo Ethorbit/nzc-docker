@@ -1,5 +1,5 @@
 # NZC Docker
-Docker infrastructure used by the NZC (nZombies Chronicles) game community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
+Docker infrastructure used by the nZC (nZombies Chronicles) game community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
 
 ## Prerequisites
 * a Linux install (outside of a container) with at least 4 CPU threads (for best performance), NVMe storage (For best performance) with 25GB of free disk space, and 3GB of RAM available.
@@ -27,8 +27,8 @@ Make sure lxcfs is running:
 We use lxcfs so that the containerized programs can see the container's resources rather than the host's resources, which helps with performance particularly with Nginx and MySQL. If you don't care and don't want to use lxcfs, you can remove the lxcfs volume mappings from all YAML files.
 
 ## Installing
-* `git clone https://github.com/Ethorbit/nzombies-chronicles-docker.git`
-* `cd nzombies-chronicles-docker`
+* `git clone https://github.com/Ethorbit/nzc-docker.git`
+* `cd nzc-docker`
 * `make install` 
 
 env files will be generated.
