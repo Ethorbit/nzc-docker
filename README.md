@@ -1,4 +1,4 @@
-# NZC Docker
+# nZC Docker
 Docker infrastructure used by the nZC (nZombies Chronicles) game community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
 
 ## Prerequisites
