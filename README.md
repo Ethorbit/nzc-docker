@@ -76,8 +76,8 @@ By default, anyone can connect to SearxNG.
 In case anything was missed, look around in the configs directory.
 
 ## Development / Local Environment
-* In .env set `DEVELOPING` to 1 and in .domain.env set `DOMAIN_NAME` to chronicles.local
-* In your host, either use dnsmasq and add `address=/chronicles.local/127.0.0.1` to /etc/dnsmasq.conf OR add an /etc/hosts entry `127.0.0.1 chronicles.local` and an entry for every subdomain used as well.
+* In .env set `DEVELOPING` to 1 and in .domain.env set `DOMAIN_NAME` to nzc.local
+* In your host, either use dnsmasq and add `address=/nzc.local/127.0.0.1` to /etc/dnsmasq.conf OR add an /etc/hosts entry `127.0.0.1 nzc.local` and an entry for every subdomain used as well.
 * After bringing the containers up, go into your browser and set the mkcert certificate (located in CA\_TRUST\_STORE\_DIR) to be trusted. You may need to restart your browser for this to work.
 
 ## Production / Public
