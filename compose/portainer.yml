@@ -7,14 +7,14 @@ x-portainer: &portainer
   volumes:
     - /etc/localtime:/etc/localtime:ro
     - /etc/timezone:/etc/timezone:ro
-    - /var/lib/lxcfs/proc/cpuinfo:/proc/cpuinfo:rw
-    - /var/lib/lxcfs/proc/diskstats:/proc/diskstats:rw
-    - /var/lib/lxcfs/proc/meminfo:/proc/meminfo:rw
-    - /var/lib/lxcfs/proc/stat:/proc/stat:rw
-    - /var/lib/lxcfs/proc/swaps:/proc/swaps:rw
-    - /var/lib/lxcfs/proc/uptime:/proc/uptime:rw
-    - /var/lib/lxcfs/proc/slabinfo:/proc/slabinfo:rw
-    - /var/lib/lxcfs/sys/devices/system/cpu:/sys/devices/system/cpu:rw
+    - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
+    - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
+    - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
+    - ${MOUNT_PROC_STAT}:/proc/stat:rw
+    - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
+    - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
+    - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
+    - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
     - /var/run/docker.sock:/var/run/docker.sock
     - portainer_data:/data
     - ./data/configs/portainer:/configs

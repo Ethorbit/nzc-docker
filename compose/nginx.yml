@@ -229,14 +229,14 @@ services:
       - ./data/configs/users/shadow:/etc/shadow:ro 
       - ./data/configs/users/gshadow:/etc/gshadow:ro
       # - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
-      - /var/lib/lxcfs/proc/cpuinfo:/proc/cpuinfo:rw
-      - /var/lib/lxcfs/proc/diskstats:/proc/diskstats:rw
-      - /var/lib/lxcfs/proc/meminfo:/proc/meminfo:rw
-      - /var/lib/lxcfs/proc/stat:/proc/stat:rw
-      - /var/lib/lxcfs/proc/swaps:/proc/swaps:rw
-      - /var/lib/lxcfs/proc/uptime:/proc/uptime:rw
-      - /var/lib/lxcfs/proc/slabinfo:/proc/slabinfo:rw
-      - /var/lib/lxcfs/sys/devices/system/cpu:/sys/devices/system/cpu:rw
+      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
+      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
+      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
+      - ${MOUNT_PROC_STAT}:/proc/stat:rw
+      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
+      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
+      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
+      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
       - php_fpm_run:/var/run/php-fpm
       - nginx_cache:/mnt/cache
       - nginx_websites:/mnt/websites
@@ -283,14 +283,14 @@ services:
       - ./data/configs/users/shadow:/etc/shadow:ro 
       - ./data/configs/users/gshadow:/etc/gshadow:ro
       # - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
-      - /var/lib/lxcfs/proc/cpuinfo:/proc/cpuinfo:rw
-      - /var/lib/lxcfs/proc/diskstats:/proc/diskstats:rw
-      - /var/lib/lxcfs/proc/meminfo:/proc/meminfo:rw
-      - /var/lib/lxcfs/proc/stat:/proc/stat:rw
-      - /var/lib/lxcfs/proc/swaps:/proc/swaps:rw
-      - /var/lib/lxcfs/proc/uptime:/proc/uptime:rw
-      - /var/lib/lxcfs/proc/slabinfo:/proc/slabinfo:rw
-      - /var/lib/lxcfs/sys/devices/system/cpu:/sys/devices/system/cpu:rw
+      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
+      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
+      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
+      - ${MOUNT_PROC_STAT}:/proc/stat:rw
+      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
+      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
+      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
+      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
       - php_fpm_run:/var/run/php-fpm
       - nginx_cache:/mnt/cache
       - nginx_websites:/mnt/websites

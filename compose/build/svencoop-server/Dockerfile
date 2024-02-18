@@ -1,4 +1,4 @@
-FROM ethorbit/svencoop-server:latest
+FROM ethorbit/svencoop-server-with-dlc:0733510
 ARG PUID
 ARG PGID
 ARG UMASK

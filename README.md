@@ -8,7 +8,7 @@ Docker infrastructure used by the nZC game community. Runs a database, various w
 Packages:
 * docker with a minimum version of 24.0.0, build 98fdcd769b
 * docker-compose with a minimum version of 2.18.1
-* lxcfs
+* lxcfs (optional)
 * envsubst
 * iptables
 * make
@@ -20,11 +20,11 @@ Check your versions:
 
 You can possibly use earlier versions, but if things don't work as expected - that's why.
 
-Make sure lxcfs is running:
+Make sure lxcfs is running (optional):
 * `sudo systemctl enable lxcfs --now`
 * `find /var/lib/lxcfs/` You should be seeing many files listed for things like cpu and whatnot
 
-We use lxcfs so that the containerized programs can see the container's resources rather than the host's resources, which helps with performance particularly with Nginx and MySQL. If you don't care and don't want to use lxcfs, you can remove the lxcfs volume mappings from all YAML files.
+We use lxcfs so that the containerized programs can see the container's resources rather than the host's resources, which helps with performance. If you don't care and don't want to use lxcfs, you can just skip this.
 
 ## Installing
 * `git clone https://github.com/Ethorbit/nzc-docker.git`
@@ -65,12 +65,12 @@ ones (There is usually comments inside config files to indicate where custom use
 Unix users and groups are shared between all containers to make permission management easier, you can configure them in: `compose/data/configs/users/settings.yml`
 **Make sure all ids are unique**. If you want to change ids (AKA UID/GID), then you'll need to re-create all containers as well as volumes, or you'll need to manually exec into each affected container and correct their permissions - that's tedious, so make sure not to change ids if you don't want to ever deal with that.
 
-You will also want to configure MySQL database users, databases and access, which is in: `compose/data/configs/mysql/init.sql.template`
+You will also want to configure MySQL database users, databases and access, which is in: `compose/data/configs/mysql/template/init.sql`
 A basic understanding of SQL syntax will be required.
 
 Lastly, you'll want to manage the Portainer web panel's users and teams in: `compose/data/configs/portainer/templates`
 
-Optionally, if you care about the included SearxNG instance (A privacy respecting meta-search engine), you can add a list of trusted IPs or IP CIDR ranges in: `compose/data/configs/nginx/snippets/admin_ips.conf`
+Optionally, if you care about the included SearxNG instance (A privacy respecting meta-search engine), you can add a list of trusted IPs or IP CIDR ranges in: `compose/data/configs/nginx/snippets/private/admin_ips.conf`
 By default, anyone can connect to SearxNG.
 
 In case anything was missed, look around in the configs directory.
