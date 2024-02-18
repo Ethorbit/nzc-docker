@@ -157,7 +157,7 @@ install: setup set-passwords list-passwords
 check-lxcfs:
 	@if [ "$(LXCFS)" -ne 0 ]; then \
 		if ! command -v lxcfs > /dev/null; then \
-			echo "LXCFS is enabled, but lxcfs is not installed. It's highly advised to have LXCFS for performance, so install it."; \
+			echo "LXCFS is enabled, but lxcfs is not installed. It's highly advised to have LXCFS for performance, so install it. If you don't want it, you can turn it off inside the env file."; \
 			exit 1; \
 		fi; \
 	fi
