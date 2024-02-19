@@ -49,6 +49,8 @@ MOUNT_PROC_SLABINFO := /proc/slabinfo
 MOUNT_SYS_DEVICES_SYSTEM_CPU := /sys/devices/system/cpu
 endif
 
+MOUNT_GUEST_STEAMCMD_GAMES := /home/steam/Steam/steamapps/common
+
 list_yml_command := ls $(compose_dir)/*.yml | grep -Ev '(\.build\.yml)' | sed "s/^/-f /"
 
 define yml_files
@@ -70,6 +72,7 @@ command_base := set -a && source <(cat .*env "$(config_dir)/users/env") > /dev/n
 				MOUNT_PROC_STAT="$(MOUNT_PROC_STAT)" MOUNT_PROC_SLABINFO="$(MOUNT_PROC_SLABINFO)" \
 				MOUNT_PROC_UPTIME="$(MOUNT_PROC_UPTIME)" \
 				MOUNT_SYS_DEVICES_SYSTEM_CPU="$(MOUNT_SYS_DEVICES_SYSTEM_CPU)" \
+				MOUNT_GUEST_STEAMCMD_GAMES="$(MOUNT_GUEST_STEAMCMD_GAMES)" \
 				docker-compose --profile $(profile) -p $(CONTAINER_NAME_PREFIX)
 command_update := $(command_base) --profile update -f $(compose_dir)/update.yml up
 command_setup_users := $(command_base) --profile setup_users -f $(compose_dir)/users_and_groups.yml up

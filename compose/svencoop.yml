@@ -27,7 +27,7 @@ x-svencoop: &svencoop
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - svencoop:/home/steam/server
+    - svencoop:${MOUNT_GUEST_STEAMCMD_GAMES}
   ports:
     - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/udp
     - ${SVENCOOP_PORT:-28015}:${SVENCOOP_PORT:-28015}/tcp

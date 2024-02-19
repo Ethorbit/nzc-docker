@@ -94,7 +94,7 @@ x-gmod_1: &gmod_1
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - gmod_1:/home/steam/server:slave
+    - gmod_1:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
     - gmod_shared:/shared:slave
   ports:
     - ${GMOD_1_PORT:-27015}:${GMOD_1_PORT:-27015}/udp
@@ -132,7 +132,7 @@ x-gmod_2: &gmod_2
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - gmod_2:/home/steam/server:slave
+    - gmod_2:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
     - gmod_shared:/shared:slave
   ports:
     - ${GMOD_2_PORT:-27016}:${GMOD_2_PORT:-27016}/udp
@@ -170,7 +170,7 @@ x-gmod_3: &gmod_3
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - gmod_3:/home/steam/server:slave
+    - gmod_3:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
     - gmod_shared:/shared:slave
   ports:
     - ${GMOD_3_PORT:-27017}:${GMOD_3_PORT:-27017}/udp
