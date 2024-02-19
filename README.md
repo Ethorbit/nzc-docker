@@ -153,6 +153,11 @@ You can use PHPMyAdmin to manage MySQL and Portainer to manage all the container
 
 This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you **do not** use Portainer to re-create containers and **only use it to** start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
 
+## Troubleshooting
+* When starting the project a big error shows up: _Error response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: error setting cgroup config for procHooks process: failed to write "8:2 rbps=10485760": write /sys/fs/cgroup/system.slice/docker_
+
+This is because you didn't set the DISK in the .limits.env file. The Makefile is defaulting the DISK to a partition or volume which Docker cannot use for applying cgroups limits and thus it refuses to start the containers.
+
 ## Help 
 If you need more info on the makefile, use: `make help`
 
