@@ -19,8 +19,8 @@ CREATE USER 'hl2dm'@'${MYSQL_HOST}' IDENTIFIED BY '${HL2DM_PASSWORD}';
 GRANT ALL PRIVILEGES ON *.* TO 'php'@'${MYSQL_HOST}' WITH GRANT OPTION;
 GRANT gmod TO 'gmod'@'${MYSQL_HOST}';
 GRANT svencoop TO 'svencoop'@'${MYSQL_HOST}';
-GRANT synergy TO 'svencoop'@'${MYSQL_HOST}';
-GRANT hl2dm TO 'svencoop'@'${MYSQL_HOST}';
+GRANT synergy TO 'synergy'@'${MYSQL_HOST}';
+GRANT hl2dm TO 'hl2dm'@'${MYSQL_HOST}';
 
 /* Your custom users AKA staff members */
 CREATE USER 'doormatt'@'%' IDENTIFIED BY '${DOORMATT_PASSWORD}';
