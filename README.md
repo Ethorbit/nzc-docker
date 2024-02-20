@@ -185,7 +185,7 @@ The game(s) in question might not be free and are waiting for you to login to yo
 
 * I shutdown game containers before logging in and now they aren't working at all.
 
-Delete all the game(s)'s files from SFTP and restart the container(s).
+Delete all the files for the game(s) in question from SFTP and then restart their container(s).
 
 ## Help 
 If you need more info on the makefile, use: `make help`
