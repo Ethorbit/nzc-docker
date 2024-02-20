@@ -4,7 +4,16 @@ Docker infrastructure used by the nZC game community. Runs a database, various w
 ## Prerequisites
 * a Linux install (outside of a container) with at least 6 CPU threads (for best performance), NVMe storage (For best performance) with 25GB of free disk space, and 5GB of RAM available.
 * a domain
-* a Steam account that owns all the unfree games nZC runs.
+* a Steam account you are willing to login with that owns:
+    * Half-Life
+    * Half-Life: Opposing Force
+    * Half-Life: Blue Shift
+    * Half-Life 2
+    * Half-Life 2: Lost Coast
+    * Half-Life 2: Episode One
+    * Half-Life 2: Episode Two
+
+Note: you can choose not to host some game servers to avoid having to own all of the games.
 
 Packages:
 * docker with a minimum version of 24.0.0, build 98fdcd769b
