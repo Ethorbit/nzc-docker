@@ -12,7 +12,8 @@ x-svencoop: &svencoop
     START_ARGS: "-port ${SVENCOOP_PORT:-28015} +maxplayers 12 +map uplink"
     RCON_PASSWORD: ${SVENCOOP_PASSWORD}
     STEAM_LOGIN_TOKEN: ${SVENCOOP_LOGIN_TOKEN}
-  volumes: 
+    STEAMCMD_LOGIN_USERNAME: ${STEAMCMD_LOGIN_USERNAME}
+  volumes:
     - /etc/localtime:/etc/localtime:ro
     - /etc/timezone:/etc/timezone:ro
     - ./data/configs/users/passwd:/etc/passwd:ro

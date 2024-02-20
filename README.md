@@ -4,6 +4,7 @@ Docker infrastructure used by the nZC game community. Runs a database, various w
 ## Prerequisites
 * a Linux install (outside of a container) with at least 4 CPU threads (for best performance), NVMe storage (For best performance) with 25GB of free disk space, and 3GB of RAM available.
 * a domain
+* a Steam account that owns all the unfree games nZC runs.
 
 Packages:
 * docker with a minimum version of 24.0.0, build 98fdcd769b
@@ -57,7 +58,12 @@ You can configure the services in `compose/data`. If there's a template for a fi
 Tokens can be modified in the .tokens.env file.
 
 ### Users and groups
-You can modify passwords in the .users.env file. All containers would need to be restarted after changes.
+
+User configuration is stored inside the .users.env file.
+
+Some games are not free and will require you to login to your Steam account for server installation / updates, so you **need** to set a steam username and that user **needs** to own all the games this project uses (Unless you don't want to host for those games)
+
+You can modify admin passwords, but if you already created the containers then you'll need to delete the portainer and mysql volume (or run sql queries to update the mysql user) and then ALL the containers would need to be restarted.
 
 You can edit the container user configuration inside `compose/data`, but be careful not to override users and groups that containers rely on to function and to only change the optional
 ones (There is usually comments inside config files to indicate where custom users are, but just use your best judgement).
@@ -144,7 +150,7 @@ Beyond using `docker logs` (Documented on Docker's website), you can also do:
 * `ls -laht /logs/` 
 * `cat <file>`
 
-Staff members can also view rsyslog log files from inside SFTP.
+Staff members can also view rsyslog log files from inside SFTP or from the Portainer web panel covered below.
 
 ### Admin Webpanels
 Provided from the nginx webserver is an admin page with Portainer and PHPMyAdmin to manage most stuff in the browser. - `https://admin.domain/`
@@ -153,10 +159,33 @@ You can use PHPMyAdmin to manage MySQL and Portainer to manage all the container
 
 This project relies on a Makefile which Portainer knows nothing about, so it is recommended that you **do not** use Portainer to re-create containers and **only use it to** start, stop, restart, view logs, attach and enter commands. And while possible, it is also not recommended to use it to change users, teams or passwords - do that in the config files and then re-create the container(s).
 
+### Attaching - typing into active processes
+Some containers (like games) may need you to enter information such as passwords, commands, etc. You can do so with `docker attach <container name>` or by logging into the Portainer webpage and pressing 'Attach' on the selected container.
+
+Attach does not show any history, but you can check logs for that.
+
+Since attaching gives you control of the process, some key combinations (Such as Ctrl+C) can **Terminate** the process! Care should be taken. In the CLI you can do Ctrl+P,Ctrl+C to detach and in Portainer there should be a Detach button, but you can also just close the browser tab.
+
+### Game logins
+
+Some games will say 'Logging into (your steam name set in .users.env)'. These games are actually waiting for you to enter your account's password and will not proceed installation until you do so.
+
+If you're running the project in the foreground, you'll be able to see which games do this, but if you're not, you'll need to view the logs of each game container and check the last log to see if it wants to login to your account.
+
+You can enter a password in games that need it by 'attaching' to the game. After attaching you should see nothing, but if you type your password and hit enter, the game will login. If you mistype your password, the login will fail and you'll need to delete the game's files from inside SFTP and restart the container so you can try again.
+
 ## Troubleshooting
 * When starting the project a big error shows up: _Error response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: error setting cgroup config for procHooks process: failed to write "8:2 rbps=10485760": write /sys/fs/cgroup/system.slice/docker_
 
 This is because you didn't set the DISK in the .limits.env file. The Makefile is defaulting the DISK to a partition or volume which Docker cannot use for applying cgroups limits and thus it refuses to start the containers.
+
+* Project is running, but some game server(s) never install or run.
+
+The game(s) in question might not be free and are waiting for you to login to your Steam account. Check 'Game logins' section under 'Maintenance' for steps on how to proceed.
+
+* I shutdown game containers before logging in and now they aren't working at all.
+
+Delete all the game(s)'s files from SFTP and restart the container(s).
 
 ## Help 
 If you need more info on the makefile, use: `make help`
