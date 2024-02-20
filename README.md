@@ -54,8 +54,8 @@ Everything runs on a single machine, so edit: `.limits.env`
 
 IO limits are applied only to the disk device set by `DISK`. This is because all IO heavy operations take place in volumes, and there is (or should only be) one disk for volumes.
 
-Change which CPU threads each service runs off of. It is already optimized for a system with a maximum of 4 threads by default.
-Keep in mind that Garry's Mod and Sven Co-op are single-threaded.
+Change which CPU threads each service runs off of.
+Keep in mind that the games are single-threaded, so there is no point assigning them more than one thread.
 
 Note that IO speed limits, RAM limits and CPU weights are already configured in the yaml files with no variables provided, they should already be optimized well enough.
 
