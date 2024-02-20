@@ -20,7 +20,7 @@ services:
       chown root:root "/mnt/$$d" 
       chmod 750 "/mnt/$$d"; 
       done
-      && mkdir -p /mnt/game_servers/svencoop
+      && mkdir -p /mnt/game_servers/svencoop /mnt/game_servers/synergy /mnt/game_servers/hl2dm
       && chown root:root /mnt/game_servers/svencoop
       && chmod 751 /mnt/game_servers/svencoop'
     cap_drop:
@@ -76,6 +76,8 @@ services:
       - ./data/configs/ssh/sshd_config:/etc/ssh/sshd_config
       - sftp:/mnt
       - svencoop:/mnt/game_servers/svencoop
+      - synergy:/mnt/game_servers/synergy
+      - hl2dm:/mnt/game_servers/hl2dm
       - gmod_shared:/mnt/game_servers/gmod/shared
       - gmod_1:/mnt/game_servers/gmod/1
       - gmod_2:/mnt/game_servers/gmod/2
@@ -129,6 +131,8 @@ volumes:
   portainer_data:
   discord_sticky_bot:
   svencoop:
+  synergy:
+  hl2dm:
   gmod_1:
   gmod_2:
   gmod_3:

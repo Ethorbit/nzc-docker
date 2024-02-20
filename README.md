@@ -2,7 +2,7 @@
 Docker infrastructure used by the nZC game community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
 
 ## Prerequisites
-* a Linux install (outside of a container) with at least 4 CPU threads (for best performance), NVMe storage (For best performance) with 25GB of free disk space, and 3GB of RAM available.
+* a Linux install (outside of a container) with at least 6 CPU threads or vCPUs (for best performance), NVMe storage (For best performance) with 25GB of free disk space, and 5GB of RAM available.
 * a domain
 * a Steam account that owns all the unfree games nZC runs.
 
@@ -179,13 +179,13 @@ You can enter a password in games that need it by 'attaching' to the game. After
 
 This is because you didn't set the DISK in the .limits.env file. The Makefile is defaulting the DISK to a partition or volume which Docker cannot use for applying cgroups limits and thus it refuses to start the containers.
 
-* Project is running, but some game server(s) never install or run.
+* Project is running, but some game server(s) never even install.
 
 The game(s) in question might not be free and are waiting for you to login to your Steam account. Check 'Game logins' section under 'Maintenance' for steps on how to proceed.
 
-* I shutdown game containers before logging in and now they aren't working at all.
+* Game(s) not working at all after installation or there are missing files / DLCs.
 
-Delete all the files for the game(s) in question from SFTP and then restart their container(s).
+First try updating the game(s) in question and then restarting their container(s). If that doesn't work, delete all the files for the problematic game(s) using SFTP and then restart their container(s).
 
 ## Help 
 If you need more info on the makefile, use: `make help`

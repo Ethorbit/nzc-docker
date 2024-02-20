@@ -1,19 +1,18 @@
 version: "3.9"
-x-svencoop: &svencoop
+x-hl2dm: &hl2dm
   build:
-    context: ./build/svencoop-server
+    context: ./build/hl2dm-server
     args:
       PUID: ${steam_u}
-      PGID: ${svencoop_g} 
+      PGID: ${hl2dm_g}
       UMASK: "007"
   tty: true
   stdin_open: true
   environment:
-    START_ARGS: "-port ${SVENCOOP_PORT:-27115} +maxplayers 12 +map -sp_campaign_portal"
-    PORT: ${SVENCOOP_PORT:-27115}
-    RCON_PASSWORD: ${SVENCOOP_PASSWORD}
-    STEAM_LOGIN_TOKEN: ${SVENCOOP_LOGIN_TOKEN}
-    STEAMCMD_LOGIN_USERNAME: ${STEAMCMD_LOGIN_USERNAME}
+    START_ARGS: "-port ${HL2DM_PORT:-27315} +maxplayers 12 +map dm_lockdown"
+    PORT: ${HL2DM_PORT:-27315}
+    STEAM_LOGIN_TOKEN: ${HL2DM_LOGIN_TOKEN}
+    RCON_PASSWORD: ${HL2DM_PASSWORD}
   volumes:
     - /etc/localtime:/etc/localtime:ro
     - /etc/timezone:/etc/timezone:ro
@@ -29,23 +28,23 @@ x-svencoop: &svencoop
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - svencoop:${MOUNT_GUEST_STEAMCMD_GAMES}
+    - hl2dm:${MOUNT_GUEST_STEAMCMD_GAMES}
   ports:
-    - ${SVENCOOP_PORT:-27115}:${SVENCOOP_PORT:-27115}/udp
-    - ${SVENCOOP_PORT:-27115}:${SVENCOOP_PORT:-27115}/tcp
+    - ${HL2DM_PORT:-27315}:${HL2DM_PORT:-27315}/udp
+    - ${HL2DM_PORT:-27315}:${HL2DM_PORT:-27315}/tcp
   networks:
-    svencoop:
-      ipv4_address: 172.151.1.1
+    hl2dm:
+      ipv4_address: 172.153.1.1
     nginx:
     mysql:
   extra_hosts:
     - "${DOMAIN_NAME}:172.10.1.2"
     - "${WEBSITE_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
     - "${FASTDL_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
-  hostname: svencoop
+  hostname: hl2dm
   labels:
-    - "io.portainer.accesscontrol.teams=svencoop"
-  cpuset: ${SVENCOOP_CPU}
+    - "io.portainer.accesscontrol.teams=hl2dm"
+  cpuset: ${HL2DM_CPU}
   cpu_count: 1
   cpu_shares: 256
   deploy:
@@ -58,37 +57,37 @@ x-svencoop: &svencoop
     weight: 150
     device_write_bps:
       - path: ${DISK}
-        rate: '20m'
+        rate: '60m'
     device_read_bps:
       - path: ${DISK}
-        rate: '30m'
+        rate: '60m'
     device_read_iops:
       - path: ${DISK}
-        rate: 520
+        rate: 1000
     device_write_iops:
       - path: ${DISK}
-        rate: 500
+        rate: 1000
   logging:
     driver: syslog
     options:
       mode: non-blocking
       syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "svencoop"
+      tag: "hl2dm"
   restart: always
-x-svencoop-depends: &svencoop-depends
-  svencoop_permissions:
+x-hl2dm-depends: &hl2dm-depends
+  hl2dm_permissions:
     condition: service_completed_successfully
   rsyslog:
     condition: service_healthy
 
 services:
-  svencoop_permissions:
+  hl2dm_permissions:
     build:
       context: ./build/permissions
     volumes:
-      - svencoop:/mnt
+      - hl2dm:/mnt
     command: >
-      /bin/sh -c 'chown "${steam_u}":"${svencoop_g}" /mnt 
+      /bin/sh -c 'chown "${steam_u}":"${hl2dm_g}" /mnt 
       && chmod 2770 /mnt 
       && setfacl -d -m u::rwx,g::rwx,o::- /mnt'
     cap_drop:
@@ -100,27 +99,27 @@ services:
       - CAP_FSETID
     network_mode: none
     restart: on-failure
-  svencoop_production:
+  hl2dm_production:
     profiles:
       - production
-    <<: [ *svencoop ]
+    <<: [ *hl2dm ]
     depends_on:
-      <<: [ *svencoop-depends ]
+      <<: [ *hl2dm-depends ]
       nginx_production: 
         condition: service_healthy
-  svencoop_development:
+  hl2dm_development:
     profiles:
       - development
-    <<: [ *svencoop ]
+    <<: [ *hl2dm ]
     depends_on:
-      <<: [ *svencoop-depends ]
+      <<: [ *hl2dm-depends ]
       nginx_development:
         condition: service_healthy
 volumes:
-  svencoop:
+  hl2dm:
 networks: 
-  svencoop:
+  hl2dm:
     ipam:
       driver: default 
       config:
-        - subnet: 172.151.1.0/22
+        - subnet: 172.153.1.0/22

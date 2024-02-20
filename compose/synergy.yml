@@ -1,18 +1,18 @@
 version: "3.9"
-x-svencoop: &svencoop
+x-synergy: &synergy
   build:
-    context: ./build/svencoop-server
+    context: ./build/synergy-server
     args:
       PUID: ${steam_u}
-      PGID: ${svencoop_g} 
+      PGID: ${synergy_g}
       UMASK: "007"
   tty: true
   stdin_open: true
   environment:
-    START_ARGS: "-port ${SVENCOOP_PORT:-27115} +maxplayers 12 +map -sp_campaign_portal"
-    PORT: ${SVENCOOP_PORT:-27115}
-    RCON_PASSWORD: ${SVENCOOP_PASSWORD}
-    STEAM_LOGIN_TOKEN: ${SVENCOOP_LOGIN_TOKEN}
+    START_ARGS: "-port ${SYNERGY_PORT:-27215} +maxplayers 12 +map d1_trainstation_01"
+    PORT: ${SYNERGY_PORT:-27215}
+    RCON_PASSWORD: ${SYNERGY_PASSWORD}
+    STEAM_LOGIN_TOKEN: ${SYNERGY_LOGIN_TOKEN}
     STEAMCMD_LOGIN_USERNAME: ${STEAMCMD_LOGIN_USERNAME}
   volumes:
     - /etc/localtime:/etc/localtime:ro
@@ -29,23 +29,23 @@ x-svencoop: &svencoop
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - svencoop:${MOUNT_GUEST_STEAMCMD_GAMES}
+    - synergy:${MOUNT_GUEST_STEAMCMD_GAMES}
   ports:
-    - ${SVENCOOP_PORT:-27115}:${SVENCOOP_PORT:-27115}/udp
-    - ${SVENCOOP_PORT:-27115}:${SVENCOOP_PORT:-27115}/tcp
+    - ${SYNERGY_PORT:-27215}:${SYNERGY_PORT:-27215}/udp
+    - ${SYNERGY_PORT:-27215}:${SYNERGY_PORT:-27215}/tcp
   networks:
-    svencoop:
-      ipv4_address: 172.151.1.1
+    synergy:
+      ipv4_address: 172.152.1.1
     nginx:
     mysql:
   extra_hosts:
     - "${DOMAIN_NAME}:172.10.1.2"
     - "${WEBSITE_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
     - "${FASTDL_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
-  hostname: svencoop
+  hostname: synergy
   labels:
-    - "io.portainer.accesscontrol.teams=svencoop"
-  cpuset: ${SVENCOOP_CPU}
+    - "io.portainer.accesscontrol.teams=synergy"
+  cpuset: ${SYNERGY_CPU}
   cpu_count: 1
   cpu_shares: 256
   deploy:
@@ -58,37 +58,37 @@ x-svencoop: &svencoop
     weight: 150
     device_write_bps:
       - path: ${DISK}
-        rate: '20m'
+        rate: '60m'
     device_read_bps:
       - path: ${DISK}
-        rate: '30m'
+        rate: '60m'
     device_read_iops:
       - path: ${DISK}
-        rate: 520
+        rate: 1000
     device_write_iops:
       - path: ${DISK}
-        rate: 500
+        rate: 1000
   logging:
     driver: syslog
     options:
       mode: non-blocking
       syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "svencoop"
+      tag: "synergy"
   restart: always
-x-svencoop-depends: &svencoop-depends
-  svencoop_permissions:
+x-synergy-depends: &synergy-depends
+  synergy_permissions:
     condition: service_completed_successfully
   rsyslog:
     condition: service_healthy
 
 services:
-  svencoop_permissions:
+  synergy_permissions:
     build:
       context: ./build/permissions
     volumes:
-      - svencoop:/mnt
+      - synergy:/mnt
     command: >
-      /bin/sh -c 'chown "${steam_u}":"${svencoop_g}" /mnt 
+      /bin/sh -c 'chown "${steam_u}":"${synergy_g}" /mnt 
       && chmod 2770 /mnt 
       && setfacl -d -m u::rwx,g::rwx,o::- /mnt'
     cap_drop:
@@ -100,27 +100,27 @@ services:
       - CAP_FSETID
     network_mode: none
     restart: on-failure
-  svencoop_production:
+  synergy_production:
     profiles:
       - production
-    <<: [ *svencoop ]
+    <<: [ *synergy ]
     depends_on:
-      <<: [ *svencoop-depends ]
+      <<: [ *synergy-depends ]
       nginx_production: 
         condition: service_healthy
-  svencoop_development:
+  synergy_development:
     profiles:
       - development
-    <<: [ *svencoop ]
+    <<: [ *synergy ]
     depends_on:
-      <<: [ *svencoop-depends ]
+      <<: [ *synergy-depends ]
       nginx_development:
         condition: service_healthy
 volumes:
-  svencoop:
+  synergy:
 networks: 
-  svencoop:
+  synergy:
     ipam:
       driver: default 
       config:
-        - subnet: 172.151.1.0/22
+        - subnet: 172.152.1.0/22

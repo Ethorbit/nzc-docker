@@ -19,17 +19,21 @@ groups:
     id: 1806
   discord:
     id: 1807
-  gmod:
-    id: 1808
-  svencoop:
-    id: 1809
   rsyslog:
-    id: 1810
+    id: 1808
   cert:
-    id: 1811
+    id: 1809
   mysql:
+    id: 1810
+  svencoop:
+    id: 1811
+  synergy:
     id: 1812
-      
+  hl2dm:
+    id: 1813
+  gmod:
+    id: 1814
+
 x-staff-defaults: &staff-defaults
   primarygroup: staff
   keys:
@@ -42,8 +46,10 @@ x-admin-defaults: &admin-defaults
     - fastdl
     - steam
     - nginx
-    - gmod
     - svencoop
+    - synergy
+    - hl2dm
+    - gmod
     - discord
     - rsyslog
 users:
@@ -74,8 +80,10 @@ users:
       - php
       - fastdl
       - websites
-      - gmod
       - svencoop
+      - synergy
+      - hl2dm
+      - gmod
   steam:
     id: 1802
     home: false
