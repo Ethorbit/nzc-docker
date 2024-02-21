@@ -1,4 +1,5 @@
 version: "3.9"
+
 x-svencoop: &svencoop
   build:
     context: ./build/svencoop-server
@@ -8,44 +9,12 @@ x-svencoop: &svencoop
       UMASK: "007"
   tty: true
   stdin_open: true
-  environment:
-    START_ARGS: "-port ${SVENCOOP_PORT:-27115} +maxplayers 12 +map -sp_campaign_portal"
-    PORT: ${SVENCOOP_PORT:-27115}
-    RCON_PASSWORD: ${SVENCOOP_PASSWORD}
-    STEAM_LOGIN_TOKEN: ${SVENCOOP_LOGIN_TOKEN}
-    STEAMCMD_LOGIN_USERNAME: ${STEAMCMD_LOGIN_USERNAME}
-  volumes:
-    - /etc/localtime:/etc/localtime:ro
-    - /etc/timezone:/etc/timezone:ro
-    - ./data/configs/users/passwd:/etc/passwd:ro
-    - ./data/configs/users/group:/etc/group:ro
-    - ./data/configs/users/shadow:/etc/shadow:ro
-    - ./data/configs/users/gshadow:/etc/gshadow:ro
-    - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-    - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-    - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-    - ${MOUNT_PROC_STAT}:/proc/stat:rw
-    - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-    - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-    - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-    - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - svencoop:${MOUNT_GUEST_STEAMCMD_GAMES}
-  ports:
-    - ${SVENCOOP_PORT:-27115}:${SVENCOOP_PORT:-27115}/udp
-    - ${SVENCOOP_PORT:-27115}:${SVENCOOP_PORT:-27115}/tcp
-  networks:
-    svencoop:
-      ipv4_address: 172.151.1.1
-    nginx:
-    mysql:
   extra_hosts:
     - "${DOMAIN_NAME}:172.10.1.2"
     - "${WEBSITE_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
     - "${FASTDL_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
-  hostname: svencoop
   labels:
     - "io.portainer.accesscontrol.teams=svencoop"
-  cpuset: ${SVENCOOP_CPU}
   cpu_count: 1
   cpu_shares: 256
   deploy:
@@ -68,13 +37,95 @@ x-svencoop: &svencoop
     device_write_iops:
       - path: ${DISK}
         rate: 500
+
+x-svencoop-networks: &svencoop_networks
+  nginx:
+  mysql:
+
+x-svencoop-1: &svencoop_1
+  <<: [ *svencoop ]
+  environment:
+    START_ARGS: "-port ${SVENCOOP_1_PORT:-27115} +maxplayers 12 +map -sp_campaign_portal"
+    PORT: ${SVENCOOP_1_PORT:-27115}
+    RCON_PASSWORD: ${SVENCOOP_PASSWORD}
+    STEAM_LOGIN_TOKEN: ${SVENCOOP_1_LOGIN_TOKEN}
+    STEAMCMD_LOGIN_USERNAME: ${STEAMCMD_LOGIN_USERNAME}
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+    - ./data/configs/users/passwd:/etc/passwd:ro
+    - ./data/configs/users/group:/etc/group:ro
+    - ./data/configs/users/shadow:/etc/shadow:ro
+    - ./data/configs/users/gshadow:/etc/gshadow:ro
+    - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
+    - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
+    - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
+    - ${MOUNT_PROC_STAT}:/proc/stat:rw
+    - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
+    - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
+    - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
+    - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
+    - svencoop_1:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
+    - svencoop_shared:/shared:slave
+  ports:
+    - ${SVENCOOP_1_PORT:-27115}:${SVENCOOP_1_PORT:-27115}/udp
+    - ${SVENCOOP_1_PORT:-27115}:${SVENCOOP_1_PORT:-27115}/tcp
+  networks:
+    svencoop:
+      ipv4_address: 172.151.1.1
+    <<: [ *svencoop_networks ]
+  hostname: svencoop_1
+  cpuset: ${SVENCOOP_1_CPU}
   logging:
     driver: syslog
     options:
       mode: non-blocking
       syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "svencoop"
+      tag: "svencoop_1"
   restart: always
+
+x-svencoop-2: &svencoop_2
+  <<: [ *svencoop ]
+  environment:
+    START_ARGS: "-port ${SVENCOOP_2_PORT:-27116} +maxplayers 12 +map -sp_campaign_portal"
+    PORT: ${SVENCOOP_2_PORT:-27116}
+    RCON_PASSWORD: ${SVENCOOP_PASSWORD}
+    STEAM_LOGIN_TOKEN: ${SVENCOOP_2_LOGIN_TOKEN}
+    STEAMCMD_LOGIN_USERNAME: ${STEAMCMD_LOGIN_USERNAME}
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+    - ./data/configs/users/passwd:/etc/passwd:ro
+    - ./data/configs/users/group:/etc/group:ro
+    - ./data/configs/users/shadow:/etc/shadow:ro
+    - ./data/configs/users/gshadow:/etc/gshadow:ro
+    - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
+    - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
+    - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
+    - ${MOUNT_PROC_STAT}:/proc/stat:rw
+    - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
+    - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
+    - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
+    - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
+    - svencoop_2:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
+    - svencoop_shared:/shared:slave
+  ports:
+    - ${SVENCOOP_2_PORT:-27116}:${SVENCOOP_2_PORT:-27116}/udp
+    - ${SVENCOOP_2_PORT:-27116}:${SVENCOOP_2_PORT:-27116}/tcp
+  networks:
+    svencoop:
+      ipv4_address: 172.151.1.2
+    <<: [ *svencoop_networks ]
+  hostname: svencoop_2
+  cpuset: ${SVENCOOP_2_CPU}
+  logging:
+    driver: syslog
+    options:
+      mode: non-blocking
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      tag: "svencoop_2"
+  restart: always
+
 x-svencoop-depends: &svencoop-depends
   svencoop_permissions:
     condition: service_completed_successfully
@@ -86,11 +137,15 @@ services:
     build:
       context: ./build/permissions
     volumes:
-      - svencoop:/mnt
+      - svencoop_shared:/mnt/shared
+      - svencoop_1:/mnt/1
+      - svencoop_2:/mnt/2
     command: >
-      /bin/sh -c 'chown "${steam_u}":"${svencoop_g}" /mnt 
-      && chmod 2770 /mnt 
-      && setfacl -d -m u::rwx,g::rwx,o::- /mnt'
+      /bin/sh -c 'for d in shared 1 2; do 
+      chown "${steam_u}":"${svencoop_g}" "/mnt/$$d" 
+      && chmod 2770 "/mnt/$$d" 
+      && setfacl -d -m u::rwx,g::rwx,o::- "/mnt/$$d"; 
+      done'
     cap_drop:
       - ALL 
     cap_add:
@@ -100,24 +155,42 @@ services:
       - CAP_FSETID
     network_mode: none
     restart: on-failure
-  svencoop_production:
+  svencoop_1_production:
     profiles:
       - production
-    <<: [ *svencoop ]
+    <<: [ *svencoop_1 ]
     depends_on:
       <<: [ *svencoop-depends ]
       nginx_production: 
         condition: service_healthy
-  svencoop_development:
+  svencoop_1_development:
     profiles:
       - development
-    <<: [ *svencoop ]
+    <<: [ *svencoop_1 ]
+    depends_on:
+      <<: [ *svencoop-depends ]
+      nginx_development:
+        condition: service_healthy
+  svencoop_2_production:
+    profiles:
+      - production
+    <<: [ *svencoop_2 ]
+    depends_on:
+      <<: [ *svencoop-depends ]
+      nginx_production: 
+        condition: service_healthy
+  svencoop_2_development:
+    profiles:
+      - development
+    <<: [ *svencoop_2 ]
     depends_on:
       <<: [ *svencoop-depends ]
       nginx_development:
         condition: service_healthy
 volumes:
-  svencoop:
+  svencoop_1:
+  svencoop_2:
+  svencoop_shared:
 networks: 
   svencoop:
     ipam:

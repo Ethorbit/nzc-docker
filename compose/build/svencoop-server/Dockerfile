@@ -5,9 +5,11 @@ ARG UMASK
 ENV UMASK=${UMASK}
 COPY ./server-start.sh "${IMAGE_DIR}/${START_SCRIPT}"
 USER root
-RUN usermod -u "$PUID" ${USER} &&\ 
-   groupmod -g "$PGID" ${USER} &&\
-   chown ${USER}:${USER} "${IMAGE_DIR}/${START_SCRIPT}" &&\
-   chown ${USER}:${USER} -R ${HOME_DIR} &&\ 
-   chmod 2770 "${IMAGE_DIR}/${START_SCRIPT}"
+RUN apt update &&\
+    apt-get install -y python3 &&\
+    usermod -u "$PUID" ${USER} &&\
+    groupmod -g "$PGID" ${USER} &&\
+    chown ${USER}:${USER} "${IMAGE_DIR}/${START_SCRIPT}" &&\
+    chown ${USER}:${USER} -R ${HOME_DIR} &&\
+    chmod 2770 "${IMAGE_DIR}/${START_SCRIPT}"
 USER ${USER}

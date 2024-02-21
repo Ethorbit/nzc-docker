@@ -20,8 +20,9 @@ services:
       chown root:root "/mnt/$$d" 
       chmod 750 "/mnt/$$d"; 
       done
-      && mkdir -p /mnt/game_servers/gmod/alpha /mnt/game_servers/gmod/bravo /mnt/game_servers/gmod/charlie
-      && mkdir -p /mnt/game_servers/svencoop /mnt/game_servers/synergy /mnt/game_servers/hl2dm'
+      && mkdir -p /mnt/game_servers/gmod/shared /mnt/game_servers/gmod/alpha /mnt/game_servers/gmod/bravo /mnt/game_servers/gmod/charlie
+      && mkdir -p /mnt/game_servers/svencoop/shared /mnt/game_servers/svencoop/1 /mnt/game_servers/svencoop/2
+      && mkdir -p /mnt/game_servers/synergy /mnt/game_servers/hl2dm'
     cap_drop:
       - ALL 
     cap_add:
@@ -74,7 +75,9 @@ services:
       - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
       - ./data/configs/ssh/sshd_config:/etc/ssh/sshd_config
       - sftp:/mnt
-      - svencoop:/mnt/game_servers/svencoop
+      - svencoop_shared:/mnt/game_servers/svencoop/shared
+      - svencoop_1:/mnt/game_servers/svencoop/1
+      - svencoop_2:/mnt/game_servers/svencoop/2
       - synergy:/mnt/game_servers/synergy
       - hl2dm:/mnt/game_servers/hl2dm
       - gmod_alpha_shared:/mnt/game_servers/gmod/alpha/shared
@@ -133,7 +136,9 @@ volumes:
   phpmyadmin:
   portainer_data:
   discord_sticky_bot:
-  svencoop:
+  svencoop_shared:
+  svencoop_1:
+  svencoop_2:
   synergy:
   hl2dm:
   gmod_alpha_shared:

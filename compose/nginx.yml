@@ -152,9 +152,9 @@ services:
     volumes:
       - nginx_fastdl:/mnt/fastdl
     command: >
-      /bin/sh -c "mkdir -p /mnt/links/svencoop/svencoop
-      && rm -f /mnt/fastdl/svencoop
-      && ln -sf /mnt/links/svencoop/svencoop /mnt/fastdl/svencoop"
+      /bin/sh -c "mkdir -p /mnt/links/svencoop_shared
+      && rm -f /mnt/fastdl/svencoop_shared
+      && ln -sf /mnt/links/svencoop_shared /mnt/fastdl/svencoop_shared"
     cap_drop:
       - ALL 
     cap_add:
@@ -255,7 +255,7 @@ services:
       - nginx_websites:/mnt/websites
       - nginx_fastdl:/mnt/fastdl
       - phpmyadmin:/mnt/admin/phpmyadmin
-      - svencoop:/mnt/links/svencoop:ro
+      - svencoop_shared:/mnt/links/svencoop_shared:ro
       - ./data/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/configs/nginx/snippets:/etc/nginx/snippets:ro
       - ./data/configs/nginx/conf.d:/etc/nginx/conf.d:ro
@@ -309,7 +309,7 @@ services:
       - nginx_websites:/mnt/websites
       - nginx_fastdl:/mnt/fastdl
       - phpmyadmin:/mnt/admin/phpmyadmin
-      - svencoop:/mnt/links/svencoop:ro
+      - svencoop_shared:/mnt/links/svencoop_shared:ro
       - ./data/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./data/configs/nginx/snippets:/etc/nginx/snippets:ro
       - ./data/configs/nginx/conf.d:/etc/nginx/conf.d:ro
