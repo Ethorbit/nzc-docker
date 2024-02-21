@@ -1,22 +1,25 @@
 CREATE USER 'admin'@'%' IDENTIFIED BY '${ADMIN_PASSWORD}';
 GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;
 
-CREATE DATABASE gmod;
 CREATE DATABASE gmod_alpha;
 CREATE DATABASE gmod_bravo;
 CREATE DATABASE gmod_charlie;
 CREATE DATABASE svencoop;
+CREATE DATABASE synergy;
+CREATE DATABASE hl2dm;
 
-CREATE ROLE gmod;
 CREATE ROLE gmod_alpha;
 CREATE ROLE gmod_bravo;
 CREATE ROLE gmod_charlie;
 CREATE ROLE svencoop;
-GRANT ALL ON `gmod%`.* TO gmod;
+CREATE ROLE synergy;
+CREATE ROLE hl2dm;
 GRANT ALL ON `gmod_alpha%`.* TO gmod_alpha;
 GRANT ALL ON `gmod_bravo%`.* TO gmod_bravo;
 GRANT ALL ON `gmod_charlie%`.* TO gmod_charlie;
 GRANT ALL ON `svencoop%`.* TO svencoop;
+GRANT ALL ON `synergy%`.* TO synergy;
+GRANT ALL ON `hl2dm%`.* TO hl2dm;
 
 /* Internal users */
 CREATE USER 'php'@'${MYSQL_HOST}' IDENTIFIED BY '${PHP_PASSWORD}';
@@ -27,7 +30,6 @@ CREATE USER 'svencoop'@'${MYSQL_HOST}' IDENTIFIED BY '${SVENCOOP_PASSWORD}';
 CREATE USER 'synergy'@'${MYSQL_HOST}' IDENTIFIED BY '${SYNERGY_PASSWORD}';
 CREATE USER 'hl2dm'@'${MYSQL_HOST}' IDENTIFIED BY '${HL2DM_PASSWORD}';
 GRANT ALL PRIVILEGES ON *.* TO 'php'@'${MYSQL_HOST}' WITH GRANT OPTION;
-GRANT gmod TO 'gmod'@'${MYSQL_HOST}';
 GRANT gmod_alpha TO 'gmod_alpha'@'${MYSQL_HOST}';
 GRANT gmod_bravo TO 'gmod_bravo'@'${MYSQL_HOST}';
 GRANT gmod_charlie TO 'gmod_charlie'@'${MYSQL_HOST}';
