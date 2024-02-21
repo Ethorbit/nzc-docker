@@ -1,6 +1,12 @@
 [
     { 
-        "Name": "gmod"
+        "Name": "gmod_alpha"
+    },
+    { 
+        "Name": "gmod_bravo"
+    },
+    { 
+        "Name": "gmod_charlie"
     },
     { 
         "Name": "svencoop"

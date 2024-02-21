@@ -26,13 +26,17 @@ groups:
   mysql:
     id: 1810
   svencoop:
-    id: 1811
+    id: 1820
   synergy:
-    id: 1812
+    id: 1850
   hl2dm:
-    id: 1813
-  gmod:
-    id: 1814
+    id: 1880
+  gmod_alpha:
+    id: 1910
+  gmod_bravo:
+    id: 1911
+  gmod_charlie:
+    id: 1912
 
 x-staff-defaults: &staff-defaults
   primarygroup: staff
@@ -49,7 +53,9 @@ x-admin-defaults: &admin-defaults
     - svencoop
     - synergy
     - hl2dm
-    - gmod
+    - gmod_alpha
+    - gmod_bravo
+    - gmod_charlie
     - discord
     - rsyslog
 users:
@@ -83,14 +89,20 @@ users:
       - svencoop
       - synergy
       - hl2dm
-      - gmod
+      - gmod_alpha
+      - gmod_bravo
+      - gmod_charlie
   steam:
     id: 1802
     home: false
     primarygroup: steam
     groups:
-      - gmod
+      - gmod_alpha
+      - gmod_bravo
+      - gmod_charlie
       - svencoop
+      - synergy
+      - hl2dm
   stickybot:
     id: 1803
     home: false
@@ -115,21 +127,21 @@ users:
     <<: *staff-defaults
     groups:
       - fastdl
-      - gmod
+      - gmod_alpha
     password: "${DOORMATT_PASSWORD}"
   blunto:
     id: 1902
     <<: *staff-defaults
     groups:
       - fastdl
-      - gmod
+      - gmod_alpha
     password: "${BLUNTO_PASSWORD}"
   berb:
     id: 1903
     <<: *staff-defaults
     groups:
       - fastdl
-      - gmod
+      - gmod_alpha
     password: "${BERB_PASSWORD}"
   pepe:
     id: 1904

@@ -20,9 +20,8 @@ services:
       chown root:root "/mnt/$$d" 
       chmod 750 "/mnt/$$d"; 
       done
-      && mkdir -p /mnt/game_servers/svencoop /mnt/game_servers/synergy /mnt/game_servers/hl2dm
-      && chown root:root /mnt/game_servers/svencoop
-      && chmod 751 /mnt/game_servers/svencoop'
+      && mkdir -p /mnt/game_servers/gmod/alpha /mnt/game_servers/gmod/bravo /mnt/game_servers/gmod/charlie
+      && mkdir -p /mnt/game_servers/svencoop /mnt/game_servers/synergy /mnt/game_servers/hl2dm'
     cap_drop:
       - ALL 
     cap_add:
@@ -78,10 +77,14 @@ services:
       - svencoop:/mnt/game_servers/svencoop
       - synergy:/mnt/game_servers/synergy
       - hl2dm:/mnt/game_servers/hl2dm
-      - gmod_shared:/mnt/game_servers/gmod/shared
-      - gmod_1:/mnt/game_servers/gmod/1
-      - gmod_2:/mnt/game_servers/gmod/2
-      - gmod_3:/mnt/game_servers/gmod/3
+      - gmod_alpha_shared:/mnt/game_servers/gmod/alpha/shared
+      - gmod_bravo_shared:/mnt/game_servers/gmod/bravo/shared
+      - gmod_charlie_shared:/mnt/game_servers/gmod/charlie/shared
+      - gmod_alpha_1:/mnt/game_servers/gmod/alpha/1
+      - gmod_alpha_2:/mnt/game_servers/gmod/alpha/2
+      - gmod_alpha_3:/mnt/game_servers/gmod/alpha/3
+      - gmod_bravo_1:/mnt/game_servers/gmod/bravo/1
+      - gmod_charlie_1:/mnt/game_servers/gmod/charlie/1
       - nginx_fastdl:/mnt/fastdl
       - nginx_websites:/mnt/websites
       - discord_sticky_bot:/mnt/discord_bots/stickies
@@ -133,10 +136,14 @@ volumes:
   svencoop:
   synergy:
   hl2dm:
-  gmod_1:
-  gmod_2:
-  gmod_3:
-  gmod_shared:
+  gmod_alpha_shared:
+  gmod_bravo_shared:
+  gmod_charlie_shared:
+  gmod_alpha_1:
+  gmod_alpha_2:
+  gmod_alpha_3:
+  gmod_bravo_1:
+  gmod_charlie_1:
   home:
   rsyslog_logs:
   mysql:

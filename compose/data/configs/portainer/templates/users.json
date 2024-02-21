@@ -3,19 +3,19 @@
         "Username": "doormatt",
         "Password": "${DOORMATT_PASSWORD}",
         "Role": 2,
-        "Teams": [ "gmod" ]
+        "Teams": [ "gmod_alpha" ]
     },
     {
         "Username": "blunto",
         "Password": "${BLUNTO_PASSWORD}",
         "Role": 2,
-        "Teams": [ "gmod" ]
+        "Teams": [ "gmod_alpha" ]
     },
     {
         "Username": "berb",
         "Password": "${BERB_PASSWORD}",
         "Role": 2,
-        "Teams": [ "gmod" ]
+        "Teams": [ "gmod_alpha" ]
     },
     {
         "Username": "freeman",
