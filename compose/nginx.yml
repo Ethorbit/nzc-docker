@@ -21,7 +21,8 @@ x-nginx: &nginx
     - ${php_g}
     - ${svencoop_g}
     - ${synergy_g}
-    - ${hl2dm_g}
+    - ${hl2dm_alpha_g}
+    - ${hl2dm_bravo_g}
     - ${gmod_alpha_g}
     - ${gmod_bravo_g}
     - ${gmod_charlie_g}
@@ -191,14 +192,17 @@ services:
       && chmod 700 -R /mnt/nginx_cache/
       && chown -R ${nginx_u}:${nginx_g} /mnt/nginx_cache/
       && mkdir -p /mnt/nginx_fastdl/gmod_alpha /mnt/nginx_fastdl/gmod_bravo /mnt/nginx_fastdl/gmod_charlie
-      && mkdir -p /mnt/nginx_fastdl/synergy /mnt/nginx_fastdl/hl2dm
+      && mkdir -p /mnt/nginx_fastdl/hl2dm_alpha /mnt/nginx_fastdl/hl2dm_bravo
+      && mkdir -p /mnt/nginx_fastdl/synergy
       && chown ${nginx_u}:${synergy_g} /mnt/nginx_fastdl/synergy
-      && chown ${nginx_u}:${hl2dm_g} /mnt/nginx_fastdl/hl2dm
+      && chown ${nginx_u}:${hl2dm_alpha_g} /mnt/nginx_fastdl/hl2dm_alpha
+      && chown ${nginx_u}:${hl2dm_bravo_g} /mnt/nginx_fastdl/hl2dm_bravo
       && chown ${nginx_u}:${gmod_alpha_g} /mnt/nginx_fastdl/gmod_alpha
       && chown ${nginx_u}:${gmod_bravo_g} /mnt/nginx_fastdl/gmod_bravo
       && chown ${nginx_u}:${gmod_charlie_g} /mnt/nginx_fastdl/gmod_charlie
       && chmod 2771 /mnt/nginx_fastdl/synergy
-      && chmod 2771 /mnt/nginx_fastdl/hl2dm
+      && chmod 2771 /mnt/nginx_fastdl/hl2dm_alpha
+      && chmod 2771 /mnt/nginx_fastdl/hl2dm_bravo
       && chmod 2771 /mnt/nginx_fastdl/gmod_alpha
       && chmod 2771 /mnt/nginx_fastdl/gmod_bravo
       && chmod 2771 /mnt/nginx_fastdl/gmod_charlie

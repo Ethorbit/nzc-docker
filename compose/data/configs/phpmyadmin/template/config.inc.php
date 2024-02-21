@@ -46,7 +46,8 @@ $cfg['Servers'][$i]['AllowDeny']['rules'] = array(
     'deny gmod_charlie from all',
     'deny svencoop from all',
     'deny synergy from all',
-    'deny hl2dm from all'
+    'deny hl2dm_alpha from all',
+    'deny hl2dm_bravo from all'
 );
 
 /**

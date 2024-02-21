@@ -25,7 +25,8 @@ x-php_fpm: &php_fpm
     - "svencoop-1.${DOMAIN_NAME}:172.151.1.1"
     - "svencoop-2.${DOMAIN_NAME}:172.151.1.2"
     - "synergy.${DOMAIN_NAME}:172.152.1.1"
-    - "hl2dm.${DOMAIN_NAME}:172.153.1.1"
+    - "hl2dm-alpha-1.${DOMAIN_NAME}:172.153.1.1"
+    - "hl2dm-bravo-1.${DOMAIN_NAME}:172.153.1.10"
   hostname: php_fpm
   volumes:
     - /etc/localtime:/etc/localtime:ro

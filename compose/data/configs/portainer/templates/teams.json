@@ -9,13 +9,16 @@
         "Name": "gmod_charlie"
     },
     { 
+        "Name": "hl2dm_alpha"
+    },
+    { 
+        "Name": "hl2dm_bravo"
+    },
+    { 
         "Name": "svencoop"
     },
     { 
         "Name": "synergy"
-    },
-    { 
-        "Name": "hl2dm"
     },
     { 
         "Name": "websites"
