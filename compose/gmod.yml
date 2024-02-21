@@ -282,7 +282,7 @@ x-gmod_bravo_1: &gmod_bravo_1
   cpu_shares: 1024
   environment:
     <<: [ *gmod_bravo_env ]
-    PORT: ${GMOD_BRAVO_1_PORT:-27017}
+    PORT: ${GMOD_BRAVO_1_PORT:-27025}
     STEAM_LOGIN_TOKEN: ${GMOD_BRAVO_1_LOGIN_TOKEN}
   volumes:
     - /etc/localtime:/etc/localtime:ro
@@ -302,8 +302,8 @@ x-gmod_bravo_1: &gmod_bravo_1
     - gmod_bravo_1:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
     - gmod_bravo_shared:/shared:slave
   ports:
-    - ${GMOD_BRAVO_1_PORT:-27017}:${GMOD_BRAVO_1_PORT:-27017}/udp
-    - ${GMOD_BRAVO_1_PORT:-27017}:${GMOD_BRAVO_1_PORT:-27017}/tcp
+    - ${GMOD_BRAVO_1_PORT:-27025}:${GMOD_BRAVO_1_PORT:-27025}/udp
+    - ${GMOD_BRAVO_1_PORT:-27025}:${GMOD_BRAVO_1_PORT:-27025}/tcp
   logging:
     driver: syslog
     options:
@@ -320,7 +320,7 @@ x-gmod_charlie_1: &gmod_charlie_1
   cpu_shares: 1024
   environment:
     <<: [ *gmod_charlie_env ]
-    PORT: ${GMOD_CHARLIE_1_PORT:-27017}
+    PORT: ${GMOD_CHARLIE_1_PORT:-27035}
     STEAM_LOGIN_TOKEN: ${GMOD_CHARLIE_1_LOGIN_TOKEN}
   volumes:
     - /etc/localtime:/etc/localtime:ro
@@ -340,8 +340,8 @@ x-gmod_charlie_1: &gmod_charlie_1
     - gmod_charlie_1:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
     - gmod_charlie_shared:/shared:slave
   ports:
-    - ${GMOD_CHARLIE_1_PORT:-27017}:${GMOD_CHARLIE_1_PORT:-27017}/udp
-    - ${GMOD_CHARLIE_1_PORT:-27017}:${GMOD_CHARLIE_1_PORT:-27017}/tcp
+    - ${GMOD_CHARLIE_1_PORT:-27035}:${GMOD_CHARLIE_1_PORT:-27035}/udp
+    - ${GMOD_CHARLIE_1_PORT:-27035}:${GMOD_CHARLIE_1_PORT:-27035}/tcp
   logging:
     driver: syslog
     options:
