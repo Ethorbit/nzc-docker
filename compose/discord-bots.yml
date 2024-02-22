@@ -70,19 +70,45 @@ services:
     depends_on:
       discord_permissions:
         condition: service_completed_successfully
-      rsyslog:
+      discord_sticky_bot_rsyslog:
         condition: service_healthy
     logging:
       driver: syslog
       options:
         mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        syslog-address: "tcp://localhost:${DISCORD_STICKY_BOT_RSYSLOG_PORT}"
         tag: "discord_sticky_bot"
     restart: always
     networks:
       - discord 
+  discord_sticky_bot_rsyslog:
+    command: '-n'
+    tty: true
+    stdin_open: true
+    healthcheck:
+      test: "/healthcheck.sh"
+      start_period: 5s
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    restart: always
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${discord_g}
+        - PORT=${DISCORD_STICKY_BOT_RSYSLOG_PORT}
+    hostname: rsyslog_discord_sticky_bot
+    ports:
+      - 127.0.0.1:${DISCORD_STICKY_BOT_RSYSLOG_PORT}:${DISCORD_STICKY_BOT_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - discord_sticky_bot_logs:/logs
 networks:    
   discord:
     name: discord-bots
 volumes:
+  discord_sticky_bot_logs:
   discord_sticky_bot: 
