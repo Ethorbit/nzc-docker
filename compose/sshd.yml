@@ -106,6 +106,7 @@ services:
       - synergy_logs:/mnt/logs/synergy
       - sshd_logs:/mnt/logs/sshd
       - nginx_logs:/mnt/logs/nginx
+      - php_fpm_logs:/mnt/logs/php_fpm
       - mysql:/mnt/mysql
     depends_on:
       sshd_permissions:
@@ -174,6 +175,7 @@ volumes:
   nginx_websites:
   nginx_fastdl:
   phpmyadmin:
+  php_fpm_logs:
   portainer_data:
   discord_sticky_bot:
   svencoop_logs:

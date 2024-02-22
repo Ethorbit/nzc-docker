@@ -64,6 +64,7 @@ x-admin-defaults: &admin-defaults
     - hl2dm_bravo
     - discord
     - rsyslog
+    - php
 users:
   admin:
     id: ${HUID}

@@ -60,13 +60,13 @@ x-php_fpm: &php_fpm
   cpu_shares: 1024
   # Website PHP scripts are actually logged to nginx, this only logs the php-fpm process itself (so kinda useless)
   depends_on:
-    rsyslog:
+    php_fpm_rsyslog:
       condition: service_healthy
   logging:
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${PHP_FPM_RSYSLOG_PORT}"
       tag: "php_fpm"
   restart: always
 services:
@@ -92,7 +92,34 @@ services:
       args:
         - UID=${php_u}
         - GID=${php_g}
+
+  php_fpm_rsyslog:
+    command: '-n'
+    tty: true
+    stdin_open: true
+    healthcheck:
+      test: "/healthcheck.sh"
+      start_period: 5s
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    restart: always
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${php_g}
+        - PORT=${PHP_FPM_RSYSLOG_PORT}
+    hostname: rsyslog_php_fpm
+    ports:
+      - 127.0.0.1:${PHP_FPM_RSYSLOG_PORT}:${PHP_FPM_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - php_fpm_logs:/logs
 volumes:
+  php_fpm_logs:
   php_fpm_run:
 networks:
   php:
