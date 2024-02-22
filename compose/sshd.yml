@@ -107,6 +107,7 @@ services:
       - sshd_logs:/mnt/logs/sshd
       - nginx_logs:/mnt/logs/nginx
       - php_fpm_logs:/mnt/logs/php_fpm
+      - mysql_logs:/mnt/logs/mysql
       - mysql:/mnt/mysql
     depends_on:
       sshd_permissions:
@@ -203,4 +204,5 @@ volumes:
   gmod_charlie_1:
   home:
   rsyslog_logs:
+  mysql_logs:
   mysql:

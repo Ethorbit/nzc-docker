@@ -52,13 +52,13 @@ services:
     depends_on:
       mysql_envsubst:
         condition: service_completed_successfully
-      rsyslog:
+      mysql_rsyslog:
         condition: service_healthy
     logging:
       driver: syslog
       options:
         mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        syslog-address: "tcp://localhost:${MYSQL_RSYSLOG_PORT}"
         tag: "mysql"
     ulimits:
       nproc: 65535
@@ -88,7 +88,34 @@ services:
         - path: ${DISK}
           rate: 4000
     restart: always
+
+  mysql_rsyslog:
+    command: '-n'
+    tty: true
+    stdin_open: true
+    healthcheck:
+      test: "/healthcheck.sh"
+      start_period: 5s
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    restart: always
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${mysql_g}
+        - PORT=${MYSQL_RSYSLOG_PORT}
+    hostname: rsyslog_mysql
+    ports:
+      - 127.0.0.1:${MYSQL_RSYSLOG_PORT}:${MYSQL_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - mysql_logs:/logs
 volumes:
+  mysql_logs:
   mysql:
 networks:
   mysql:

@@ -65,6 +65,7 @@ x-admin-defaults: &admin-defaults
     - discord
     - rsyslog
     - php
+    - mysql
 users:
   admin:
     id: ${HUID}
