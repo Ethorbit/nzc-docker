@@ -24,9 +24,7 @@ x-defaults: &defaults
     device_write_iops:
       - path: ${DISK}
         rate: 1000
-x-defaults_depends: &defaults_depends
-  rsyslog:
-    condition: service_healthy
+
 x-defaults_development_depends: &defaults_development_depends
   nginx_development:
     condition: service_healthy
@@ -35,41 +33,47 @@ x-defaults_production_depends: &defaults_production_depends
     condition: service_healthy
 
 x-defaults_alpha_depends: &defaults_alpha_depends
+  gmod_alpha_rsyslog:
+    condition: service_healthy
   gmod_alpha_permissions:
     condition: service_completed_successfully
 x-defaults_bravo_depends: &defaults_bravo_depends
+  gmod_bravo_rsyslog:
+    condition: service_healthy
   gmod_bravo_permissions:
     condition: service_completed_successfully
 x-defaults_charlie_depends: &defaults_charlie_depends
+  gmod_charlie_rsyslog:
+    condition: service_healthy
   gmod_charlie_permissions:
     condition: service_completed_successfully
 
 x-defaults_alpha_development: &defaults_alpha_development
   <<: *defaults
   depends_on:
-    <<: [ *defaults_depends, *defaults_development_depends, *defaults_alpha_depends ]
+    <<: [ *defaults_development_depends, *defaults_alpha_depends ]
 x-defaults_alpha_production: &defaults_alpha_production
   <<: *defaults
   depends_on:
-    <<: [ *defaults_depends, *defaults_production_depends, *defaults_alpha_depends ]
+    <<: [ *defaults_production_depends, *defaults_alpha_depends ]
 
 x-defaults_bravo_development: &defaults_bravo_development
   <<: *defaults
   depends_on:
-    <<: [ *defaults_depends, *defaults_development_depends, *defaults_bravo_depends ]
+    <<: [ *defaults_development_depends, *defaults_bravo_depends ]
 x-defaults_bravo_production: &defaults_bravo_production
   <<: *defaults
   depends_on:
-    <<: [ *defaults_depends, *defaults_production_depends, *defaults_bravo_depends ]
+    <<: [ *defaults_production_depends, *defaults_bravo_depends ]
 
 x-defaults_charlie_development: &defaults_charlie_development
   <<: *defaults
   depends_on:
-    <<: [ *defaults_depends, *defaults_development_depends, *defaults_charlie_depends ]
+    <<: [ *defaults_development_depends, *defaults_charlie_depends ]
 x-defaults_charlie_production: &defaults_charlie_production
   <<: *defaults
   depends_on:
-    <<: [ *defaults_depends, *defaults_production_depends, *defaults_charlie_depends ]
+    <<: [ *defaults_production_depends, *defaults_charlie_depends ]
 
 x-gmod-alpha: &gmod_alpha
   build:
@@ -194,7 +198,7 @@ x-gmod_alpha_1: &gmod_alpha_1
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${GMOD_ALPHA_RSYSLOG_PORT}"
       tag: "gmod_alpha_1"
 
 x-gmod_alpha_2: &gmod_alpha_2
@@ -232,7 +236,7 @@ x-gmod_alpha_2: &gmod_alpha_2
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${GMOD_ALPHA_RSYSLOG_PORT}"
       tag: "gmod_alpha_2"
 
 x-gmod_alpha_3: &gmod_alpha_3
@@ -270,7 +274,7 @@ x-gmod_alpha_3: &gmod_alpha_3
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${GMOD_ALPHA_RSYSLOG_PORT}"
       tag: "gmod_alpha_3"
 
 x-gmod_bravo_1: &gmod_bravo_1
@@ -308,7 +312,7 @@ x-gmod_bravo_1: &gmod_bravo_1
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${GMOD_BRAVO_RSYSLOG_PORT}"
       tag: "gmod_bravo_1"
 
 x-gmod_charlie_1: &gmod_charlie_1
@@ -346,8 +350,20 @@ x-gmod_charlie_1: &gmod_charlie_1
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${GMOD_CHARLIE_RSYSLOG_PORT}"
       tag: "gmod_charlie_1"
+
+x-gmod-rsyslog: &gmod_rsyslog
+  command: '-n'
+  tty: true
+  stdin_open: true
+  healthcheck:
+    test: "/healthcheck.sh"
+    start_period: 5s
+    interval: 5s
+    timeout: 10s
+    retries: 3
+  restart: always
 
 services:
   gmod_alpha_permissions:
@@ -455,7 +471,60 @@ services:
     profiles:
       - development
     <<: [ *gmod_charlie_development, *gmod_charlie_1 ]
+  
+  gmod_alpha_rsyslog:
+    <<: [ *gmod_rsyslog ]
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${gmod_alpha_g}
+        - PORT=${GMOD_ALPHA_RSYSLOG_PORT}
+    hostname: rsyslog_gmod_alpha
+    ports:
+      - 127.0.0.1:${GMOD_ALPHA_RSYSLOG_PORT}:${GMOD_ALPHA_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - gmod_alpha_logs:/logs
+  gmod_bravo_rsyslog:
+    <<: [ *gmod_rsyslog ]
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${gmod_bravo_g}
+        - PORT=${GMOD_BRAVO_RSYSLOG_PORT}
+    hostname: rsyslog_gmod_bravo
+    ports:
+      - 127.0.0.1:${GMOD_BRAVO_RSYSLOG_PORT}:${GMOD_BRAVO_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - gmod_bravo_logs:/logs
+  gmod_charlie_rsyslog:
+    <<: [ *gmod_rsyslog ]
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${gmod_charlie_g}
+        - PORT=${GMOD_CHARLIE_RSYSLOG_PORT}
+    hostname: rsyslog_gmod_charlie
+    ports:
+      - 127.0.0.1:${GMOD_CHARLIE_RSYSLOG_PORT}:${GMOD_CHARLIE_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - gmod_charlie_logs:/logs
+        
 volumes:
+  gmod_alpha_logs:
+  gmod_bravo_logs:
+  gmod_charlie_logs:
   gmod_alpha_shared:
   gmod_bravo_shared:
   gmod_charlie_shared:

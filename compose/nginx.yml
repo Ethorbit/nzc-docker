@@ -4,7 +4,7 @@ x-labels: &labels
     - "io.portainer.accesscontrol.teams=websites"
  
 x-nginx_dependencies: &nginx_dependencies
-  rsyslog:
+  nginx_rsyslog:
     condition: service_healthy
   dhparam:
     condition: service_completed_successfully
@@ -69,7 +69,7 @@ x-nginx: &nginx
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${NGINX_RSYSLOG_PORT}"
       tag: "nginx"
   restart: always    
 x-nginx_networks: &nginx_networks
@@ -333,7 +333,34 @@ services:
         condition: service_completed_successfully
       php_fpm_development:
         condition: service_started
+
+  nginx_rsyslog:
+    command: '-n'
+    tty: true
+    stdin_open: true
+    healthcheck:
+      test: "/healthcheck.sh"
+      start_period: 5s
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    restart: always
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${nginx_g}
+        - PORT=${NGINX_RSYSLOG_PORT}
+    hostname: rsyslog_nginx
+    ports:
+      - 127.0.0.1:${NGINX_RSYSLOG_PORT}:${NGINX_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - nginx_logs:/logs
 volumes:
+  nginx_logs:
   nginx_cache:
   nginx_websites:
   nginx_fastdl:

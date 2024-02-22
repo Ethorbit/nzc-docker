@@ -1,3 +1,6 @@
+# This is just here temporarily so the project can still run
+# Each service is eventually going to have its own dedicated rsyslog service 
+# for fine-grained permissions
 version: "3.9"
 services:
   rsyslog:
@@ -24,27 +27,6 @@ services:
       interval: 5s
       timeout: 10s
       retries: 3
-    blkio_config:
-      weight: 700
-      device_write_bps:
-        - path: ${DISK}
-          rate: '30m'
-      device_read_bps:
-        - path: ${DISK}
-          rate: '60m'
-      device_read_iops:
-        - path: ${DISK}
-          rate: 150
-      device_write_iops:
-        - path: ${DISK}
-          rate: 150
-    cpu_shares: 512
-    deploy:
-      resources:
-        limits:
-          memory: 64M
-        reservations:
-          memory: 32M
     restart: always
 volumes:
   rsyslog_logs:

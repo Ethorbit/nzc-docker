@@ -6,6 +6,18 @@
 # The reasoning behind this is that gamemodes are kinda like separate games
 version: "3.9"
 
+x-hl2dm-rsyslog: &hl2dm_rsyslog
+  command: '-n'
+  tty: true
+  stdin_open: true
+  healthcheck:
+    test: "/healthcheck.sh"
+    start_period: 5s
+    interval: 5s
+    timeout: 10s
+    retries: 3
+  restart: always
+
 x-hl2dm: &hl2dm
   tty: true
   stdin_open: true
@@ -99,7 +111,7 @@ x-hl2dm-alpha-1: &hl2dm_alpha_1
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${HL2DM_ALPHA_RSYSLOG_PORT}"
       tag: "hl2dm_alpha_1"
   restart: always
 
@@ -140,7 +152,7 @@ x-hl2dm-bravo-1: &hl2dm_bravo_1
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${HL2DM_BRAVO_RSYSLOG_PORT}"
       tag: "hl2dm_bravo_1"
   restart: always
 
@@ -152,10 +164,6 @@ x-hl2dm-development: &hl2dm_development
   profiles:
     - development
     
-x-hl2dm-depends: &hl2dm_depends
-  rsyslog:
-    condition: service_healthy
-
 x-hl2dm-development-depends: &hl2dm_development_depends
   nginx_development:
     condition: service_healthy
@@ -165,12 +173,14 @@ x-hl2dm-production-depends: &hl2dm_production_depends
     condition: service_healthy
       
 x-hl2dm-alpha-depends: &hl2dm_alpha_depends
-  <<: [ *hl2dm_depends ]
+  hl2dm_alpha_rsyslog:
+    condition: service_healthy
   hl2dm_alpha_permissions:
     condition: service_completed_successfully
  
 x-hl2dm-bravo-depends: &hl2dm_bravo_depends
-  <<: [ *hl2dm_depends ]
+  hl2dm_bravo_rsyslog:
+    condition: service_healthy
   hl2dm_bravo_permissions:
     condition: service_completed_successfully
  
@@ -228,7 +238,43 @@ services:
     <<: [ *hl2dm_bravo_1, *hl2dm_development ]
     depends_on:
       <<: [ *hl2dm_development_depends, *hl2dm_bravo_depends ]
+
+  hl2dm_alpha_rsyslog:
+    <<: [ *hl2dm_rsyslog ]
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${hl2dm_alpha_g}
+        - PORT=${HL2DM_ALPHA_RSYSLOG_PORT}
+    hostname: rsyslog_hl2dm_alpha
+    ports:
+      - 127.0.0.1:${HL2DM_ALPHA_RSYSLOG_PORT}:${HL2DM_ALPHA_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - hl2dm_alpha_logs:/logs
+  hl2dm_bravo_rsyslog:
+    <<: [ *hl2dm_rsyslog ]
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${hl2dm_bravo_g}
+        - PORT=${HL2DM_BRAVO_RSYSLOG_PORT}
+    hostname: rsyslog_hl2dm_bravo
+    ports:
+      - 127.0.0.1:${HL2DM_BRAVO_RSYSLOG_PORT}:${HL2DM_BRAVO_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - hl2dm_bravo_logs:/logs
+
 volumes:
+  hl2dm_alpha_logs:
+  hl2dm_bravo_logs:
   hl2dm_alpha_shared:
   hl2dm_bravo_shared:
   hl2dm_alpha_1:

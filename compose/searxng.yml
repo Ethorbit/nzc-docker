@@ -19,6 +19,8 @@ x-io-limits: &io-limits
         rate: 95
 services:
   redis:
+    profiles:
+      - optional
     image: redis:6-alpine
     command: redis-server --save "" --appendonly "no"
     networks:
@@ -54,6 +56,8 @@ services:
     logging:
       driver: "none"
   searxng_envsubst:
+    profiles:
+      - optional
     build:
       context: ./build/input_output_envsubst
       args:
@@ -72,6 +76,8 @@ services:
       - CAP_FOWNER
     restart: on-failure
   searxng:
+    profiles:
+      - optional
     image: searxng/searxng:2023.4.25-216751da
     networks:
       searxng:

@@ -56,7 +56,7 @@ services:
       driver: syslog
       options:
         mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        syslog-address: "tcp://localhost:${SSH_RSYSLOG_PORT}"
         tag: "sshd"
     volumes:
       - home:/home
@@ -97,7 +97,15 @@ services:
       - discord_sticky_bot:/mnt/discord_bots/stickies
       - phpmyadmin:/mnt/admin_websites/phpmyadmin
       - portainer_data:/mnt/admin_websites/portainer
-      - rsyslog_logs:/mnt/logs:ro
+      - gmod_alpha_logs:/mnt/logs/gmod_alpha
+      - gmod_bravo_logs:/mnt/logs/gmod_bravo
+      - gmod_charlie_logs:/mnt/logs/gmod_charlie
+      - hl2dm_alpha_logs:/mnt/logs/hl2dm_alpha
+      - hl2dm_bravo_logs:/mnt/logs/hl2dm_bravo
+      - svencoop_logs:/mnt/logs/svencoop
+      - synergy_logs:/mnt/logs/synergy
+      - sshd_logs:/mnt/logs/sshd
+      - nginx_logs:/mnt/logs/nginx
       - mysql:/mnt/mysql
     depends_on:
       sshd_permissions:
@@ -106,7 +114,7 @@ services:
       sshd_envsubst:
         condition: 
           service_completed_successfully
-      rsyslog:
+      sshd_rsyslog:
         condition: service_healthy
     cpuset: ${SSH_CPU}
     cpu_shares: 256
@@ -131,23 +139,58 @@ services:
         - path: ${DISK}
           rate: 220
     restart: always
+
+  sshd_rsyslog:
+    command: '-n'
+    tty: true
+    stdin_open: true
+    healthcheck:
+      test: "/healthcheck.sh"
+      start_period: 5s
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    restart: always
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${ssh_g}
+        - PORT=${SSH_RSYSLOG_PORT}
+    hostname: rsyslog_sshd
+    ports:
+      - 127.0.0.1:${SSH_RSYSLOG_PORT}:${SSH_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - sshd_logs:/logs
 networks:
   ssh:
 volumes:
+  sshd_logs:
   sftp:
+  nginx_logs:
   nginx_websites:
   nginx_fastdl:
   phpmyadmin:
   portainer_data:
   discord_sticky_bot:
+  svencoop_logs:
   svencoop_shared:
   svencoop_1:
   svencoop_2:
+  synergy_logs:
   synergy:
+  hl2dm_alpha_logs:
+  hl2dm_bravo_logs:
   hl2dm_alpha_shared:
   hl2dm_bravo_shared:
   hl2dm_alpha_1:
   hl2dm_bravo_1:
+  gmod_alpha_logs:
+  gmod_bravo_logs:
+  gmod_charlie_logs:
   gmod_alpha_shared:
   gmod_bravo_shared:
   gmod_charlie_shared:

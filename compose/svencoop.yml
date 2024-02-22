@@ -1,5 +1,17 @@
 version: "3.9"
 
+x-svencoop-rsyslog: &svencoop_rsyslog
+  command: '-n'
+  tty: true
+  stdin_open: true
+  healthcheck:
+    test: "/healthcheck.sh"
+    start_period: 5s
+    interval: 5s
+    timeout: 10s
+    retries: 3
+  restart: always
+
 x-svencoop: &svencoop
   build:
     context: ./build/svencoop-server
@@ -80,8 +92,8 @@ x-svencoop-1: &svencoop_1
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "svencoop_1"
+      syslog-address: "tcp://localhost:${SVENCOOP_RSYSLOG_PORT}"
+      tag: "synergy_1"
   restart: always
 
 x-svencoop-2: &svencoop_2
@@ -122,14 +134,14 @@ x-svencoop-2: &svencoop_2
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "svencoop_2"
+      syslog-address: "tcp://localhost:${SVENCOOP_RSYSLOG_PORT}"
+      tag: "synergy_2"
   restart: always
 
 x-svencoop-depends: &svencoop-depends
   svencoop_permissions:
     condition: service_completed_successfully
-  rsyslog:
+  svencoop_rsyslog:
     condition: service_healthy
 
 services:
@@ -187,7 +199,25 @@ services:
       <<: [ *svencoop-depends ]
       nginx_development:
         condition: service_healthy
+
+  svencoop_rsyslog:
+    <<: [ *svencoop_rsyslog ]
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${svencoop_g}
+        - PORT=${SVENCOOP_RSYSLOG_PORT}
+    hostname: rsyslog_svencoop
+    ports:
+      - 127.0.0.1:${SVENCOOP_RSYSLOG_PORT}:${SVENCOOP_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - svencoop_logs:/logs
 volumes:
+  svencoop_logs:
   svencoop_1:
   svencoop_2:
   svencoop_shared:

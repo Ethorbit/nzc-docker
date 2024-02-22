@@ -1,4 +1,17 @@
 version: "3.9"
+
+x-synergy-rsyslog: &synergy_rsyslog
+  command: '-n'
+  tty: true
+  stdin_open: true
+  healthcheck:
+    test: "/healthcheck.sh"
+    start_period: 5s
+    interval: 5s
+    timeout: 10s
+    retries: 3
+  restart: always
+
 x-synergy: &synergy
   build:
     context: ./build/synergy-server
@@ -72,13 +85,13 @@ x-synergy: &synergy
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${SYNERGY_RSYSLOG_PORT}"
       tag: "synergy"
   restart: always
 x-synergy-depends: &synergy-depends
   synergy_permissions:
     condition: service_completed_successfully
-  rsyslog:
+  synergy_rsyslog:
     condition: service_healthy
 
 services:
@@ -116,7 +129,25 @@ services:
       <<: [ *synergy-depends ]
       nginx_development:
         condition: service_healthy
+
+  synergy_rsyslog:
+    <<: [ *synergy_rsyslog ]
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${synergy_g}
+        - PORT=${SYNERGY_RSYSLOG_PORT}
+    hostname: synergy_rsyslog
+    ports:
+      - 127.0.0.1:${SYNERGY_RSYSLOG_PORT}:${SYNERGY_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - synergy_logs:/logs
 volumes:
+  synergy_logs:
   synergy:
 networks: 
   synergy:
