@@ -1,9 +1,17 @@
 FROM alpine:3.17.2
 ARG UID
 ARG GID
+ARG PORT
 COPY ./entrypoint.sh /
+COPY ./healthcheck.sh /
 RUN chmod +x /entrypoint.sh &&\
+    chmod +x /healthcheck.sh &&\
     apk add --no-cache rsyslog shadow &&\
+    mkdir /configs &&\
+    chmod 755 /configs &&\
+    printf 'module(load="imtcp" port="%s")\ninput(type="imtcp" port="%s")\n' \
+      "$PORT" "$PORT" >> /configs/tcp.conf &&\
+    chmod 755 /configs/tcp.conf &&\
     useradd rsyslog &&\
     usermod -u "$UID" rsyslog &&\
     groupmod -g "$GID" rsyslog &&\
@@ -15,7 +23,7 @@ RUN chmod +x /entrypoint.sh &&\
     chown rsyslog:rsyslog /logs
 VOLUME /socks
 VOLUME /logs
-EXPOSE 514/tcp
-EXPOSE 514/udp
+EXPOSE ${PORT}/tcp
+EXPOSE ${PORT}/udp
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/bin/sh" ]
