@@ -112,6 +112,7 @@ services:
       - mysql:/mnt/mysql
       - certbot_logs:/mnt/logs/certbot
       - acme_dns_logs:/mnt/logs/acme_dns
+      - fail2ban_logs:/mnt/logs/fail2ban
     depends_on:
       sshd_permissions:
         condition:
@@ -212,3 +213,4 @@ volumes:
   mysql:
   certbot_logs:
   acme_dns_logs:
+  fail2ban_logs:

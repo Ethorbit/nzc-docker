@@ -29,6 +29,8 @@ groups:
     id: 1811
   dns:
     id: 1812
+  fail2ban:
+    id: 1813
   svencoop:
     id: 1820
   synergy:
@@ -70,6 +72,7 @@ x-admin-defaults: &admin-defaults
     - php
     - mysql
     - discord
+    - fail2ban
 users:
   admin:
     id: ${HUID}

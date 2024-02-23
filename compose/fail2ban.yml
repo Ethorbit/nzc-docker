@@ -28,12 +28,18 @@ services:
     command: '-f -x -v'
     volumes:
       - ./data/configs/fail2ban/jail.d:/etc/fail2ban/jail.d
-      - rsyslog_logs:/logs
+      - fail2ban_logs:/logs
     depends_on:
       fail2ban_jail_envsubst:
         condition: service_completed_successfully
-      rsyslog:
+      fail2ban_rsyslog:
        condition: service_healthy
+    logging:
+      driver: syslog
+      options:
+        mode: non-blocking
+        syslog-address: "tcp://localhost:${FAIL2BAN_RSYSLOG_PORT}"
+        tag: "fail2ban"
     blkio_config:
       weight: 500
       device_write_bps:
@@ -56,3 +62,30 @@ services:
         reservations:
           memory: 32M
     restart: unless-stopped
+  fail2ban_rsyslog:
+    command: '-n'
+    tty: true
+    stdin_open: true
+    healthcheck:
+      test: "/healthcheck.sh"
+      start_period: 5s
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    restart: always
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${fail2ban_g}
+        - PORT=${FAIL2BAN_RSYSLOG_PORT}
+    hostname: rsyslog_fail2ban
+    ports:
+      - 127.0.0.1:${FAIL2BAN_RSYSLOG_PORT}:${FAIL2BAN_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - fail2ban_logs:/logs
+volumes:
+  fail2ban_logs:
