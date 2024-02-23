@@ -12,7 +12,6 @@ compose/data/configs/portainer/users.json
 compose/data/configs/portainer/teams.json
 compose/data/configs/nginx/snippets/private/
 compose/data/configs/nginx/snippets/ssl.conf
-compose/data/configs/rsyslog/rsyslog.conf
 compose/data/configs/fail2ban/jail.d/*
 compose/data/configs/fail2ban/filter.extras.d/*
 compose/data/configs/searxng/*.yml
