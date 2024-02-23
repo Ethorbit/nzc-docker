@@ -1,4 +1,17 @@
 version: "3.9"
+
+x-ssl-rsyslog: &ssl_rsyslog
+  command: '-n'
+  tty: true
+  stdin_open: true
+  healthcheck:
+    test: "/healthcheck.sh"
+    start_period: 5s
+    interval: 5s
+    timeout: 10s
+    retries: 3
+  restart: always
+  
 x-labels: &labels
   labels:
     - "io.portainer.accesscontrol.teams=websites"
@@ -88,13 +101,13 @@ services:
     depends_on:
       acme_dns_envsubst:
         condition: service_completed_successfully
-      rsyslog:
+      acme_dns_rsyslog:
         condition: service_healthy
     logging:
       driver: syslog
       options:
         mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        syslog-address: "tcp://localhost:${ACME_DNS_RSYSLOG_PORT}"
         tag: "acme_dns"
     healthcheck:
       test: 'curl -f -X GET http://acme_dns/health || exit 1'
@@ -103,6 +116,24 @@ services:
       retries: 3
       start_period: 10s
     restart: always
+  acme_dns_rsyslog:
+    <<: [ *ssl_rsyslog ]
+    profiles:
+      - production
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${dns_g}
+        - PORT=${ACME_DNS_RSYSLOG_PORT}
+    hostname: rsyslog_acme_dns
+    ports:
+      - 127.0.0.1:${ACME_DNS_RSYSLOG_PORT}:${ACME_DNS_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - acme_dns_logs:/logs
   certbot_permissions:
     build:
       context: ./build/permissions
@@ -163,20 +194,39 @@ services:
         condition: service_completed_successfully
       acme_dns:
         condition: service_healthy
-      rsyslog:
+      certbot_rsyslog:
         condition: service_healthy
     logging:
       driver: syslog
       options:
         mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+        syslog-address: "tcp://localhost:${CERTBOT_RSYSLOG_PORT}"
         tag: "certbot"
     restart: always
-
+  certbot_rsyslog:
+    <<: [ *ssl_rsyslog ]
+    profiles:
+      - production
+    build:
+      context: ./build/rsyslog
+      args:
+        - UID=${rsyslog_u}
+        - GID=${cert_g}
+        - PORT=${CERTBOT_RSYSLOG_PORT}
+    hostname: rsyslog_certbot
+    ports:
+      - 127.0.0.1:${CERTBOT_RSYSLOG_PORT}:${CERTBOT_RSYSLOG_PORT}/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - certbot_logs:/logs
 volumes:
   dhparam:
+  acme_dns_logs:
   acme_dns_storage:
   mkcert:
+  certbot_logs:
   certbot_conf:
   certbot_www:
 networks:

@@ -27,6 +27,8 @@ groups:
     id: 1810
   ssh:
     id: 1811
+  dns:
+    id: 1812
   svencoop:
     id: 1820
   synergy:
@@ -54,6 +56,7 @@ x-admin-defaults: &admin-defaults
     - fastdl
     - steam
     - nginx
+    - dns
     - ssh
     - svencoop
     - synergy

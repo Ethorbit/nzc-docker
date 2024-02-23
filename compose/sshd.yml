@@ -110,6 +110,8 @@ services:
       - php_fpm_logs:/mnt/logs/php_fpm
       - mysql_logs:/mnt/logs/mysql
       - mysql:/mnt/mysql
+      - certbot_logs:/mnt/logs/certbot
+      - acme_dns_logs:/mnt/logs/acme_dns
     depends_on:
       sshd_permissions:
         condition:
@@ -208,3 +210,5 @@ volumes:
   rsyslog_logs:
   mysql_logs:
   mysql:
+  certbot_logs:
+  acme_dns_logs:
