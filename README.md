@@ -188,6 +188,11 @@ You can enter a password in games that need it by 'attaching' to the game. After
 
 This is because you didn't set the DISK in the .limits.env file. The Makefile is defaulting the DISK to a partition or volume which Docker cannot use for applying cgroups limits and thus it refuses to start the containers.
 
+* When starting the project, I get _max depth exceeded_
+
+You need to remove all the docker images:
+`docker rmi -f $(docker images -a -q)`
+
 * Project is running, but some game server(s) never even install.
 
 The game(s) in question might not be free and are waiting for you to login to your Steam account. Check 'Game logins' section under 'Maintenance' for steps on how to proceed.
