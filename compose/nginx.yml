@@ -358,6 +358,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
       - nginx_logs:/logs
 volumes:
   nginx_logs:

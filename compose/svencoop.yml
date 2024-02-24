@@ -215,6 +215,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
       - svencoop_logs:/logs
 volumes:
   svencoop_logs:

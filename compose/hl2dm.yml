@@ -254,6 +254,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
       - hl2dm_alpha_logs:/logs
   hl2dm_bravo_rsyslog:
     <<: [ *hl2dm_rsyslog ]
@@ -270,6 +271,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
       - hl2dm_bravo_logs:/logs
 
 volumes:

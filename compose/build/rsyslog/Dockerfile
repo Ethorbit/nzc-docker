@@ -9,9 +9,9 @@ RUN chmod +x /entrypoint.sh &&\
     apk add --no-cache rsyslog shadow &&\
     mkdir /configs &&\
     chmod 755 /configs &&\
-    printf 'module(load="imtcp" port="%s")\ninput(type="imtcp" port="%s")\n' \
-      "$PORT" "$PORT" >> /configs/tcp.conf &&\
-    chmod 755 /configs/tcp.conf &&\
+    printf 'module(load="imtcp")\ninput(type="imtcp" port="%s")\n' \
+      "$PORT" > /configs/tcp.conf &&\
+    chmod 0444 /configs/tcp.conf &&\
     useradd rsyslog &&\
     usermod -u "$UID" rsyslog &&\
     groupmod -g "$GID" rsyslog &&\
