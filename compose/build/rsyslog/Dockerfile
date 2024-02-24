@@ -6,7 +6,7 @@ COPY ./entrypoint.sh /
 COPY ./healthcheck.sh /
 RUN chmod +x /entrypoint.sh &&\
     chmod +x /healthcheck.sh &&\
-    apk add --no-cache rsyslog shadow &&\
+    apk add --no-cache rsyslog logrotate shadow &&\
     mkdir /configs &&\
     chmod 755 /configs &&\
     printf 'module(load="imtcp")\ninput(type="imtcp" port="%s")\n' \
@@ -20,10 +20,7 @@ RUN chmod +x /entrypoint.sh &&\
     chmod 770 /socks &&\
     chmod 750 /logs &&\
     chown rsyslog:root /socks &&\
-    chown rsyslog:rsyslog /logs &&\
-    mkdir /logs/daily /logs/weekly /logs/monthly &&\
-    chmod 750 /logs/daily /logs/weekly /logs/monthly &&\
-    chown rsyslog:rsyslog /logs/daily /logs/weekly /logs/monthly
+    chown rsyslog:rsyslog /logs
 VOLUME /socks
 VOLUME /logs
 EXPOSE ${PORT}/tcp

@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  rsyslog_permissions:
+    build:
+      context: ./build/permissions
+    volumes:
+      - ./data/configs/rsyslog/rsyslog.conf:/mnt/rsyslog.conf
+      - ./data/configs/logrotate/rsyslog.conf:/mnt/logrotate
+    command: >
+      /bin/sh -c 'chown "${root_u}":"${rsyslog_g}" /mnt/rsyslog.conf /mnt/logrotate
+      && chmod 644 /mnt/rsyslog.conf /mnt/logrotate'
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_CHOWN
+      - CAP_FOWNER
+      - CAP_FSETID
+    network_mode: none
+    restart: on-failure

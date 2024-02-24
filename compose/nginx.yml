@@ -351,6 +351,9 @@ services:
         - UID=${rsyslog_u}
         - GID=${nginx_g}
         - PORT=${NGINX_RSYSLOG_PORT}
+    depends_on:
+      rsyslog_permissions:
+        condition: service_completed_successfully
     hostname: rsyslog_nginx
     ports:
       - 127.0.0.1:${NGINX_RSYSLOG_PORT}:${NGINX_RSYSLOG_PORT}/tcp

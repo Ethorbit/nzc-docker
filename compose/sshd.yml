@@ -163,6 +163,9 @@ services:
         - UID=${rsyslog_u}
         - GID=${ssh_g}
         - PORT=${SSH_RSYSLOG_PORT}
+    depends_on:
+      rsyslog_permissions:
+        condition: service_completed_successfully
     hostname: rsyslog_sshd
     ports:
       - 127.0.0.1:${SSH_RSYSLOG_PORT}:${SSH_RSYSLOG_PORT}/tcp

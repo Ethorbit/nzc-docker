@@ -106,6 +106,9 @@ services:
         - UID=${rsyslog_u}
         - GID=${mysql_g}
         - PORT=${MYSQL_RSYSLOG_PORT}
+    depends_on:
+      rsyslog_permissions:
+        condition: service_completed_successfully
     hostname: rsyslog_mysql
     ports:
       - 127.0.0.1:${MYSQL_RSYSLOG_PORT}:${MYSQL_RSYSLOG_PORT}/tcp

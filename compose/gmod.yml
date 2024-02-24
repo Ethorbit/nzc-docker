@@ -363,6 +363,9 @@ x-gmod-rsyslog: &gmod_rsyslog
     interval: 5s
     timeout: 10s
     retries: 3
+  depends_on:
+    rsyslog_permissions:
+      condition: service_completed_successfully
   restart: always
 
 services:

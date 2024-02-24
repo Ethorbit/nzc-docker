@@ -110,6 +110,9 @@ services:
         - UID=${rsyslog_u}
         - GID=${php_g}
         - PORT=${PHP_FPM_RSYSLOG_PORT}
+    depends_on:
+      rsyslog_permissions:
+        condition: service_completed_successfully
     hostname: rsyslog_php_fpm
     ports:
       - 127.0.0.1:${PHP_FPM_RSYSLOG_PORT}:${PHP_FPM_RSYSLOG_PORT}/tcp

@@ -100,6 +100,9 @@ services:
         - UID=${rsyslog_u}
         - GID=${discord_g}
         - PORT=${DISCORD_STICKY_BOT_RSYSLOG_PORT}
+    depends_on:
+      rsyslog_permissions:
+        condition: service_completed_successfully
     hostname: rsyslog_discord_sticky_bot
     ports:
       - 127.0.0.1:${DISCORD_STICKY_BOT_RSYSLOG_PORT}:${DISCORD_STICKY_BOT_RSYSLOG_PORT}/tcp

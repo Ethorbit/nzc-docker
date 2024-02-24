@@ -79,6 +79,9 @@ services:
         - UID=${rsyslog_u}
         - GID=${fail2ban_g}
         - PORT=${FAIL2BAN_RSYSLOG_PORT}
+    depends_on:
+      rsyslog_permissions:
+        condition: service_completed_successfully
     hostname: rsyslog_fail2ban
     ports:
       - 127.0.0.1:${FAIL2BAN_RSYSLOG_PORT}:${FAIL2BAN_RSYSLOG_PORT}/tcp
