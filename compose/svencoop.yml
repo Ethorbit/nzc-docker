@@ -217,6 +217,15 @@ services:
       - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
       - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
       - svencoop_logs:/logs
+      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
+      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
+      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
+      - ${MOUNT_PROC_STAT}:/proc/stat:rw
+      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
+      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
+      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
+      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
+    cpuset: ${SVENCOOP_RSYSLOG_CPU}
 volumes:
   svencoop_logs:
   svencoop_1:

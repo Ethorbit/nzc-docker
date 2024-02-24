@@ -45,6 +45,7 @@ services:
       - ./data/configs/users/shadow:/etc/shadow:ro
       - ./data/configs/users/gshadow:/etc/gshadow:ro
       - discord_sticky_bot:/botdb
+    cpuset: ${DISCORD_CPU}
     cpu_shares: 256
     #cpu_percent: 10
     deploy:
@@ -70,7 +71,7 @@ services:
     depends_on:
       discord_permissions:
         condition: service_completed_successfully
-      discord_sticky_bot_rsyslog:
+      discord_rsyslog:
         condition: service_healthy
     logging:
       driver: syslog
@@ -80,8 +81,9 @@ services:
         tag: "discord_sticky_bot"
     restart: always
     networks:
-      - discord 
-  discord_sticky_bot_rsyslog:
+      - discord
+
+  discord_rsyslog:
     command: '-n'
     tty: true
     stdin_open: true
@@ -107,6 +109,16 @@ services:
       - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
       - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
       - discord_sticky_bot_logs:/logs
+      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
+      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
+      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
+      - ${MOUNT_PROC_STAT}:/proc/stat:rw
+      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
+      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
+      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
+      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
+    cpuset: ${DISCORD_CPU}
+
 networks:    
   discord:
     name: discord-bots
