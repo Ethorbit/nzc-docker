@@ -51,7 +51,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 90M
+          memory: ${DISCORD_STICKY_BOT_RAM:-90M}
         reservations:
           memory: 30M
     blkio_config:

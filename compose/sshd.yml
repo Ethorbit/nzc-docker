@@ -127,7 +127,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 352M 
+          memory: ${SSH_RAM:-352M}
         reservations:
           memory: 128M  
     blkio_config:

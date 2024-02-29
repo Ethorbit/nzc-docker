@@ -67,7 +67,7 @@ x-synergy: &synergy
   deploy:
     resources:
       limits:
-        memory: 512M 
+        memory: ${SYNERGY_RAM:-1024M}
       reservations:
         memory: 128M  
   blkio_config:

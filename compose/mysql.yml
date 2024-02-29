@@ -70,7 +70,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2048M
+          memory: ${MYSQL_RAM:-2048M}
         reservations:
           memory: 512M
     blkio_config:

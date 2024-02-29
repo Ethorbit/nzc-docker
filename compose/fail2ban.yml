@@ -58,7 +58,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 64M
+          memory: ${FAIL2BAN_RAM:-64M}
         reservations:
           memory: 32M
     restart: unless-stopped

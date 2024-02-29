@@ -47,7 +47,7 @@ x-nginx: &nginx
   deploy:
     resources:
       limits:
-        memory: 1024M
+        memory: ${NGINX_RAM:-1024M}
       reservations:
         memory: 512M
   blkio_config:

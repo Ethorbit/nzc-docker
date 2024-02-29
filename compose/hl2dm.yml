@@ -30,12 +30,6 @@ x-hl2dm: &hl2dm
     - "${FASTDL_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
   cpu_count: 1
   cpu_shares: 256
-  deploy:
-    resources:
-      limits:
-        memory: 512M
-      reservations:
-        memory: 128M
   blkio_config:
     weight: 150
     device_write_bps:
@@ -63,6 +57,12 @@ x-hl2dm-alpha: &hl2dm_alpha
       PUID: ${steam_u}
       PGID: ${hl2dm_alpha_g}
       UMASK: "007"
+  deploy:
+    resources:
+      limits:
+        memory: ${HL2DM_ALPHA_RAM:-1024M}
+      reservations:
+        memory: 128M
   labels:
     - "io.portainer.accesscontrol.teams=hl2dm_alpha"
 
@@ -74,6 +74,12 @@ x-hl2dm-bravo: &hl2dm_bravo
       PUID: ${steam_u}
       PGID: ${hl2dm_bravo_g}
       UMASK: "007"
+  deploy:
+    resources:
+      limits:
+        memory: ${HL2DM_BRAVO_RAM:-1024M}
+      reservations:
+        memory: 128M
   labels:
     - "io.portainer.accesscontrol.teams=hl2dm_bravo"
 
@@ -82,7 +88,7 @@ x-hl2dm-alpha-1: &hl2dm_alpha_1
   environment:
     START_ARGS: "-port ${HL2DM_ALPHA_1_PORT:-27315} +maxplayers 12 +map dm_lockdown"
     PORT: ${HL2DM_ALPHA_1_PORT:-27315}
-    STEAM_LOGIN_TOKEN: ${HL2DM_ALPHA_LOGIN_TOKEN}
+    STEAM_LOGIN_TOKEN: ${HL2DM_ALPHA_1_LOGIN_TOKEN}
     RCON_PASSWORD: ${HL2DM_ALPHA_PASSWORD}
   volumes:
     - /etc/localtime:/etc/localtime:ro
@@ -123,7 +129,7 @@ x-hl2dm-bravo-1: &hl2dm_bravo_1
   environment:
     START_ARGS: "-port ${HL2DM_BRAVO_1_PORT:-27325} +maxplayers 12 +map dm_lockdown"
     PORT: ${HL2DM_BRAVO_1_PORT:-27325}
-    STEAM_LOGIN_TOKEN: ${HL2DM_BRAVO_LOGIN_TOKEN}
+    STEAM_LOGIN_TOKEN: ${HL2DM_BRAVO_1_LOGIN_TOKEN}
     RCON_PASSWORD: ${HL2DM_BRAVO_PASSWORD}
   volumes:
     - /etc/localtime:/etc/localtime:ro

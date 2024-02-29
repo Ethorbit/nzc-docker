@@ -89,7 +89,7 @@ x-gmod-alpha: &gmod_alpha
   deploy:
     resources:
       limits:
-        memory: 660M
+        memory: ${GMOD_ALPHA_RAM:-660M}
       reservations:
         memory: 256M
   hostname: gmod_alpha
@@ -110,7 +110,7 @@ x-gmod-bravo: &gmod_bravo
   deploy:
     resources:
       limits:
-        memory: 660M
+        memory: ${GMOD_BRAVO_RAM:-660M}
       reservations:
         memory: 256M
   hostname: gmod_bravo
@@ -131,7 +131,7 @@ x-gmod-charlie: &gmod_charlie
   deploy:
     resources:
       limits:
-        memory: 660M
+        memory: ${GMOD_CHARLIE_RAM:-660M}
       reservations:
         memory: 256M
   hostname: gmod_charlie
