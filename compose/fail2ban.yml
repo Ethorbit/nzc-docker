@@ -72,6 +72,12 @@ services:
       interval: 5s
       timeout: 10s
       retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: ${RSYSLOG_RAM:-12M}
+        reservations:
+          memory: 6M
     restart: always
     build:
       context: ./build/rsyslog

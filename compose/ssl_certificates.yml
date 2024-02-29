@@ -10,6 +10,12 @@ x-ssl-rsyslog: &ssl_rsyslog
     interval: 5s
     timeout: 10s
     retries: 3
+  deploy:
+    resources:
+      limits:
+        memory: ${RSYSLOG_RAM:-12M}
+      reservations:
+        memory: 6M
   depends_on:
     rsyslog_permissions:
       condition: service_completed_successfully
@@ -60,6 +66,12 @@ services:
       - PRIVATE_KEY=/mnt/mkcert.key
     <<: [ *healthcheck ]
     network_mode: none 
+    deploy:
+      resources:
+        limits:
+          memory: 12M
+        reservations:
+          memory: 6M
     restart: on-failure
     
   # Certificate for Production w/ renewal

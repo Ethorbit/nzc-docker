@@ -8,6 +8,12 @@ services:
     environment:
       - AUTOHEAL_CONTAINER_LABEL=all
       - AUTOHEAL_INTERVAL=30
+    deploy:
+      resources:
+        limits:
+          memory: 12M
+        reservations:
+          memory: 6M
     restart: always
     network_mode: none
 

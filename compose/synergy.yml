@@ -10,6 +10,12 @@ x-synergy-rsyslog: &synergy_rsyslog
     interval: 5s
     timeout: 10s
     retries: 3
+  deploy:
+    resources:
+      limits:
+        memory: ${RSYSLOG_RAM:-12M}
+      reservations:
+        memory: 6M
   depends_on:
     rsyslog_permissions:
       condition: service_completed_successfully

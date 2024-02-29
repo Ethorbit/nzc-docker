@@ -56,6 +56,12 @@ x-php_fpm: &php_fpm
     && chown ${php_u}:${php_g} /var/run/php-fpm/sock
     && chmod 770 /var/run/php-fpm/sock
     && php-fpm"
+  deploy:
+    resources:
+      limits:
+        memory: ${PHP_FPM_RAM:-4096M}
+      reservations:
+        memory: 6M
   cpuset: ${NGINX_CPU} # Since we handle the workloads of php (which is closely tied to webserver), we might as well use the same cores..
   cpu_shares: 1024
   # Website PHP scripts are actually logged to nginx, this only logs the php-fpm process itself (so kinda useless)
@@ -130,6 +136,12 @@ services:
       - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
       - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
       - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
+    deploy:
+      resources:
+        limits:
+          memory: ${RSYSLOG_RAM:-12M}
+        reservations:
+          memory: 6M
     cpuset: ${NGINX_CPU}
 
 volumes:

@@ -126,6 +126,12 @@ services:
       - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
       - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
       - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
+    deploy:
+      resources:
+        limits:
+          memory: ${RSYSLOG_RAM:-12M}
+        reservations:
+          memory: 6M
     cpuset: ${MYSQL_CPU}
 volumes:
   mysql_logs:
