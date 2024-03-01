@@ -180,8 +180,7 @@ services:
       - ./data/configs/nginx/cpu:/mnt/nginx_cpu
       - ./data/configs/nginx:/mnt/nginx_conf
     command: >
-      /bin/sh -c "echo \"${NGINX_CPU}\" > /mnt/nginx_cpu/online
-      && chown ${nginx_u}:${websites_g} /mnt/nginx_websites
+      /bin/sh -c "chown ${nginx_u}:${websites_g} /mnt/nginx_websites
       && chown ${nginx_u}:${fastdl_g} /mnt/nginx_fastdl
       && chmod 2771 /mnt/nginx_websites 
       /mnt/nginx_fastdl
@@ -245,7 +244,6 @@ services:
       - ./data/configs/users/group:/etc/group:ro
       - ./data/configs/users/shadow:/etc/shadow:ro 
       - ./data/configs/users/gshadow:/etc/gshadow:ro
-      # - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
       - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
       - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
       - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
@@ -299,7 +297,6 @@ services:
       - ./data/configs/users/group:/etc/group:ro
       - ./data/configs/users/shadow:/etc/shadow:ro 
       - ./data/configs/users/gshadow:/etc/gshadow:ro
-      # - ./data/configs/nginx/cpu/online:/sys/devices/system/cpu/online:ro
       - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
       - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
       - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
