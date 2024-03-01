@@ -150,6 +150,8 @@ services:
     hostname: synergy_rsyslog
     ports:
       - 127.0.0.1:${SYNERGY_RSYSLOG_PORT}:${SYNERGY_RSYSLOG_PORT}/tcp
+    labels:
+      - "io.portainer.accesscontrol.teams=synergy"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro

@@ -492,6 +492,8 @@ services:
     hostname: rsyslog_gmod_alpha
     ports:
       - 127.0.0.1:${GMOD_ALPHA_RSYSLOG_PORT}:${GMOD_ALPHA_RSYSLOG_PORT}/tcp
+    labels:
+      - "io.portainer.accesscontrol.teams=gmod_alpha"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -518,6 +520,8 @@ services:
     hostname: rsyslog_gmod_bravo
     ports:
       - 127.0.0.1:${GMOD_BRAVO_RSYSLOG_PORT}:${GMOD_BRAVO_RSYSLOG_PORT}/tcp
+    labels:
+      - "io.portainer.accesscontrol.teams=gmod_bravo"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -544,6 +548,8 @@ services:
     hostname: rsyslog_gmod_charlie
     ports:
       - 127.0.0.1:${GMOD_CHARLIE_RSYSLOG_PORT}:${GMOD_CHARLIE_RSYSLOG_PORT}/tcp
+    labels:
+      - "io.portainer.accesscontrol.teams=gmod_charlie"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro

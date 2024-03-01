@@ -265,6 +265,8 @@ services:
     hostname: rsyslog_hl2dm_alpha
     ports:
       - 127.0.0.1:${HL2DM_ALPHA_RSYSLOG_PORT}:${HL2DM_ALPHA_RSYSLOG_PORT}/tcp
+    labels:
+      - "io.portainer.accesscontrol.teams=hl2dm_alpha"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -292,6 +294,8 @@ services:
     hostname: rsyslog_hl2dm_bravo
     ports:
       - 127.0.0.1:${HL2DM_BRAVO_RSYSLOG_PORT}:${HL2DM_BRAVO_RSYSLOG_PORT}/tcp
+    labels:
+      - "io.portainer.accesscontrol.teams=hl2dm_bravo"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro

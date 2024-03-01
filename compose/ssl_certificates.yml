@@ -1,5 +1,9 @@
 version: "3.9"
 
+x-labels: &labels
+  labels:
+    - "io.portainer.accesscontrol.teams=websites"
+  
 x-ssl-rsyslog: &ssl_rsyslog
   command: '-n'
   tty: true
@@ -16,14 +20,11 @@ x-ssl-rsyslog: &ssl_rsyslog
         memory: ${RSYSLOG_RAM:-12M}
       reservations:
         memory: 6M
+  <<: [ *labels ]
   depends_on:
     rsyslog_permissions:
       condition: service_completed_successfully
   restart: always
-  
-x-labels: &labels
-  labels:
-    - "io.portainer.accesscontrol.teams=websites"
 
 x-healthcheck: &healthcheck
   healthcheck:

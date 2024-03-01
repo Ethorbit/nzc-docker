@@ -50,8 +50,6 @@ CREATE USER 'freeman'@'%' IDENTIFIED BY '${FREEMAN_PASSWORD}';
 CREATE USER 'pepe'@'%' IDENTIFIED BY '${PEPE_PASSWORD}';
 
 GRANT gmod_alpha TO 'doormatt'@'%', 'blunto'@'%', 'berb'@'%';
-GRANT svencoop TO 'freeman'@'%', 'pepe'@'%';
 SET DEFAULT ROLE gmod_alpha TO 'doormatt', 'blunto', 'berb';
-SET DEFAULT ROLE svencoop TO 'freeman', 'pepe';
 
 FLUSH PRIVILEGES;

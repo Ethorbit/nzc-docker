@@ -161,13 +161,9 @@ users:
   pepe:
     id: 1904
     <<: *staff-defaults
-    groups:
-      - svencoop
     password: "${PEPE_PASSWORD}"
   freeman:
     id: 1905
     <<: *staff-defaults
-    groups:
-      - svencoop
     password: "${FREEMAN_PASSWORD}"
 

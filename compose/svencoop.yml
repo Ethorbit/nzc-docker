@@ -1,5 +1,9 @@
 version: "3.9"
 
+x-svencoop-labels: &svencoop_labels
+  labels:
+    - "io.portainer.accesscontrol.teams=svencoop"
+  
 x-svencoop-rsyslog: &svencoop_rsyslog
   command: '-n'
   tty: true
@@ -19,6 +23,7 @@ x-svencoop-rsyslog: &svencoop_rsyslog
   depends_on:
     rsyslog_permissions:
       condition: service_completed_successfully
+  <<: [ *svencoop_labels ]
   restart: always
 
 x-svencoop: &svencoop
@@ -34,8 +39,7 @@ x-svencoop: &svencoop
     - "${DOMAIN_NAME}:172.10.1.2"
     - "${WEBSITE_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
     - "${FASTDL_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
-  labels:
-    - "io.portainer.accesscontrol.teams=svencoop"
+  <<: [ *svencoop_labels ]
   cpu_count: 1
   cpu_shares: 256
   deploy:
