@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  discord_permissions:
+  discord_sticky_bot_permissions:
     build:
       context: ./build/permissions
     volumes:
@@ -20,7 +20,7 @@ services:
       - CAP_FSETID
     network_mode: none
     restart: on-failure
-  discord_sticky-bot:
+  discord_sticky_bot:
     build:
       context: ./build/discord_sticky-message-bot
       args:
@@ -69,7 +69,7 @@ services:
         - path: ${DISK}
           rate: 100
     depends_on:
-      discord_permissions:
+      discord_sticky_bot_permissions:
         condition: service_completed_successfully
       discord_rsyslog:
         condition: service_healthy
@@ -77,12 +77,76 @@ services:
       driver: syslog
       options:
         mode: non-blocking
-        syslog-address: "tcp://localhost:${DISCORD_STICKY_BOT_RSYSLOG_PORT}"
+        syslog-address: "tcp://localhost:${DISCORD_RSYSLOG_PORT}"
         tag: "discord_sticky_bot"
     restart: always
     networks:
       - discord
-
+  
+  discord_server_status_envsubst:
+    build:
+      context: ./build/input_output_envsubst
+      args:
+        FILE_EXTENSION: "json"
+    environment:
+      - DISCORD_SERVER_STATUS_BOT_TOKEN=${DISCORD_SERVER_STATUS_BOT_TOKEN}
+      - DISCORD_SERVER_STATUS_CHANNEL=${DISCORD_SERVER_STATUS_CHANNEL}
+    env_file:
+      - ../.ports.env
+    volumes:
+      - ./data/configs/discord_server_status/template:/mnt/input
+      - ./data/configs/discord_server_status:/mnt/output
+    network_mode: none
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_FOWNER
+    restart: on-failure
+        
+  discord_server_status:
+    image: mgerb/server-status:latest
+    volumes:
+      - ./data/configs/discord_server_status/config.json:/server-status/config.json
+    hostname: discord_server_status
+    networks:
+      discord:
+      gmod:
+      svencoop:
+      synergy:
+      hl2dm:
+    extra_hosts:
+      - "gmod-alpha-1:172.150.1.1"
+      - "gmod-alpha-2:172.150.1.2"
+      - "gmod-alpha-3:172.150.1.3"
+      - "gmod-bravo-1:172.150.1.10"
+      - "gmod-charlie:172.150.1.20"
+      - "svencoop-1:172.151.1.1"
+      - "svencoop-2:172.151.1.2"
+      - "synergy:172.152.1.1"
+      - "hl2dm-alpha-1:172.153.1.1"
+      - "hl2dm-bravo-1:172.153.1.10"
+    cpuset: ${DISCORD_CPU}
+    cpu_shares: 128
+    deploy:
+      resources:
+        limits:
+          memory: ${DISCORD_SERVER_STATUS_RAM:-90M}
+        reservations:
+          memory: 30M
+    depends_on:
+      discord_server_status_envsubst:
+        condition: service_completed_successfully 
+      discord_rsyslog:
+        condition: service_healthy
+    logging:
+      driver: syslog
+      options:
+        mode: non-blocking
+        syslog-address: "tcp://localhost:${DISCORD_RSYSLOG_PORT}"
+        tag: "discord_server_status"
+    restart: always
+  
   discord_rsyslog:
     command: '-n'
     tty: true
@@ -99,13 +163,13 @@ services:
       args:
         - UID=${rsyslog_u}
         - GID=${discord_g}
-        - PORT=${DISCORD_STICKY_BOT_RSYSLOG_PORT}
+        - PORT=${DISCORD_RSYSLOG_PORT}
     depends_on:
       rsyslog_permissions:
         condition: service_completed_successfully
     hostname: rsyslog_discord_sticky_bot
     ports:
-      - 127.0.0.1:${DISCORD_STICKY_BOT_RSYSLOG_PORT}:${DISCORD_STICKY_BOT_RSYSLOG_PORT}/tcp
+      - 127.0.0.1:${DISCORD_RSYSLOG_PORT}:${DISCORD_RSYSLOG_PORT}/tcp
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro

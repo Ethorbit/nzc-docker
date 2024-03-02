@@ -1,0 +1,60 @@
+{
+    "Token": "${DISCORD_SERVER_STATUS_BOT_TOKEN}",
+    "RoomIDList":["${DISCORD_SERVER_STATUS_CHANNEL}"],
+    "RolesToNotify": [],
+    "GameStatus": "doing status things",
+    "PollingInterval": 5,
+    "BotPrefix": "!",
+    "Servers": [
+        {
+            "Name": "Gmod :${GMOD_ALPHA_1_PORT}",
+            "Address": "gmod-alpha-1",
+            "Port": ${GMOD_ALPHA_1_PORT}
+        },
+        {
+            "Name": "Gmod :${GMOD_ALPHA_2_PORT}",
+            "Address": "gmod-alpha-2",
+            "Port": ${GMOD_ALPHA_2_PORT}
+        },
+        {
+            "Name": "Gmod :${GMOD_ALPHA_3_PORT}",
+            "Address": "gmod-alpha-3",
+            "Port": ${GMOD_ALPHA_3_PORT}
+        },
+        {
+            "Name": "Gmod :${GMOD_BRAVO_1_PORT}",
+            "Address": "gmod-bravo-1",
+            "Port": ${GMOD_BRAVO_1_PORT}
+        },
+        {
+            "Name": "Gmod :${GMOD_CHARLIE_1_PORT}",
+            "Address": "gmod-charlie-1",
+            "Port": ${GMOD_CHARLIE_1_PORT}
+        },
+        {
+            "Name": "HL2:DM :${HL2DM_ALPHA_1_PORT}",
+            "Address": "hl2dm-alpha-1",
+            "Port": ${HL2DM_ALPHA_1_PORT}
+        },
+        {
+            "Name": "HL2:DM :${HL2DM_BRAVO_1_PORT}",
+            "Address": "hl2dm-bravo-1",
+            "Port": ${HL2DM_BRAVO_1_PORT}
+        },
+        {
+            "Name": "Sven Co-op :${SVENCOOP_1_PORT}",
+            "Address": "svencoop-1",
+            "Port": ${SVENCOOP_1_PORT}
+        },
+        {
+            "Name": "Sven Co-op :${SVENCOOP_2_PORT}",
+            "Address": "svencoop-2",
+            "Port": ${SVENCOOP_2_PORT}
+        },
+        {
+            "Name": "Synergy :${SYNERGY_PORT}",
+            "Address": "synergy",
+            "Port": ${SYNERGY_PORT}
+        }
+    ]
+}
