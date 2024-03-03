@@ -142,6 +142,19 @@ Because this project consists of many different containers, it is not feasible t
 For example, to restart ONLY the web server:
 `nofiles=1 make args='-f ./compose/nginx.yml restart' cmd`
 
+To list containers: `docker container ls`
+
+To remove a faulty or outdated container: `docker container rm -f <name>`
+
+To list volumes: `docker volume ls`
+
+To remove a container's data volume: `docker volume rm -f <name>`
+
+To force remove a container's data volume (also removes any container using the volume): `make rm-vol <name>`
+
+To create ONLY the containers that were removed:
+`make args='up --no-recreate --build -d' cmd`
+
 To update users and groups: `make update-users`
 
 Note: for Development there's nothing wrong with removing and re-creating everything: `make args='down -v' cmd && make args='up --build' cmd` - however that results in full data loss, so that's dangerous and unacceptable for a Production instance!
