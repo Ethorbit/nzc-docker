@@ -2,7 +2,7 @@
     "Token": "${DISCORD_SERVER_STATUS_BOT_TOKEN}",
     "RoomIDList":["${DISCORD_SERVER_STATUS_CHANNEL}"],
     "RolesToNotify": [],
-    "GameStatus": "doing status things",
+    "GameStatus": "with /server-status",
     "PollingInterval": ${DISCORD_SERVER_STATUS_POLLING_RATE},
     "Servers": [
         {
