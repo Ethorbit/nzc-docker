@@ -16,8 +16,8 @@ Docker infrastructure used by the nZC game community. Runs a database, various w
 Note: you can choose not to host some game servers to avoid having to own all of the games.
 
 Packages:
-* docker with a minimum version of 24.0.0, build 98fdcd769b
-* docker-compose with a minimum version of 2.18.1
+* docker with a version of 24.0.0, build 98fdcd769b
+* docker-compose with a version of 2.18.1
 * lxcfs (optional)
 * envsubst
 * iptables
@@ -28,7 +28,7 @@ Check your versions:
 * `docker -v`
 * `docker-compose -v`
 
-You can possibly use earlier versions, but if things don't work as expected - that's why.
+You can possibly use later versions, but if things don't work as expected - that's why.
 
 Make sure lxcfs is running (optional):
 * `sudo systemctl enable lxcfs --now`
