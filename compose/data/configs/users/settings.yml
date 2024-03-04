@@ -31,6 +31,8 @@ groups:
     id: 1812
   fail2ban:
     id: 1813
+  serverstatus:
+    id: 1814
   svencoop:
     id: 1820
   synergy:
@@ -118,6 +120,12 @@ users:
       - svencoop
       - synergy
       - hl2dm
+  serverstatus:
+    id: 1814
+    home: false
+    primarygroup: serverstatus
+    groups:
+      - discord
   stickybot:
     id: 1803
     home: false

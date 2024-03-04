@@ -97,7 +97,7 @@ services:
       - discord_sticky_bot:/mnt/discord_bots/stickies
       - phpmyadmin:/mnt/admin_websites/phpmyadmin
       - portainer_data:/mnt/admin_websites/portainer
-      - discord_sticky_bot_logs:/mnt/logs/discord_sticky_bot
+      - discord_logs:/mnt/logs/discord_bots
       - gmod_alpha_logs:/mnt/logs/gmod_alpha
       - gmod_bravo_logs:/mnt/logs/gmod_bravo
       - gmod_charlie_logs:/mnt/logs/gmod_charlie
@@ -201,7 +201,7 @@ volumes:
   phpmyadmin:
   php_fpm_logs:
   portainer_data:
-  discord_sticky_bot_logs:
+  discord_logs:
   discord_sticky_bot:
   svencoop_logs:
   svencoop_shared:

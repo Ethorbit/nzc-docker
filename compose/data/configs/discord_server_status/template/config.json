@@ -3,57 +3,71 @@
     "RoomIDList":["${DISCORD_SERVER_STATUS_CHANNEL}"],
     "RolesToNotify": [],
     "GameStatus": "doing status things",
-    "PollingInterval": 5,
-    "BotPrefix": "!",
+    "PollingInterval": ${DISCORD_SERVER_STATUS_POLLING_RATE},
     "Servers": [
         {
+            "Name": "Web Server",
+            "Address": "localhost",
+            "Port": 80
+        },
+        {
+            "Name": "Database",
+            "Address": "localhost",
+            "Port": ${MYSQL_PORT}
+        },
+        {
+            "Name": "File Sharing",
+            "Address": "localhost",
+            "Port": ${SSH_PORT}
+        },
+        {
             "Name": "Gmod :${GMOD_ALPHA_1_PORT}",
-            "Address": "gmod-alpha-1",
+            "Address": "localhost",
             "Port": ${GMOD_ALPHA_1_PORT}
         },
         {
             "Name": "Gmod :${GMOD_ALPHA_2_PORT}",
-            "Address": "gmod-alpha-2",
+            "Address": "localhost",
             "Port": ${GMOD_ALPHA_2_PORT}
         },
         {
             "Name": "Gmod :${GMOD_ALPHA_3_PORT}",
-            "Address": "gmod-alpha-3",
+            "Address": "localhost",
             "Port": ${GMOD_ALPHA_3_PORT}
         },
         {
             "Name": "Gmod :${GMOD_BRAVO_1_PORT}",
-            "Address": "gmod-bravo-1",
+            "Address": "localhost",
             "Port": ${GMOD_BRAVO_1_PORT}
         },
         {
             "Name": "Gmod :${GMOD_CHARLIE_1_PORT}",
-            "Address": "gmod-charlie-1",
+            "Address": "localhost",
             "Port": ${GMOD_CHARLIE_1_PORT}
         },
         {
             "Name": "HL2:DM :${HL2DM_ALPHA_1_PORT}",
-            "Address": "hl2dm-alpha-1",
+            "Address": "localhost",
             "Port": ${HL2DM_ALPHA_1_PORT}
         },
         {
             "Name": "HL2:DM :${HL2DM_BRAVO_1_PORT}",
-            "Address": "hl2dm-bravo-1",
+            "Address": "localhost",
             "Port": ${HL2DM_BRAVO_1_PORT}
         },
         {
             "Name": "Sven Co-op :${SVENCOOP_1_PORT}",
-            "Address": "svencoop-1",
+            "Address": "localhost",
             "Port": ${SVENCOOP_1_PORT}
         },
         {
             "Name": "Sven Co-op :${SVENCOOP_2_PORT}",
-            "Address": "svencoop-2",
+            "Address": "localhost",
             "Port": ${SVENCOOP_2_PORT}
         },
         {
             "Name": "Synergy :${SYNERGY_PORT}",
-            "Address": "synergy",
+            "Address": "localhost",
             "Port": ${SYNERGY_PORT}
         }
     ]
