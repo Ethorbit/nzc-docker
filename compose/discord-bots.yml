@@ -1,5 +1,12 @@
 version: "3.9"
 
+# I've decided to disable server-status (behind profile optional)
+# My reasoning is that you should NOT report the status of services 
+# on the same machine you are running the services on
+# because if the machine goes offline, the bot won't be reporting anything
+#
+# You can either remove profile optional or copy the config.json to 
+# an instance of the bot running on a reliable VPS.
 x-discord-server-status-depends: &discord_server_status_depends
   discord_server_status_envsubst:
     condition: service_completed_successfully 
@@ -9,6 +16,8 @@ x-discord-server-status-depends: &discord_server_status_depends
     condition: service_healthy
   
 x-discord-server-status: &discord_server_status
+  profiles:
+    - optional
   build:
     context: ./build/discord-server-status
     args:
