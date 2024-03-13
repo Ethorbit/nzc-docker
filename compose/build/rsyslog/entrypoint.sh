@@ -27,7 +27,7 @@ logrotate_loop() {
     
     while :; do
         sleep 1h
-        logrotate -vf /etc/logrotate.d/
+        logrotate -v /etc/logrotate.d/
     done
 
     echo "logrotate_loop stopped when it shouldn't have!" ; kill $$ ; exit 1
