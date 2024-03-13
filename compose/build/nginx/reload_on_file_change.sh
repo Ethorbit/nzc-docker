@@ -3,7 +3,7 @@ check_changes() {
     echo "Nginx will auto-reload when a config or certificate changes."
     
     inotifywait -m -r \
-        -e modify,attrib,move,create,delete \
+        -e close_write,modify,attrib,move,create,delete \
         --exclude '\.swp$|.*template.*' \
         /etc/nginx/snippets/ \
         /etc/nginx/conf.d/ \
