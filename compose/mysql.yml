@@ -1,4 +1,29 @@
 version: "3.9"
+
+x-limits: &limits
+  cpuset: ${MYSQL_CPU}
+  cpu_shares: 1024
+  deploy:
+    resources:
+      limits:
+        memory: ${MYSQL_RAM:-2048M}
+      reservations:
+        memory: 512M
+  blkio_config:
+    weight: 1000
+    device_write_bps:
+      - path: ${DISK}
+        rate: '250m'
+    device_read_bps:
+      - path: ${DISK}
+        rate: '250m'
+    device_read_iops:
+      - path: ${DISK}
+        rate: 4000
+    device_write_iops:
+      - path: ${DISK}
+        rate: 4000
+
 services:
   mysql_envsubst:
     build:
@@ -32,6 +57,12 @@ services:
     hostname: mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${ADMIN_PASSWORD}
+    healthcheck:
+      test: "mysqladmin ping -h 127.0.0.1 --silent || exit 1"
+      start_period: 5s
+      interval: 5s
+      timeout: 10s
+      retries: 3
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -44,6 +75,7 @@ services:
       - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
       - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
       - mysql:/var/lib/mysql
+      - mysql_backups:/mnt/backups
       - ./data/configs/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./data/configs/mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       #- /dev/null:/etc/mysql/conf.d/docker.cnf
@@ -65,28 +97,53 @@ services:
       nofile:
         soft: 20000
         hard: 40000
-    cpuset: ${MYSQL_CPU}
-    cpu_shares: 1024
-    deploy:
-      resources:
-        limits:
-          memory: ${MYSQL_RAM:-2048M}
-        reservations:
-          memory: 512M
-    blkio_config:
-      weight: 1000
-      device_write_bps:
-        - path: ${DISK}
-          rate: '250m'
-      device_read_bps:
-        - path: ${DISK}
-          rate: '250m'
-      device_read_iops:
-        - path: ${DISK}
-          rate: 4000
-      device_write_iops:
-        - path: ${DISK}
-          rate: 4000
+    <<: [ *limits ]
+    restart: always
+
+  mysql_backups:
+    build:
+      context: ./build/mysql-anacron-backup
+      args:
+        UID: ${mysql_u}
+        GID: ${admin_g}
+    networks:
+      - mysql
+    extra_hosts:
+      - "mysql:172.212.1.1"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_USER: admin
+      MYSQL_PASS: ${ADMIN_PASSWORD}
+      ANACRON_DAYS: 7
+      MAX_BACKUPS: 26
+      GZIP_LEVEL: 9
+      MYSQLDUMP_OPTS: --no-tablespaces
+    volumes:
+      - mysql_backups:/backup
+      - mysql_backups_spool:/home/mysql-backup/.anacron/spool
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
+      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
+      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
+      - ${MOUNT_PROC_STAT}:/proc/stat:rw
+      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
+      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
+      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
+      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
+    logging:
+      driver: syslog
+      options:
+        mode: non-blocking
+        syslog-address: "tcp://localhost:${MYSQL_RSYSLOG_PORT}"
+        tag: "mysql_backups"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mysql_rsyslog:
+        condition: service_healthy
+    <<: [ *limits ]
     restart: always
 
   mysql_rsyslog:
@@ -136,6 +193,8 @@ services:
 volumes:
   mysql_logs:
   mysql:
+  mysql_backups:
+  mysql_backups_spool:
 networks:
   mysql:
     ipam:

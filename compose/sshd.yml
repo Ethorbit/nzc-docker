@@ -76,6 +76,7 @@ services:
       - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
       - ./data/configs/ssh/sshd_config:/etc/ssh/sshd_config
       - sftp:/mnt
+      - mysql_backups:/mnt/mysql_backups
       - svencoop_shared:/mnt/game_servers/svencoop/shared
       - svencoop_1:/mnt/game_servers/svencoop/1
       - svencoop_2:/mnt/game_servers/svencoop/2
@@ -109,7 +110,6 @@ services:
       - nginx_logs:/mnt/logs/nginx
       - php_fpm_logs:/mnt/logs/php_fpm
       - mysql_logs:/mnt/logs/mysql
-      - mysql:/mnt/mysql
       - certbot_logs:/mnt/logs/certbot
       - acme_dns_logs:/mnt/logs/acme_dns
       - fail2ban_logs:/mnt/logs/fail2ban
@@ -195,6 +195,7 @@ networks:
 volumes:
   sshd_logs:
   sftp:
+  mysql_backups:
   nginx_logs:
   nginx_websites:
   nginx_fastdl:
@@ -229,7 +230,6 @@ volumes:
   home:
   rsyslog_logs:
   mysql_logs:
-  mysql:
   certbot_logs:
   acme_dns_logs:
   fail2ban_logs:
