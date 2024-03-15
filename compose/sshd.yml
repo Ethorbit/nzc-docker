@@ -23,7 +23,8 @@ services:
       && mkdir -p /mnt/game_servers/gmod/alpha /mnt/game_servers/gmod/bravo /mnt/game_servers/gmod/charlie
       && mkdir -p /mnt/game_servers/hl2dm/alpha /mnt/game_servers/hl2dm/bravo
       && mkdir -p /mnt/game_servers/svencoop/shared /mnt/game_servers/svencoop/1 /mnt/game_servers/svencoop/2
-      && mkdir -p /mnt/game_servers/synergy'
+      && mkdir -p /mnt/game_servers/synergy
+      && mkdir -p /mnt/game_servers/ark/shared /mnt/game_servers/ark/1'
     cap_drop:
       - ALL 
     cap_add:
@@ -93,6 +94,8 @@ services:
       - gmod_alpha_3:/mnt/game_servers/gmod/alpha/3
       - gmod_bravo_1:/mnt/game_servers/gmod/bravo/1
       - gmod_charlie_1:/mnt/game_servers/gmod/charlie/1
+      - ark_1:/mnt/game_servers/ark/1
+      - ark_shared:/mnt/game_servers/ark/shared
       - nginx_fastdl:/mnt/fastdl
       - nginx_websites:/mnt/websites
       - discord_sticky_bot:/mnt/discord_bots/stickies
@@ -106,6 +109,7 @@ services:
       - hl2dm_bravo_logs:/mnt/logs/hl2dm_bravo
       - svencoop_logs:/mnt/logs/svencoop
       - synergy_logs:/mnt/logs/synergy
+      - ark_logs:/mnt/logs/ark
       - sshd_logs:/mnt/logs/sshd
       - nginx_logs:/mnt/logs/nginx
       - php_fpm_logs:/mnt/logs/php_fpm
@@ -227,6 +231,9 @@ volumes:
   gmod_alpha_3:
   gmod_bravo_1:
   gmod_charlie_1:
+  ark_logs:
+  ark_1:
+  ark_shared:
   home:
   rsyslog_logs:
   mysql_logs:

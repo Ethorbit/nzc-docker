@@ -47,7 +47,8 @@ $cfg['Servers'][$i]['AllowDeny']['rules'] = array(
     'deny svencoop from all',
     'deny synergy from all',
     'deny hl2dm_alpha from all',
-    'deny hl2dm_bravo from all'
+    'deny hl2dm_bravo from all',
+    'deny ark from all'
 );
 
 /**

@@ -8,6 +8,7 @@ CREATE DATABASE hl2dm_alpha;
 CREATE DATABASE hl2dm_bravo;
 CREATE DATABASE svencoop;
 CREATE DATABASE synergy;
+CREATE DATABASE ark;
 
 CREATE ROLE gmod_alpha;
 CREATE ROLE gmod_bravo;
@@ -16,6 +17,7 @@ CREATE ROLE hl2dm_alpha;
 CREATE ROLE hl2dm_bravo;
 CREATE ROLE svencoop;
 CREATE ROLE synergy;
+CREATE ROLE ark;
 GRANT ALL ON `gmod_alpha%`.* TO gmod_alpha;
 GRANT ALL ON `gmod_bravo%`.* TO gmod_bravo;
 GRANT ALL ON `gmod_charlie%`.* TO gmod_charlie;
@@ -23,6 +25,7 @@ GRANT ALL ON `hl2dm_alpha%`.* TO hl2dm_alpha;
 GRANT ALL ON `hl2dm_bravo%`.* TO hl2dm_bravo;
 GRANT ALL ON `svencoop%`.* TO svencoop;
 GRANT ALL ON `synergy%`.* TO synergy;
+GRANT ALL ON `ark%`.* TO ark;
 
 /* Internal users */
 CREATE USER 'php'@'${MYSQL_HOST}' IDENTIFIED BY '${PHP_PASSWORD}';
@@ -33,6 +36,7 @@ CREATE USER 'hl2dm_alpha'@'${MYSQL_HOST}' IDENTIFIED BY '${HL2DM_ALPHA_PASSWORD}
 CREATE USER 'hl2dm_bravo'@'${MYSQL_HOST}' IDENTIFIED BY '${HL2DM_BRAVO_PASSWORD}';
 CREATE USER 'svencoop'@'${MYSQL_HOST}' IDENTIFIED BY '${SVENCOOP_PASSWORD}';
 CREATE USER 'synergy'@'${MYSQL_HOST}' IDENTIFIED BY '${SYNERGY_PASSWORD}';
+CREATE USER 'ark'@'${MYSQL_HOST}' IDENTIFIED BY '${ARK_PASSWORD}';
 GRANT ALL PRIVILEGES ON *.* TO 'php'@'${MYSQL_HOST}' WITH GRANT OPTION;
 GRANT gmod_alpha TO 'gmod_alpha'@'${MYSQL_HOST}';
 GRANT gmod_bravo TO 'gmod_bravo'@'${MYSQL_HOST}';
@@ -41,6 +45,7 @@ GRANT hl2dm_alpha TO 'hl2dm_alpha'@'${MYSQL_HOST}';
 GRANT hl2dm_bravo TO 'hl2dm_bravo'@'${MYSQL_HOST}';
 GRANT svencoop TO 'svencoop'@'${MYSQL_HOST}';
 GRANT synergy TO 'synergy'@'${MYSQL_HOST}';
+GRANT ark TO 'ark'@'${MYSQL_HOST}';
 
 /* Your custom users AKA staff members */
 CREATE USER 'doormatt'@'%' IDENTIFIED BY '${DOORMATT_PASSWORD}';
@@ -48,8 +53,11 @@ CREATE USER 'blunto'@'%' IDENTIFIED BY '${BLUNTO_PASSWORD}';
 CREATE USER 'berb'@'%' IDENTIFIED BY '${BERB_PASSWORD}';
 CREATE USER 'freeman'@'%' IDENTIFIED BY '${FREEMAN_PASSWORD}';
 CREATE USER 'pepe'@'%' IDENTIFIED BY '${PEPE_PASSWORD}';
+CREATE USER 'geist'@'%' IDENTIFIED BY '${GEIST_PASSWORD}';
 
 GRANT gmod_alpha TO 'doormatt'@'%', 'blunto'@'%', 'berb'@'%';
+GRANT ark TO 'geist'@'%';
 SET DEFAULT ROLE gmod_alpha TO 'doormatt', 'blunto', 'berb';
+SET DEFAULT ROLE ark TO 'geist';
 
 FLUSH PRIVILEGES;

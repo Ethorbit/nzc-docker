@@ -47,6 +47,8 @@ groups:
     id: 1911
   gmod_charlie:
     id: 1912
+  ark:
+    id: 2001
 
 x-staff-defaults: &staff-defaults
   primarygroup: staff
@@ -69,6 +71,7 @@ x-admin-defaults: &admin-defaults
     - gmod_charlie
     - hl2dm_alpha
     - hl2dm_bravo
+    - ark
     - discord
     - rsyslog
     - php
@@ -120,6 +123,7 @@ users:
       - svencoop
       - synergy
       - hl2dm
+      - ark
   serverstatus:
     id: 1814
     home: false
@@ -178,5 +182,6 @@ users:
     id: 1906
     <<: *staff-defaults
     groups:
+      - ark
       - websites
     password: "${GEIST_PASSWORD}"

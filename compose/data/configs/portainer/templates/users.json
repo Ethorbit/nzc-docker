@@ -16,5 +16,11 @@
         "Password": "${BERB_PASSWORD}",
         "Role": 2,
         "Teams": [ "gmod_alpha" ]
+    },
+    {
+        "Username": "geist",
+        "Password": "${GEIST_PASSWORD}",
+        "Role": 2,
+        "Teams": [ "ark" ]
     }
 ]

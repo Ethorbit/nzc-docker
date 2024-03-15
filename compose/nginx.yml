@@ -26,6 +26,7 @@ x-nginx: &nginx
     - ${gmod_alpha_g}
     - ${gmod_bravo_g}
     - ${gmod_charlie_g}
+    - ${ark_g}
     - ${websites_g}
   hostname: nginx
   ports:
