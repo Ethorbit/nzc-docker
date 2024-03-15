@@ -75,6 +75,8 @@ x-ark-1: &ark_1
   <<: [ *ark ]
   hostname: ark_1
   environment:
+    PORT: ${ARK_1_PORT}
+    QUERY_PORT: ${ARK_1_QUERY_PORT}
     START_ARGS: "TheIsland?listen?Port=${ARK_1_PORT:-7777}?QueryPort=${ARK_1_QUERY_PORT:-27415}?ServerCrosshair=True?MapPlayerLocation=True?AllowThirdPersonPlayer=True"
     RCON_PASSWORD: ${ARK_PASSWORD}
   volumes:

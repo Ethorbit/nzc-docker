@@ -21,6 +21,6 @@
         "Username": "geist",
         "Password": "${GEIST_PASSWORD}",
         "Role": 2,
-        "Teams": [ "ark" ]
+        "Teams": [ "ark", "websites" ]
     }
 ]
