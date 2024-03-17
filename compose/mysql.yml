@@ -84,13 +84,13 @@ services:
     depends_on:
       mysql_envsubst:
         condition: service_completed_successfully
-      mysql_rsyslog:
+      rsyslog:
         condition: service_healthy
     logging:
       driver: syslog
       options:
         mode: non-blocking
-        syslog-address: "tcp://localhost:${MYSQL_RSYSLOG_PORT}"
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
         tag: "mysql"
     ulimits:
       nproc: 65535
@@ -136,62 +136,17 @@ services:
       driver: syslog
       options:
         mode: non-blocking
-        syslog-address: "tcp://localhost:${MYSQL_RSYSLOG_PORT}"
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
         tag: "mysql_backups"
     depends_on:
       mysql:
         condition: service_healthy
-      mysql_rsyslog:
+      rsyslog:
         condition: service_healthy
     <<: [ *limits ]
     restart: always
 
-  mysql_rsyslog:
-    command: '-n'
-    tty: true
-    stdin_open: true
-    healthcheck:
-      test: "/healthcheck.sh"
-      start_period: 5s
-      interval: 5s
-      timeout: 10s
-      retries: 3
-    restart: always
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${mysql_g}
-        - PORT=${MYSQL_RSYSLOG_PORT}
-    depends_on:
-      rsyslog_permissions:
-        condition: service_completed_successfully
-    hostname: rsyslog_mysql
-    ports:
-      - 127.0.0.1:${MYSQL_RSYSLOG_PORT}:${MYSQL_RSYSLOG_PORT}/tcp
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - mysql_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    deploy:
-      resources:
-        limits:
-          memory: ${RSYSLOG_RAM:-12M}
-        reservations:
-          memory: 6M
-    cpuset: ${MYSQL_CPU}
 volumes:
-  mysql_logs:
   mysql:
   mysql_backups:
   mysql_backups_spool:

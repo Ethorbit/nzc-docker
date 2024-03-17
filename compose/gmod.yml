@@ -25,26 +25,26 @@ x-defaults: &defaults
       - path: ${DISK}
         rate: 1000
 
+x-defaults-depends: &defaults_depends
+  rsyslog:
+    condition: service_healthy
+
 x-defaults_development_depends: &defaults_development_depends
+  <<: [ *defaults_depends ]
   nginx_development:
     condition: service_healthy
 x-defaults_production_depends: &defaults_production_depends
+  <<: [ *defaults_depends ]
   nginx_production: 
     condition: service_healthy
 
 x-defaults_alpha_depends: &defaults_alpha_depends
-  gmod_alpha_rsyslog:
-    condition: service_healthy
   gmod_alpha_permissions:
     condition: service_completed_successfully
 x-defaults_bravo_depends: &defaults_bravo_depends
-  gmod_bravo_rsyslog:
-    condition: service_healthy
   gmod_bravo_permissions:
     condition: service_completed_successfully
 x-defaults_charlie_depends: &defaults_charlie_depends
-  gmod_charlie_rsyslog:
-    condition: service_healthy
   gmod_charlie_permissions:
     condition: service_completed_successfully
 
@@ -198,7 +198,7 @@ x-gmod_alpha_1: &gmod_alpha_1
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${GMOD_ALPHA_RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
       tag: "gmod_alpha_1"
 
 x-gmod_alpha_2: &gmod_alpha_2
@@ -236,7 +236,7 @@ x-gmod_alpha_2: &gmod_alpha_2
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${GMOD_ALPHA_RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
       tag: "gmod_alpha_2"
 
 x-gmod_alpha_3: &gmod_alpha_3
@@ -274,7 +274,7 @@ x-gmod_alpha_3: &gmod_alpha_3
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${GMOD_ALPHA_RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
       tag: "gmod_alpha_3"
 
 x-gmod_bravo_1: &gmod_bravo_1
@@ -312,7 +312,7 @@ x-gmod_bravo_1: &gmod_bravo_1
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${GMOD_BRAVO_RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
       tag: "gmod_bravo_1"
 
 x-gmod_charlie_1: &gmod_charlie_1
@@ -350,29 +350,8 @@ x-gmod_charlie_1: &gmod_charlie_1
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${GMOD_CHARLIE_RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
       tag: "gmod_charlie_1"
-
-x-gmod-rsyslog: &gmod_rsyslog
-  command: '-n'
-  tty: true
-  stdin_open: true
-  healthcheck:
-    test: "/healthcheck.sh"
-    start_period: 5s
-    interval: 5s
-    timeout: 10s
-    retries: 3
-  deploy:
-    resources:
-      limits:
-        memory: ${RSYSLOG_RAM:-12M}
-      reservations:
-        memory: 6M
-  depends_on:
-    rsyslog_permissions:
-      condition: service_completed_successfully
-  restart: always
 
 services:
   gmod_alpha_permissions:
@@ -481,94 +460,7 @@ services:
       - development
     <<: [ *gmod_charlie_development, *gmod_charlie_1 ]
   
-  gmod_alpha_rsyslog:
-    <<: [ *gmod_rsyslog ]
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${gmod_alpha_g}
-        - PORT=${GMOD_ALPHA_RSYSLOG_PORT}
-    hostname: rsyslog_gmod_alpha
-    ports:
-      - 127.0.0.1:${GMOD_ALPHA_RSYSLOG_PORT}:${GMOD_ALPHA_RSYSLOG_PORT}/tcp
-    labels:
-      - "io.portainer.accesscontrol.teams=gmod_alpha"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - gmod_alpha_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    cpuset: ${GMOD_ALPHA_RSYSLOG_CPU}
-  gmod_bravo_rsyslog:
-    <<: [ *gmod_rsyslog ]
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${gmod_bravo_g}
-        - PORT=${GMOD_BRAVO_RSYSLOG_PORT}
-    hostname: rsyslog_gmod_bravo
-    ports:
-      - 127.0.0.1:${GMOD_BRAVO_RSYSLOG_PORT}:${GMOD_BRAVO_RSYSLOG_PORT}/tcp
-    labels:
-      - "io.portainer.accesscontrol.teams=gmod_bravo"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - gmod_bravo_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    cpuset: ${GMOD_BRAVO_RSYSLOG_CPU}
-  gmod_charlie_rsyslog:
-    <<: [ *gmod_rsyslog ]
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${gmod_charlie_g}
-        - PORT=${GMOD_CHARLIE_RSYSLOG_PORT}
-    hostname: rsyslog_gmod_charlie
-    ports:
-      - 127.0.0.1:${GMOD_CHARLIE_RSYSLOG_PORT}:${GMOD_CHARLIE_RSYSLOG_PORT}/tcp
-    labels:
-      - "io.portainer.accesscontrol.teams=gmod_charlie"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - gmod_charlie_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    cpuset: ${GMOD_CHARLIE_RSYSLOG_CPU}
 volumes:
-  gmod_alpha_logs:
-  gmod_bravo_logs:
-  gmod_charlie_logs:
   gmod_alpha_shared:
   gmod_bravo_shared:
   gmod_charlie_shared:

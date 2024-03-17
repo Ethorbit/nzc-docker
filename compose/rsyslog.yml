@@ -1,20 +1,73 @@
 version: "3.9"
 services:
-  rsyslog_permissions:
+  rsyslog_envsubst:
     build:
-      context: ./build/permissions
+      context: ./build/input_output_envsubst
+      args:
+        FILE_EXTENSION: "conf"
+    environment:
+      - RSYSLOG_PORT=${RSYSLOG_PORT}
     volumes:
-      - ./data/configs/rsyslog/rsyslog.conf:/mnt/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/mnt/logrotate
-    command: >
-      /bin/sh -c 'chown "${root_u}":"${rsyslog_g}" /mnt/rsyslog.conf /mnt/logrotate
-      && chmod 644 /mnt/rsyslog.conf /mnt/logrotate'
+      - ./data/configs/rsyslog/template:/mnt/input
+      - ./data/configs/rsyslog:/mnt/output
+    network_mode: none
     cap_drop:
       - ALL
     cap_add:
       - CAP_DAC_OVERRIDE
-      - CAP_CHOWN
       - CAP_FOWNER
-      - CAP_FSETID
-    network_mode: none
     restart: on-failure
+  rsyslog:
+    build:
+      context: ./build/rsyslog
+      args:
+        UID: ${rsyslog_u}
+        GID: ${admin_g}
+        PORT: ${RSYSLOG_PORT}
+    environment:
+      PORT: ${RSYSLOG_PORT}
+    command: '-n'
+    tty: true
+    stdin_open: true
+    hostname: rsyslog
+    ports:
+      - 127.0.0.1:${RSYSLOG_PORT}:514/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
+      - rsyslog_logs:/logs
+    depends_on:
+      rsyslog_envsubst:
+        condition: service_completed_successfully
+    healthcheck:
+      test: "/healthcheck.sh"
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    blkio_config:
+      weight: 700
+      device_write_bps:
+        - path: ${DISK}
+          rate: '30m'
+      device_read_bps:
+        - path: ${DISK}
+          rate: '60m'
+      device_read_iops:
+        - path: ${DISK}
+          rate: 150
+      device_write_iops:
+        - path: ${DISK}
+          rate: 150
+    cpu_shares: 512
+    cpuset: ${RSYSLOG_CPU}
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+    restart: always
+volumes:
+  rsyslog_logs:

@@ -13,6 +13,9 @@ x-php_fpm: &php_fpm
   # This should allow PHP scripts to do things like display game server stats and whatnot
   #   External network -> Public IP:Port #
   #   Internal network -> gameserver container's IP:Port #
+  depends_on:
+    rsyslog:
+      condition: service_healthy
   extra_hosts:
     - "${DOMAIN_NAME}:172.10.1.2"
     - "${WEBSITE_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
@@ -65,15 +68,11 @@ x-php_fpm: &php_fpm
         memory: 6M
   cpuset: ${NGINX_CPU} # Since we handle the workloads of php (which is closely tied to webserver), we might as well use the same cores..
   cpu_shares: 1024
-  # Website PHP scripts are actually logged to nginx, this only logs the php-fpm process itself (so kinda useless)
-  depends_on:
-    php_fpm_rsyslog:
-      condition: service_healthy
   logging:
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${PHP_FPM_RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
       tag: "php_fpm"
   restart: always
 services:
@@ -100,53 +99,7 @@ services:
         - UID=${php_u}
         - GID=${php_g}
 
-  php_fpm_rsyslog:
-    command: '-n'
-    tty: true
-    stdin_open: true
-    healthcheck:
-      test: "/healthcheck.sh"
-      start_period: 5s
-      interval: 5s
-      timeout: 10s
-      retries: 3
-    restart: always
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${php_g}
-        - PORT=${PHP_FPM_RSYSLOG_PORT}
-    depends_on:
-      rsyslog_permissions:
-        condition: service_completed_successfully
-    hostname: rsyslog_php_fpm
-    ports:
-      - 127.0.0.1:${PHP_FPM_RSYSLOG_PORT}:${PHP_FPM_RSYSLOG_PORT}/tcp
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - php_fpm_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    deploy:
-      resources:
-        limits:
-          memory: ${RSYSLOG_RAM:-12M}
-        reservations:
-          memory: 6M
-    cpuset: ${NGINX_CPU}
-
 volumes:
-  php_fpm_logs:
   php_fpm_run:
 networks:
   php:

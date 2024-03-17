@@ -4,28 +4,6 @@ x-labels: &labels
   labels:
     - "io.portainer.accesscontrol.teams=websites"
   
-x-ssl-rsyslog: &ssl_rsyslog
-  command: '-n'
-  tty: true
-  stdin_open: true
-  healthcheck:
-    test: "/healthcheck.sh"
-    start_period: 5s
-    interval: 5s
-    timeout: 10s
-    retries: 3
-  deploy:
-    resources:
-      limits:
-        memory: ${RSYSLOG_RAM:-12M}
-      reservations:
-        memory: 6M
-  <<: [ *labels ]
-  depends_on:
-    rsyslog_permissions:
-      condition: service_completed_successfully
-  restart: always
-
 x-healthcheck: &healthcheck
   healthcheck:
     test: /bin/sh -c '/healthcheck.sh || exit 1' 
@@ -117,13 +95,13 @@ services:
     depends_on:
       acme_dns_envsubst:
         condition: service_completed_successfully
-      acme_dns_rsyslog:
+      rsyslog:
         condition: service_healthy
     logging:
       driver: syslog
       options:
         mode: non-blocking
-        syslog-address: "tcp://localhost:${ACME_DNS_RSYSLOG_PORT}"
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
         tag: "acme_dns"
     healthcheck:
       test: 'curl -f -X GET http://acme_dns/health || exit 1'
@@ -132,33 +110,6 @@ services:
       retries: 3
       start_period: 10s
     restart: always
-  acme_dns_rsyslog:
-    <<: [ *ssl_rsyslog ]
-    profiles:
-      - production
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${dns_g}
-        - PORT=${ACME_DNS_RSYSLOG_PORT}
-    hostname: rsyslog_acme_dns
-    ports:
-      - 127.0.0.1:${ACME_DNS_RSYSLOG_PORT}:${ACME_DNS_RSYSLOG_PORT}/tcp
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - acme_dns_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
   certbot_permissions:
     build:
       context: ./build/permissions
@@ -219,48 +170,19 @@ services:
         condition: service_completed_successfully
       acme_dns:
         condition: service_healthy
-      certbot_rsyslog:
+      rsyslog:
         condition: service_healthy
     logging:
       driver: syslog
       options:
         mode: non-blocking
-        syslog-address: "tcp://localhost:${CERTBOT_RSYSLOG_PORT}"
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
         tag: "certbot"
     restart: always
-  certbot_rsyslog:
-    <<: [ *ssl_rsyslog ]
-    profiles:
-      - production
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${cert_g}
-        - PORT=${CERTBOT_RSYSLOG_PORT}
-    hostname: rsyslog_certbot
-    ports:
-      - 127.0.0.1:${CERTBOT_RSYSLOG_PORT}:${CERTBOT_RSYSLOG_PORT}/tcp
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - certbot_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
 volumes:
   dhparam:
-  acme_dns_logs:
   acme_dns_storage:
   mkcert:
-  certbot_logs:
   certbot_conf:
   certbot_www:
 networks:

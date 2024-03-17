@@ -4,28 +4,6 @@ x-svencoop-labels: &svencoop_labels
   labels:
     - "io.portainer.accesscontrol.teams=svencoop"
   
-x-svencoop-rsyslog: &svencoop_rsyslog
-  command: '-n'
-  tty: true
-  stdin_open: true
-  healthcheck:
-    test: "/healthcheck.sh"
-    start_period: 5s
-    interval: 5s
-    timeout: 10s
-    retries: 3
-  deploy:
-    resources:
-      limits:
-        memory: ${RSYSLOG_RAM:-12M}
-      reservations:
-        memory: 6M
-  depends_on:
-    rsyslog_permissions:
-      condition: service_completed_successfully
-  <<: [ *svencoop_labels ]
-  restart: always
-
 x-svencoop: &svencoop
   build:
     context: ./build/svencoop-server
@@ -105,8 +83,8 @@ x-svencoop-1: &svencoop_1
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${SVENCOOP_RSYSLOG_PORT}"
-      tag: "synergy_1"
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      tag: "svencoop_1"
   restart: always
 
 x-svencoop-2: &svencoop_2
@@ -147,14 +125,14 @@ x-svencoop-2: &svencoop_2
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${SVENCOOP_RSYSLOG_PORT}"
-      tag: "synergy_2"
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      tag: "svencoop_2"
   restart: always
 
 x-svencoop-depends: &svencoop-depends
   svencoop_permissions:
     condition: service_completed_successfully
-  svencoop_rsyslog:
+  rsyslog:
     condition: service_healthy
 
 services:
@@ -213,34 +191,7 @@ services:
       nginx_development:
         condition: service_healthy
 
-  svencoop_rsyslog:
-    <<: [ *svencoop_rsyslog ]
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${svencoop_g}
-        - PORT=${SVENCOOP_RSYSLOG_PORT}
-    hostname: rsyslog_svencoop
-    ports:
-      - 127.0.0.1:${SVENCOOP_RSYSLOG_PORT}:${SVENCOOP_RSYSLOG_PORT}/tcp
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - svencoop_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    cpuset: ${SVENCOOP_RSYSLOG_CPU}
 volumes:
-  svencoop_logs:
   svencoop_1:
   svencoop_2:
   svencoop_shared:

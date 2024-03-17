@@ -57,7 +57,7 @@ services:
       driver: syslog
       options:
         mode: non-blocking
-        syslog-address: "tcp://localhost:${SSH_RSYSLOG_PORT}"
+        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
         tag: "sshd"
     volumes:
       - home:/home
@@ -101,22 +101,7 @@ services:
       - discord_sticky_bot:/mnt/discord_bots/stickies
       - phpmyadmin:/mnt/admin_websites/phpmyadmin
       - portainer_data:/mnt/admin_websites/portainer
-      - discord_logs:/mnt/logs/discord_bots
-      - gmod_alpha_logs:/mnt/logs/gmod_alpha
-      - gmod_bravo_logs:/mnt/logs/gmod_bravo
-      - gmod_charlie_logs:/mnt/logs/gmod_charlie
-      - hl2dm_alpha_logs:/mnt/logs/hl2dm_alpha
-      - hl2dm_bravo_logs:/mnt/logs/hl2dm_bravo
-      - svencoop_logs:/mnt/logs/svencoop
-      - synergy_logs:/mnt/logs/synergy
-      - ark_logs:/mnt/logs/ark
-      - sshd_logs:/mnt/logs/sshd
-      - nginx_logs:/mnt/logs/nginx
-      - php_fpm_logs:/mnt/logs/php_fpm
-      - mysql_logs:/mnt/logs/mysql
-      - certbot_logs:/mnt/logs/certbot
-      - acme_dns_logs:/mnt/logs/acme_dns
-      - fail2ban_logs:/mnt/logs/fail2ban
+      - rsyslog_logs:/mnt/logs
     depends_on:
       sshd_permissions:
         condition:
@@ -124,7 +109,7 @@ services:
       sshd_envsubst:
         condition: 
           service_completed_successfully
-      sshd_rsyslog:
+      rsyslog:
         condition: service_healthy
     cpuset: ${SSH_CPU}
     cpu_shares: 256
@@ -150,79 +135,25 @@ services:
           rate: 220
     restart: always
 
-  sshd_rsyslog:
-    command: '-n'
-    tty: true
-    stdin_open: true
-    healthcheck:
-      test: "/healthcheck.sh"
-      start_period: 5s
-      interval: 5s
-      timeout: 10s
-      retries: 3
-    restart: always
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${ssh_g}
-        - PORT=${SSH_RSYSLOG_PORT}
-    depends_on:
-      rsyslog_permissions:
-        condition: service_completed_successfully
-    hostname: rsyslog_sshd
-    ports:
-      - 127.0.0.1:${SSH_RSYSLOG_PORT}:${SSH_RSYSLOG_PORT}/tcp
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - sshd_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    deploy:
-      resources:
-        limits:
-          memory: ${RSYSLOG_RAM:-12M}
-        reservations:
-          memory: 6M
-    cpuset: ${SSH_CPU}
 networks:
   ssh:
 volumes:
-  sshd_logs:
   sftp:
+  rsyslog_logs:
   mysql_backups:
-  nginx_logs:
   nginx_websites:
   nginx_fastdl:
   phpmyadmin:
-  php_fpm_logs:
   portainer_data:
-  discord_logs:
   discord_sticky_bot:
-  svencoop_logs:
   svencoop_shared:
   svencoop_1:
   svencoop_2:
-  synergy_logs:
   synergy:
-  hl2dm_alpha_logs:
-  hl2dm_bravo_logs:
   hl2dm_alpha_shared:
   hl2dm_bravo_shared:
   hl2dm_alpha_1:
   hl2dm_bravo_1:
-  gmod_alpha_logs:
-  gmod_bravo_logs:
-  gmod_charlie_logs:
   gmod_alpha_shared:
   gmod_bravo_shared:
   gmod_charlie_shared:
@@ -231,12 +162,6 @@ volumes:
   gmod_alpha_3:
   gmod_bravo_1:
   gmod_charlie_1:
-  ark_logs:
   ark_1:
   ark_shared:
   home:
-  rsyslog_logs:
-  mysql_logs:
-  certbot_logs:
-  acme_dns_logs:
-  fail2ban_logs:

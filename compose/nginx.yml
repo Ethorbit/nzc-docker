@@ -4,10 +4,10 @@ x-labels: &labels
     - "io.portainer.accesscontrol.teams=websites"
  
 x-nginx_dependencies: &nginx_dependencies
-  nginx_rsyslog:
-    condition: service_healthy
   dhparam:
     condition: service_completed_successfully
+  rsyslog:
+    condition: service_healthy
 
 x-nginx: &nginx
   #container_name: ${CONTAINER_NAME_PREFIX}-nginx-${CONTAINER_NAME_SUFFIX}
@@ -70,7 +70,7 @@ x-nginx: &nginx
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${NGINX_RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
       tag: "nginx"
   restart: always    
 x-nginx_networks: &nginx_networks
@@ -332,53 +332,7 @@ services:
       php_fpm_development:
         condition: service_started
 
-  nginx_rsyslog:
-    command: '-n'
-    tty: true
-    stdin_open: true
-    healthcheck:
-      test: "/healthcheck.sh"
-      start_period: 5s
-      interval: 5s
-      timeout: 10s
-      retries: 3
-    restart: always
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${nginx_g}
-        - PORT=${NGINX_RSYSLOG_PORT}
-    depends_on:
-      rsyslog_permissions:
-        condition: service_completed_successfully
-    hostname: rsyslog_nginx
-    ports:
-      - 127.0.0.1:${NGINX_RSYSLOG_PORT}:${NGINX_RSYSLOG_PORT}/tcp
-    <<: [ *labels ]
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - nginx_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    deploy:
-      resources:
-        limits:
-          memory: ${RSYSLOG_RAM:-12M}
-        reservations:
-          memory: 6M
-    cpuset: ${NGINX_CPU}
 volumes:
-  nginx_logs:
   nginx_cache:
   nginx_websites:
   nginx_fastdl:

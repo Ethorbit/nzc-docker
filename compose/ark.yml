@@ -1,26 +1,5 @@
 version: "3.9"
 
-x-ark-rsyslog: &ark_rsyslog
-  command: '-n'
-  tty: true
-  stdin_open: true
-  healthcheck:
-    test: "/healthcheck.sh"
-    start_period: 5s
-    interval: 5s
-    timeout: 10s
-    retries: 3
-  deploy:
-    resources:
-      limits:
-        memory: ${RSYSLOG_RAM:-12M}
-      reservations:
-        memory: 6M
-  depends_on:
-    rsyslog_permissions:
-      condition: service_completed_successfully
-  restart: always
-
 x-ark: &ark
   build:
     context: ./build/ark-server
@@ -62,7 +41,7 @@ x-ark: &ark
 x-ark-depends: &ark_depends
   ark_permissions:
     condition: service_completed_successfully
-  ark_rsyslog:
+  rsyslog:
     condition: service_healthy
 x-ark-development-depends: &ark_development_depends
   nginx_development:
@@ -111,7 +90,7 @@ x-ark-1: &ark_1
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${ARK_RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
       tag: "ark_1"
 
 services:
@@ -149,36 +128,7 @@ services:
     depends_on:
       <<: [ *ark_depends, *ark_development_depends ]
 
-  ark_rsyslog:
-    <<: [ *ark_rsyslog ]
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${ark_g}
-        - PORT=${ARK_RSYSLOG_PORT}
-    hostname: ark_rsyslog
-    ports:
-      - 127.0.0.1:${ARK_RSYSLOG_PORT}:${ARK_RSYSLOG_PORT}/tcp
-    labels:
-      - "io.portainer.accesscontrol.teams=ark"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - ark_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    cpuset: ${ARK_RSYSLOG_CPU}
 volumes:
-  ark_logs:
   ark_1:
   ark_shared:
 networks: 

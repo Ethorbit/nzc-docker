@@ -1,26 +1,5 @@
 version: "3.9"
 
-x-synergy-rsyslog: &synergy_rsyslog
-  command: '-n'
-  tty: true
-  stdin_open: true
-  healthcheck:
-    test: "/healthcheck.sh"
-    start_period: 5s
-    interval: 5s
-    timeout: 10s
-    retries: 3
-  deploy:
-    resources:
-      limits:
-        memory: ${RSYSLOG_RAM:-12M}
-      reservations:
-        memory: 6M
-  depends_on:
-    rsyslog_permissions:
-      condition: service_completed_successfully
-  restart: always
-
 x-synergy: &synergy
   build:
     context: ./build/synergy-server
@@ -94,13 +73,13 @@ x-synergy: &synergy
     driver: syslog
     options:
       mode: non-blocking
-      syslog-address: "tcp://localhost:${SYNERGY_RSYSLOG_PORT}"
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
       tag: "synergy"
   restart: always
 x-synergy-depends: &synergy-depends
   synergy_permissions:
     condition: service_completed_successfully
-  synergy_rsyslog:
+  rsyslog:
     condition: service_healthy
 
 services:
@@ -139,36 +118,7 @@ services:
       nginx_development:
         condition: service_healthy
 
-  synergy_rsyslog:
-    <<: [ *synergy_rsyslog ]
-    build:
-      context: ./build/rsyslog
-      args:
-        - UID=${rsyslog_u}
-        - GID=${synergy_g}
-        - PORT=${SYNERGY_RSYSLOG_PORT}
-    hostname: synergy_rsyslog
-    ports:
-      - 127.0.0.1:${SYNERGY_RSYSLOG_PORT}:${SYNERGY_RSYSLOG_PORT}/tcp
-    labels:
-      - "io.portainer.accesscontrol.teams=synergy"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./data/configs/rsyslog/rsyslog.conf:/etc/rsyslog.conf
-      - ./data/configs/logrotate/rsyslog.conf:/etc/logrotate.d/rsyslog
-      - synergy_logs:/logs
-      - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-      - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-      - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-      - ${MOUNT_PROC_STAT}:/proc/stat:rw
-      - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-      - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-      - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-      - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    cpuset: ${SYNERGY_RSYSLOG_CPU}
 volumes:
-  synergy_logs:
   synergy:
 networks: 
   synergy:
