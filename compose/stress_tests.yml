@@ -6,7 +6,6 @@
 # should be able to cause lag either.
 version: "3.9"
 x-stress-test: &stress_test
-  image: mohsenmottaghi/container-stress:latest
   tty: true
   stdin_open: true
   cpuset: "0"
@@ -34,24 +33,40 @@ x-stress-test: &stress_test
         rate: 1000
   restart: no
 
+x-stress-tool: &stress_tool
+  image: mohsenmottaghi/container-stress:latest
+    
 services:
-  io_stress_test:
+  volume_stress_test:
     <<: [ *stress_test ]
+    build:
+      context: ./build/volume_stress_test
+    profiles:
+      - stresstest_volume
+    volumes:
+      - stress_test_vol:/volume
+      - stress_test_vol_2:/volume2
+  io_stress_test:
+    <<: [ *stress_test, *stress_tool ]
     profiles:
       - stresstest_io
     command: "stress --timeout 30 --backoff 0 --verbose --io 2500 --hdd 2500 --hdd-bytes 1000000"
   cpu_stress_test:
-    <<: [ *stress_test ]
+    <<: [ *stress_test, *stress_tool ]
     profiles:
       - stresstest_cpu
     command: "stress --timeout 120 --backoff 0 --verbose --cpu 5000"
   memory_stress_test:
-    <<: [ *stress_test ]
+    <<: [ *stress_test, *stress_tool ]
     profiles:
       - stresstest_memory
     command: "stress --timeout 120 --backoff 0 --verbose --vm 4096"
   full_stress_test:
-    <<: [ *stress_test ]
+    <<: [ *stress_test, *stress_tool ]
     profiles:
       - stresstest_full
     command: "stress --timeout 30 --backoff 0 --verbose --cpu 5000 --vm 4096 --io 2500 --hdd 2500 --hdd-bytes 1000000"
+
+volumes:
+  stress_test_vol:
+  stress_test_vol_2:

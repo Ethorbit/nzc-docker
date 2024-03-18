@@ -209,6 +209,7 @@ First try updating the game(s) in question and then restarting their container(s
 
 Try these stress tests to see if it's really a problem with a container, because this could easily be an issue of the host or hardware. They only run for about a minute, so let them finish one at a time.
 
+    * `nofiles=1 make profile='stresstest_volume' args='-f "./compose/stress_tests.yml" up' cmd`
     * `nofiles=1 make profile='stresstest_io' args='-f "./compose/stress_tests.yml" up' cmd`
     * `nofiles=1 make profile='stresstest_cpu' args='-f "./compose/stress_tests.yml" up' cmd`
     * `nofiles=1 make profile='stresstest_memory' args='-f "./compose/stress_tests.yml" up' cmd`
