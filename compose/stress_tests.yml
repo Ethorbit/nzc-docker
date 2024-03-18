@@ -1,0 +1,57 @@
+# This file is only used if you're looking for performance
+# issues that can be caused by a single container. Each test
+# can be invoked by activating their profile
+
+# If none of the tests can cause lag, then no single container
+# should be able to cause lag either.
+version: "3.9"
+x-stress-test: &stress_test
+  image: mohsenmottaghi/container-stress:latest
+  tty: true
+  stdin_open: true
+  cpuset: "0"
+  cpu_count: 1
+  cpu_shares: 256
+  deploy:
+    resources:
+      limits:
+        memory: 4096M
+      reservations:
+        memory: 128M  
+  blkio_config:
+    weight: 128
+    device_write_bps:
+      - path: ${DISK}
+        rate: '60m'
+    device_read_bps:
+      - path: ${DISK}
+        rate: '60m'
+    device_read_iops:
+      - path: ${DISK}
+        rate: 1000
+    device_write_iops:
+      - path: ${DISK}
+        rate: 1000
+  restart: no
+
+services:
+  io_stress_test:
+    <<: [ *stress_test ]
+    profiles:
+      - stresstest_io
+    command: "stress --timeout 30 --backoff 0 --verbose --io 2500 --hdd 2500 --hdd-bytes 1000000"
+  cpu_stress_test:
+    <<: [ *stress_test ]
+    profiles:
+      - stresstest_cpu
+    command: "stress --timeout 120 --backoff 0 --verbose --cpu 5000"
+  memory_stress_test:
+    <<: [ *stress_test ]
+    profiles:
+      - stresstest_memory
+    command: "stress --timeout 120 --backoff 0 --verbose --vm 4096"
+  full_stress_test:
+    <<: [ *stress_test ]
+    profiles:
+      - stresstest_full
+    command: "stress --timeout 30 --backoff 0 --verbose --cpu 5000 --vm 4096 --io 2500 --hdd 2500 --hdd-bytes 1000000"
