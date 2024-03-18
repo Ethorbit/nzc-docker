@@ -50,6 +50,9 @@ services:
       context: ./build/sshd
     networks:
       - ssh
+    labels:
+      - "com.docker-tc.enabled=1"
+      - "com.docker-tc.limit=${SSH_BANDWIDTH:-20mbps}"
     ports:
       - ${SSH_PORT:-22}:${SSH_PORT:-22}
     hostname: sshd

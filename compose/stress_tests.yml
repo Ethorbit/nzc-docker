@@ -11,6 +11,9 @@ x-stress-test: &stress_test
   cpuset: "0"
   cpu_count: 1
   cpu_shares: 256
+  labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=15mbps"
   deploy:
     resources:
       limits:

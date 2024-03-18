@@ -94,6 +94,8 @@ x-gmod-alpha: &gmod_alpha
         memory: 256M
   hostname: gmod_alpha
   labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=${GMOD_BANDWIDTH:-15mbps}"
     - "io.portainer.accesscontrol.teams=gmod_alpha"
   restart: always
 x-gmod-bravo: &gmod_bravo
@@ -115,6 +117,8 @@ x-gmod-bravo: &gmod_bravo
         memory: 256M
   hostname: gmod_bravo
   labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=${GMOD_BANDWIDTH:-15mbps}"
     - "io.portainer.accesscontrol.teams=gmod_bravo"
   restart: always
 x-gmod-charlie: &gmod_charlie
@@ -136,6 +140,8 @@ x-gmod-charlie: &gmod_charlie
         memory: 256M
   hostname: gmod_charlie
   labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=${GMOD_BANDWIDTH:-15mbps}"
     - "io.portainer.accesscontrol.teams=gmod_charlie"
   restart: always
 x-gmod_alpha_development: &gmod_alpha_development

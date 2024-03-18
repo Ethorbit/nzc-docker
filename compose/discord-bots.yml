@@ -1,5 +1,11 @@
 version: "3.9"
 
+x-labels: &labels
+  labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=${DISCORD_BANDWIDTH:-5mbps}"
+    - "io.portainer.accesscontrol.teams=discord"
+
 # I've decided to comment out server-status
 # My reasoning is that you should NOT report the status of services 
 # on the same machine you are running the services on
@@ -40,6 +46,7 @@ version: "3.9"
 #    - ./data/configs/users/gshadow:/etc/gshadow:ro
 #  hostname: discord_server_status
 #  network_mode: host
+#  <<: [ *labels ]
 #  cpuset: ${DISCORD_CPU}
 #  cpu_shares: 128
 #  deploy:
@@ -68,6 +75,7 @@ services:
       /bin/sh -c 'chown -R ${stickybot_u}:${discord_g} /mnt/discord_sticky_bot/
       && chmod 2770 -R /mnt/discord_sticky_bot/
       && setfacl -d -m u::rwx,g::rwx,o::- "/mnt/discord_sticky_bot"'
+    <<: [ *labels ]
     cap_drop:
       - ALL 
     cap_add:

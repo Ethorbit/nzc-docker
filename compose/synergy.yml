@@ -45,6 +45,8 @@ x-synergy: &synergy
     - "${FASTDL_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
   hostname: synergy
   labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=${SYNERGY_BANDWIDTH:-12mbps}"
     - "io.portainer.accesscontrol.teams=synergy"
   cpuset: ${SYNERGY_CPU}
   cpu_count: 1

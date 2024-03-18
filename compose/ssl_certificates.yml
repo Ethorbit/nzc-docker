@@ -2,6 +2,8 @@ version: "3.9"
 
 x-labels: &labels
   labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=${SSL_BANDWIDTH:-10mbps}"
     - "io.portainer.accesscontrol.teams=websites"
   
 x-healthcheck: &healthcheck

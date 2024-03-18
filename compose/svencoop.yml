@@ -2,8 +2,10 @@ version: "3.9"
 
 x-svencoop-labels: &svencoop_labels
   labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=${SVENCOOP_BANDWIDTH:-12mbps}"
     - "io.portainer.accesscontrol.teams=svencoop"
-  
+
 x-svencoop: &svencoop
   build:
     context: ./build/svencoop-server

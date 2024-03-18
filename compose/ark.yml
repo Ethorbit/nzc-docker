@@ -14,6 +14,8 @@ x-ark: &ark
     - "${WEBSITE_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
     - "${FASTDL_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
   labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=${ARK_BANDWIDTH:-15mbps}"
     - "io.portainer.accesscontrol.teams=ark"
   cpu_count: 1
   cpu_shares: 256

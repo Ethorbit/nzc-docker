@@ -53,6 +53,8 @@ x-hl2dm-alpha: &hl2dm_alpha
       reservations:
         memory: 128M
   labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=${HL2DM_BANDWIDTH:-12mbps}"
     - "io.portainer.accesscontrol.teams=hl2dm_alpha"
 
 x-hl2dm-bravo: &hl2dm_bravo
@@ -70,6 +72,8 @@ x-hl2dm-bravo: &hl2dm_bravo
       reservations:
         memory: 128M
   labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=${HL2DM_BANDWIDTH:-12mbps}"
     - "io.portainer.accesscontrol.teams=hl2dm_bravo"
 
 x-hl2dm-alpha-1: &hl2dm_alpha_1

@@ -1,6 +1,8 @@
 version: "3.9"
 x-labels: &labels
   labels:
+    - "com.docker-tc.enabled=1"
+    - "com.docker-tc.limit=${NGINX_BANDWIDTH:-80mbps}"
     - "io.portainer.accesscontrol.teams=websites"
  
 x-nginx_dependencies: &nginx_dependencies
