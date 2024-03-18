@@ -24,7 +24,7 @@ x-ark: &ark
       reservations:
         memory: 128M  
   blkio_config:
-    weight: 150
+    weight: 20
     device_write_bps:
       - path: ${DISK}
         rate: '60m'
