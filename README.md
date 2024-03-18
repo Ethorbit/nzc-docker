@@ -205,6 +205,15 @@ The game(s) in question might not be free and are waiting for you to login to yo
 
 First try updating the game(s) in question and then restarting their container(s). If that doesn't work, delete all the files for the problematic game(s) using SFTP and then restart their container(s).
 
+* Excessive lag caused by a single container 
+
+Try these stress tests to see if it's really a problem with a container, because this could easily be an issue of the host or hardware. They only run for about a minute, so let them finish one at a time.
+
+* `nofiles=1 make profile='stresstest_io' args='-f "./compose/stress_tests.yml" up' cmd`
+* `nofiles=1 make profile='stresstest_cpu' args='-f "./compose/stress_tests.yml" up' cmd`
+* `nofiles=1 make profile='stresstest_memory' args='-f "./compose/stress_tests.yml" up' cmd`
+* `nofiles=1 make profile='stresstest_full' args='-f "./compose/stress_tests.yml" up' cmd`
+
 ## Help 
 If you need more info on the makefile, use: `make help`
 
