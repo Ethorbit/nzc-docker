@@ -1,4 +1,4 @@
-FROM ethorbit/mysql-anacron-backup:a544bd7
+FROM ethorbit/mysql-anacron-backup:2083e44
 ARG UID
 ARG GID
 USER root
