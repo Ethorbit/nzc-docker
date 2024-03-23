@@ -105,6 +105,12 @@ services:
       - phpmyadmin:/mnt/admin_websites/phpmyadmin
       - portainer_data:/mnt/admin_websites/portainer
       - rsyslog_logs:/mnt/logs
+    healthcheck:
+      test: netstat -ltn | grep -c ":${SSH_PORT:-22}"
+      start_period: 5s
+      interval: 2s
+      timeout: 4s
+      retries: 4
     depends_on:
       sshd_permissions:
         condition:
