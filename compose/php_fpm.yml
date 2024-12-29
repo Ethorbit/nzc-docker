@@ -9,7 +9,6 @@ x-php_fpm: &php_fpm
     gmod:
     svencoop:
     synergy:
-    hl2dm:
   # This should allow PHP scripts to do things like display game server stats and whatnot
   #   External network -> Public IP:Port #
   #   Internal network -> gameserver container's IP:Port #
@@ -28,9 +27,6 @@ x-php_fpm: &php_fpm
     - "svencoop-1.${DOMAIN_NAME}:172.151.1.1"
     - "svencoop-2.${DOMAIN_NAME}:172.151.1.2"
     - "synergy.${DOMAIN_NAME}:172.152.1.1"
-    - "hl2dm-alpha-1.${DOMAIN_NAME}:172.153.1.1"
-    - "hl2dm-bravo-1.${DOMAIN_NAME}:172.153.1.10"
-    - "ark-1.${DOMAIN_NAME}:172.154.1.1"
   hostname: php_fpm
   volumes:
     - /etc/localtime:/etc/localtime:ro
@@ -106,4 +102,4 @@ networks:
     ipam:
       driver: default 
       config:
-        - subnet: 172.119.1.0/22
+        - subnet: 172.119.0.0/22

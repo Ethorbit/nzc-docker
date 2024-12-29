@@ -37,18 +37,12 @@ groups:
     id: 1820
   synergy:
     id: 1850
-  hl2dm_alpha:
-    id: 1880
-  hl2dm_bravo:
-    id: 1881
   gmod_alpha:
     id: 1910
   gmod_bravo:
     id: 1911
   gmod_charlie:
     id: 1912
-  ark:
-    id: 2001
 
 x-staff-defaults: &staff-defaults
   primarygroup: staff
@@ -69,9 +63,6 @@ x-admin-defaults: &admin-defaults
     - gmod_alpha
     - gmod_bravo
     - gmod_charlie
-    - hl2dm_alpha
-    - hl2dm_bravo
-    - ark
     - discord
     - rsyslog
     - php
@@ -108,7 +99,6 @@ users:
       - websites
       - svencoop
       - synergy
-      - hl2dm
       - gmod_alpha
       - gmod_bravo
       - gmod_charlie
@@ -122,8 +112,6 @@ users:
       - gmod_charlie
       - svencoop
       - synergy
-      - hl2dm
-      - ark
   serverstatus:
     id: 1814
     home: false
@@ -149,39 +137,3 @@ users:
     home: false
     primarygroup: mysql
   # Custom users below, replace with your own.
-  doormatt:
-    id: 1901
-    <<: *staff-defaults
-    groups:
-      - fastdl
-      - gmod_alpha
-    password: "${DOORMATT_PASSWORD}"
-  blunto:
-    id: 1902
-    <<: *staff-defaults
-    groups:
-      - fastdl
-      - gmod_alpha
-    password: "${BLUNTO_PASSWORD}"
-  berb:
-    id: 1903
-    <<: *staff-defaults
-    groups:
-      - fastdl
-      - gmod_alpha
-    password: "${BERB_PASSWORD}"
-  pepe:
-    id: 1904
-    <<: *staff-defaults
-    password: "${PEPE_PASSWORD}"
-  freeman:
-    id: 1905
-    <<: *staff-defaults
-    password: "${FREEMAN_PASSWORD}"
-  geist:
-    id: 1906
-    <<: *staff-defaults
-    groups:
-      - ark
-      - websites
-    password: "${GEIST_PASSWORD}"

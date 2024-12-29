@@ -84,41 +84,41 @@ x-synergy-depends: &synergy-depends
   rsyslog:
     condition: service_healthy
 
-services:
-  synergy_permissions:
-    build:
-      context: ./build/permissions
-    volumes:
-      - synergy:/mnt
-    command: >
-      /bin/sh -c 'chown "${steam_u}":"${synergy_g}" /mnt 
-      && chmod 2770 /mnt 
-      && setfacl -d -m u::rwx,g::rwx,o::- /mnt'
-    cap_drop:
-      - ALL 
-    cap_add:
-      - CAP_DAC_OVERRIDE
-      - CAP_CHOWN
-      - CAP_FOWNER
-      - CAP_FSETID
-    network_mode: none
-    restart: on-failure
-  synergy_production:
-    profiles:
-      - production
-    <<: [ *synergy ]
-    depends_on:
-      <<: [ *synergy-depends ]
-      nginx_production: 
-        condition: service_healthy
-  synergy_development:
-    profiles:
-      - development
-    <<: [ *synergy ]
-    depends_on:
-      <<: [ *synergy-depends ]
-      nginx_development:
-        condition: service_healthy
+#services:
+  # synergy_permissions:
+  #   build:
+  #     context: ./build/permissions
+  #   volumes:
+  #     - synergy:/mnt
+  #   command: >
+  #     /bin/sh -c 'chown "${steam_u}":"${synergy_g}" /mnt 
+  #     && chmod 2770 /mnt 
+  #     && setfacl -d -m u::rwx,g::rwx,o::- /mnt'
+  #   cap_drop:
+  #     - ALL 
+  #   cap_add:
+  #     - CAP_DAC_OVERRIDE
+  #     - CAP_CHOWN
+  #     - CAP_FOWNER
+  #     - CAP_FSETID
+  #   network_mode: none
+  #   restart: on-failure
+  # synergy_production:
+  #   profiles:
+  #     - production
+  #   <<: [ *synergy ]
+  #   depends_on:
+  #     <<: [ *synergy-depends ]
+  #     nginx_production: 
+  #       condition: service_healthy
+  # synergy_development:
+  #   profiles:
+  #     - development
+  #   <<: [ *synergy ]
+  #   depends_on:
+  #     <<: [ *synergy-depends ]
+  #     nginx_development:
+  #       condition: service_healthy
 
 volumes:
   synergy:
@@ -127,4 +127,4 @@ networks:
     ipam:
       driver: default 
       config:
-        - subnet: 172.152.1.0/22
+        - subnet: 172.152.0.0/22

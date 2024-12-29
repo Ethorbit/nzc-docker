@@ -449,22 +449,22 @@ services:
     profiles:
       - development
     <<: [ *gmod_alpha_development, *gmod_alpha_3 ]
-  gmod_bravo_1_production:
-    profiles:
-      - production
-    <<: [ *gmod_bravo_production, *gmod_bravo_1 ]
-  gmod_bravo_1_development:
-    profiles:
-      - development
-    <<: [ *gmod_bravo_development, *gmod_bravo_1 ]
-  gmod_charlie_1_production:
-    profiles:
-      - production
-    <<: [ *gmod_charlie_production, *gmod_charlie_1 ]
-  gmod_charlie_1_development:
-    profiles:
-      - development
-    <<: [ *gmod_charlie_development, *gmod_charlie_1 ]
+  # gmod_bravo_1_production:
+  #   profiles:
+  #     - production
+  #   <<: [ *gmod_bravo_production, *gmod_bravo_1 ]
+  # gmod_bravo_1_development:
+  #   profiles:
+  #     - development
+  #   <<: [ *gmod_bravo_development, *gmod_bravo_1 ]
+  # gmod_charlie_1_production:
+  #   profiles:
+  #     - production
+  #   <<: [ *gmod_charlie_production, *gmod_charlie_1 ]
+  # gmod_charlie_1_development:
+  #   profiles:
+  #     - development
+  #   <<: [ *gmod_charlie_development, *gmod_charlie_1 ]
   
 volumes:
   gmod_alpha_shared:
@@ -480,4 +480,4 @@ networks:
     ipam:
       driver: default 
       config:
-        - subnet: 172.150.1.0/22
+        - subnet: 172.150.0.0/22

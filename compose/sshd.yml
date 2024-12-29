@@ -21,10 +21,8 @@ services:
       chmod 750 "/mnt/$$d"; 
       done
       && mkdir -p /mnt/game_servers/gmod/alpha /mnt/game_servers/gmod/bravo /mnt/game_servers/gmod/charlie
-      && mkdir -p /mnt/game_servers/hl2dm/alpha /mnt/game_servers/hl2dm/bravo
       && mkdir -p /mnt/game_servers/svencoop/shared /mnt/game_servers/svencoop/1 /mnt/game_servers/svencoop/2
-      && mkdir -p /mnt/game_servers/synergy
-      && mkdir -p /mnt/game_servers/ark/shared /mnt/game_servers/ark/1'
+      && mkdir -p /mnt/game_servers/synergy'
     cap_drop:
       - ALL 
     cap_add:
@@ -85,10 +83,6 @@ services:
       - svencoop_1:/mnt/game_servers/svencoop/1
       - svencoop_2:/mnt/game_servers/svencoop/2
       - synergy:/mnt/game_servers/synergy
-      - hl2dm_alpha_shared:/mnt/game_servers/hl2dm/alpha/shared
-      - hl2dm_bravo_shared:/mnt/game_servers/hl2dm/bravo/shared
-      - hl2dm_alpha_1:/mnt/game_servers/hl2dm/alpha/1
-      - hl2dm_bravo_1:/mnt/game_servers/hl2dm/bravo/1
       - gmod_alpha_shared:/mnt/game_servers/gmod/alpha/shared
       - gmod_bravo_shared:/mnt/game_servers/gmod/bravo/shared
       - gmod_charlie_shared:/mnt/game_servers/gmod/charlie/shared
@@ -97,8 +91,6 @@ services:
       - gmod_alpha_3:/mnt/game_servers/gmod/alpha/3
       - gmod_bravo_1:/mnt/game_servers/gmod/bravo/1
       - gmod_charlie_1:/mnt/game_servers/gmod/charlie/1
-      - ark_1:/mnt/game_servers/ark/1
-      - ark_shared:/mnt/game_servers/ark/shared
       - nginx_fastdl:/mnt/fastdl
       - nginx_websites:/mnt/websites
       - discord_sticky_bot:/mnt/discord_bots/stickies
@@ -159,10 +151,6 @@ volumes:
   svencoop_1:
   svencoop_2:
   synergy:
-  hl2dm_alpha_shared:
-  hl2dm_bravo_shared:
-  hl2dm_alpha_1:
-  hl2dm_bravo_1:
   gmod_alpha_shared:
   gmod_bravo_shared:
   gmod_charlie_shared:
@@ -171,6 +159,4 @@ volumes:
   gmod_alpha_3:
   gmod_bravo_1:
   gmod_charlie_1:
-  ark_1:
-  ark_shared:
   home:

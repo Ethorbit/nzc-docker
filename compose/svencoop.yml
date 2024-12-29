@@ -137,61 +137,61 @@ x-svencoop-depends: &svencoop-depends
   rsyslog:
     condition: service_healthy
 
-services:
-  svencoop_permissions:
-    build:
-      context: ./build/permissions
-    volumes:
-      - svencoop_shared:/mnt/shared
-      - svencoop_1:/mnt/1
-      - svencoop_2:/mnt/2
-    command: >
-      /bin/sh -c 'for d in shared 1 2; do 
-      chown "${steam_u}":"${svencoop_g}" "/mnt/$$d" 
-      && chmod 2770 "/mnt/$$d" 
-      && setfacl -d -m u::rwx,g::rwx,o::- "/mnt/$$d"; 
-      done'
-    cap_drop:
-      - ALL 
-    cap_add:
-      - CAP_DAC_OVERRIDE
-      - CAP_CHOWN
-      - CAP_FOWNER
-      - CAP_FSETID
-    network_mode: none
-    restart: on-failure
-  svencoop_1_production:
-    profiles:
-      - production
-    <<: [ *svencoop_1 ]
-    depends_on:
-      <<: [ *svencoop-depends ]
-      nginx_production: 
-        condition: service_healthy
-  svencoop_1_development:
-    profiles:
-      - development
-    <<: [ *svencoop_1 ]
-    depends_on:
-      <<: [ *svencoop-depends ]
-      nginx_development:
-        condition: service_healthy
-  svencoop_2_production:
-    profiles:
-      - production
-    <<: [ *svencoop_2 ]
-    depends_on:
-      <<: [ *svencoop-depends ]
-      nginx_production: 
-        condition: service_healthy
-  svencoop_2_development:
-    profiles:
-      - development
-    <<: [ *svencoop_2 ]
-    depends_on:
-      <<: [ *svencoop-depends ]
-      nginx_development:
-        condition: service_healthy
+#services:
+  # svencoop_permissions:
+  #   build:
+  #     context: ./build/permissions
+  #   volumes:
+  #     - svencoop_shared:/mnt/shared
+  #     - svencoop_1:/mnt/1
+  #     - svencoop_2:/mnt/2
+  #   command: >
+  #     /bin/sh -c 'for d in shared 1 2; do 
+  #     chown "${steam_u}":"${svencoop_g}" "/mnt/$$d" 
+  #     && chmod 2770 "/mnt/$$d" 
+  #     && setfacl -d -m u::rwx,g::rwx,o::- "/mnt/$$d"; 
+  #     done'
+  #   cap_drop:
+  #     - ALL 
+  #   cap_add:
+  #     - CAP_DAC_OVERRIDE
+  #     - CAP_CHOWN
+  #     - CAP_FOWNER
+  #     - CAP_FSETID
+  #   network_mode: none
+  #   restart: on-failure
+  # svencoop_1_production:
+  #   profiles:
+  #     - production
+  #   <<: [ *svencoop_1 ]
+  #   depends_on:
+  #     <<: [ *svencoop-depends ]
+  #     nginx_production: 
+  #       condition: service_healthy
+  # svencoop_1_development:
+  #   profiles:
+  #     - development
+  #   <<: [ *svencoop_1 ]
+  #   depends_on:
+  #     <<: [ *svencoop-depends ]
+  #     nginx_development:
+  #       condition: service_healthy
+  # svencoop_2_production:
+  #   profiles:
+  #     - production
+  #   <<: [ *svencoop_2 ]
+  #   depends_on:
+  #     <<: [ *svencoop-depends ]
+  #     nginx_production: 
+  #       condition: service_healthy
+  # svencoop_2_development:
+  #   profiles:
+  #     - development
+  #   <<: [ *svencoop_2 ]
+  #   depends_on:
+  #     <<: [ *svencoop-depends ]
+  #     nginx_development:
+  #       condition: service_healthy
 
 volumes:
   svencoop_1:
@@ -202,4 +202,4 @@ networks:
     ipam:
       driver: default 
       config:
-        - subnet: 172.151.1.0/22
+        - subnet: 172.151.0.0/22

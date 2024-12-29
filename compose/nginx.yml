@@ -23,12 +23,9 @@ x-nginx: &nginx
     - ${php_g}
     - ${svencoop_g}
     - ${synergy_g}
-    - ${hl2dm_alpha_g}
-    - ${hl2dm_bravo_g}
     - ${gmod_alpha_g}
     - ${gmod_bravo_g}
     - ${gmod_charlie_g}
-    - ${ark_g}
     - ${websites_g}
   hostname: nginx
   ports:
@@ -37,7 +34,6 @@ x-nginx: &nginx
   env_file:
     - ../.domain.env
   extra_hosts:
-    - "searxng:172.50.10.1"
     - "portainer:172.60.10.1"
   healthcheck:
     test: "curl -f http://127.0.0.1 || exit 1"
@@ -78,7 +74,6 @@ x-nginx: &nginx
 x-nginx_networks: &nginx_networks
   nginx:
     ipv4_address: 172.10.1.2
-  searxng:
 x-nginx_envsubst_conf: &nginx_envsubst_conf
   build:
     context: ./build/input_output_envsubst
@@ -194,17 +189,12 @@ services:
       && chmod 700 -R /mnt/nginx_cache/
       && chown -R ${nginx_u}:${nginx_g} /mnt/nginx_cache/
       && mkdir -p /mnt/nginx_fastdl/gmod_alpha /mnt/nginx_fastdl/gmod_bravo /mnt/nginx_fastdl/gmod_charlie
-      && mkdir -p /mnt/nginx_fastdl/hl2dm_alpha /mnt/nginx_fastdl/hl2dm_bravo
       && mkdir -p /mnt/nginx_fastdl/synergy
       && chown ${nginx_u}:${synergy_g} /mnt/nginx_fastdl/synergy
-      && chown ${nginx_u}:${hl2dm_alpha_g} /mnt/nginx_fastdl/hl2dm_alpha
-      && chown ${nginx_u}:${hl2dm_bravo_g} /mnt/nginx_fastdl/hl2dm_bravo
       && chown ${nginx_u}:${gmod_alpha_g} /mnt/nginx_fastdl/gmod_alpha
       && chown ${nginx_u}:${gmod_bravo_g} /mnt/nginx_fastdl/gmod_bravo
       && chown ${nginx_u}:${gmod_charlie_g} /mnt/nginx_fastdl/gmod_charlie
       && chmod 2771 /mnt/nginx_fastdl/synergy
-      && chmod 2771 /mnt/nginx_fastdl/hl2dm_alpha
-      && chmod 2771 /mnt/nginx_fastdl/hl2dm_bravo
       && chmod 2771 /mnt/nginx_fastdl/gmod_alpha
       && chmod 2771 /mnt/nginx_fastdl/gmod_bravo
       && chmod 2771 /mnt/nginx_fastdl/gmod_charlie
@@ -238,7 +228,6 @@ services:
       <<: [ *nginx_networks ]
       portainer:
     extra_hosts:
-      - "searxng:172.50.10.1"
       - "portainer:172.60.10.1"
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -346,13 +335,8 @@ networks:
       driver: default
       config:
         - subnet: 172.10.0.0/23
-  searxng:
-    ipam:
-      driver: default 
-      config:
-        - subnet: 172.50.10.0/22
   portainer:
     ipam:
       driver: default 
       config:
-        - subnet: 172.60.10.0/22
+        - subnet: 172.60.8.0/22
