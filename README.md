@@ -43,7 +43,7 @@ IO limits are applied only to the disk device set by `DISK`. This is because all
 Change which CPU threads each service runs off of.
 Keep in mind that the games are single-threaded, so there is no point assigning them more than one thread.
 
-Note that IO speed limits, RAM limits and CPU weights are already configured in the yaml files with no variables provided, they should already be optimized well enough.
+Note that IO speed limits and CPU weights are already configured in the yaml files with no variables provided, they should already be optimized well enough.
 
 ## Configuring
 
