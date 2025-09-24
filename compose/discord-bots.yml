@@ -208,10 +208,6 @@ services:
     #      #  condition: service_started
     #      #gmod_charlie_1_development:
     #      #  condition: service_started
-    #      #hl2dm_alpha_1_development:
-    #      #  condition: service_started
-    #      #hl2dm_bravo_1_development:
-    #      #  condition: service_started
     #        
     #discord_server_status_production:
     #  profiles:
@@ -230,10 +226,6 @@ services:
     #      #gmod_bravo_1_production:
     #      #  condition: service_started
     #      #gmod_charlie_1_production:
-    #      #  condition: service_started
-    #      #hl2dm_alpha_1_production:
-    #      #  condition: service_started
-    #      #hl2dm_bravo_1_production:
     #      #  condition: service_started
 
 networks:    
