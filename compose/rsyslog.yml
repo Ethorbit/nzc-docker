@@ -65,9 +65,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 64M
+          memory: ${RSYSLOG_RAM:-32M}
         reservations:
-          memory: 32M
+          memory: ${RSYSLOG_RAM_RESERVE:-32M}
     restart: always
 volumes:
   rsyslog_logs:

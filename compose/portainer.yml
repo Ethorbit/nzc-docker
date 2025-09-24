@@ -51,9 +51,9 @@ x-portainer: &portainer
   deploy:
     resources:
       limits:
-        memory: 312M 
+        memory: ${PORTAINER_RAM:-312M}
       reservations:
-        memory: 250M
+        memory: ${PORTAINER_RAM_RESERVE:-128M}
   restart: always
 x-portainer-depends: &portainer_depends
   portainer_envsubst:

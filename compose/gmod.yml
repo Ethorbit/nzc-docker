@@ -91,7 +91,7 @@ x-gmod-alpha: &gmod_alpha
       limits:
         memory: ${GMOD_ALPHA_RAM:-660M}
       reservations:
-        memory: 256M
+        memory: ${GMOD_ALPHA_RAM_RESERVE:-256M}
   hostname: gmod_alpha
   labels:
     - "com.docker-tc.enabled=1"
@@ -114,7 +114,7 @@ x-gmod-bravo: &gmod_bravo
       limits:
         memory: ${GMOD_BRAVO_RAM:-660M}
       reservations:
-        memory: 256M
+        memory: ${GMOD_BRAVO_RAM_RESERVE:-256M}
   hostname: gmod_bravo
   labels:
     - "com.docker-tc.enabled=1"
@@ -137,7 +137,7 @@ x-gmod-charlie: &gmod_charlie
       limits:
         memory: ${GMOD_CHARLIE_RAM:-660M}
       reservations:
-        memory: 256M
+        memory: ${GMOD_CHARLIE_RAM_RESERVE:-256M}
   hostname: gmod_charlie
   labels:
     - "com.docker-tc.enabled=1"
@@ -195,8 +195,8 @@ x-gmod_alpha_1: &gmod_alpha_1
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - gmod_alpha_1:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
-    - gmod_alpha_shared:/shared:slave
+    - gmod_alpha_1:${MOUNT_GUEST_STEAMCMD_GAMES}
+    - gmod_alpha_shared:/shared
   ports:
     - ${GMOD_ALPHA_1_PORT:-27015}:${GMOD_ALPHA_1_PORT:-27015}/udp
     - ${GMOD_ALPHA_1_PORT:-27015}:${GMOD_ALPHA_1_PORT:-27015}/tcp
@@ -233,8 +233,8 @@ x-gmod_alpha_2: &gmod_alpha_2
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - gmod_alpha_2:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
-    - gmod_alpha_shared:/shared:slave
+    - gmod_alpha_2:${MOUNT_GUEST_STEAMCMD_GAMES}
+    - gmod_alpha_shared:/shared
   ports:
     - ${GMOD_ALPHA_2_PORT:-27016}:${GMOD_ALPHA_2_PORT:-27016}/udp
     - ${GMOD_ALPHA_2_PORT:-27016}:${GMOD_ALPHA_2_PORT:-27016}/tcp
@@ -271,8 +271,8 @@ x-gmod_alpha_3: &gmod_alpha_3
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - gmod_alpha_3:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
-    - gmod_alpha_shared:/shared:slave
+    - gmod_alpha_3:${MOUNT_GUEST_STEAMCMD_GAMES}
+    - gmod_alpha_shared:/shared
   ports:
     - ${GMOD_ALPHA_3_PORT:-27017}:${GMOD_ALPHA_3_PORT:-27017}/udp
     - ${GMOD_ALPHA_3_PORT:-27017}:${GMOD_ALPHA_3_PORT:-27017}/tcp
@@ -309,8 +309,8 @@ x-gmod_bravo_1: &gmod_bravo_1
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - gmod_bravo_1:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
-    - gmod_bravo_shared:/shared:slave
+    - gmod_bravo_1:${MOUNT_GUEST_STEAMCMD_GAMES}
+    - gmod_bravo_shared:/shared
   ports:
     - ${GMOD_BRAVO_1_PORT:-27025}:${GMOD_BRAVO_1_PORT:-27025}/udp
     - ${GMOD_BRAVO_1_PORT:-27025}:${GMOD_BRAVO_1_PORT:-27025}/tcp
@@ -347,8 +347,8 @@ x-gmod_charlie_1: &gmod_charlie_1
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - gmod_charlie_1:${MOUNT_GUEST_STEAMCMD_GAMES}:slave
-    - gmod_charlie_shared:/shared:slave
+    - gmod_charlie_1:${MOUNT_GUEST_STEAMCMD_GAMES}
+    - gmod_charlie_shared:/shared
   ports:
     - ${GMOD_CHARLIE_1_PORT:-27035}:${GMOD_CHARLIE_1_PORT:-27035}/udp
     - ${GMOD_CHARLIE_1_PORT:-27035}:${GMOD_CHARLIE_1_PORT:-27035}/tcp
@@ -429,26 +429,26 @@ services:
     profiles:
       - production
     <<: [ *gmod_alpha_production, *gmod_alpha_1 ]
-  gmod_alpha_2_production:
-    profiles:
-      - production
-    <<: [ *gmod_alpha_production, *gmod_alpha_2 ]
-  gmod_alpha_3_production:
-    profiles:
-      - production
-    <<: [ *gmod_alpha_production, *gmod_alpha_3 ]
+  # gmod_alpha_2_production:
+  #   profiles:
+  #     - production
+  #   <<: [ *gmod_alpha_production, *gmod_alpha_2 ]
+  # gmod_alpha_3_production:
+  #   profiles:
+  #     - production
+  #   <<: [ *gmod_alpha_production, *gmod_alpha_3 ]
   gmod_alpha_1_development:
     profiles:
       - development
     <<: [ *gmod_alpha_development, *gmod_alpha_1 ]
-  gmod_alpha_2_development:
-    profiles:
-      - development
-    <<: [ *gmod_alpha_development, *gmod_alpha_2 ]
-  gmod_alpha_3_development:
-    profiles:
-      - development
-    <<: [ *gmod_alpha_development, *gmod_alpha_3 ]
+  # gmod_alpha_2_development:
+  #   profiles:
+  #     - development
+  #   <<: [ *gmod_alpha_development, *gmod_alpha_2 ]
+  # gmod_alpha_3_development:
+  #   profiles:
+  #     - development
+  #   <<: [ *gmod_alpha_development, *gmod_alpha_3 ]
   # gmod_bravo_1_production:
   #   profiles:
   #     - production

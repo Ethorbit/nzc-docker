@@ -8,7 +8,7 @@ x-limits: &limits
       limits:
         memory: ${MYSQL_RAM:-2048M}
       reservations:
-        memory: 512M
+        memory: ${MYSQL_RAM_RESERVE:-512M}
   blkio_config:
     weight: 1000
     device_write_bps:

@@ -54,7 +54,7 @@ x-labels: &labels
 #      limits:
 #        memory: ${DISCORD_SERVER_STATUS_RAM:-90M}
 #      reservations:
-#        memory: 30M
+#        memory: ${DISCORD_SERVER_STATUS_RAM_RESERVE:-30M}
 #  logging:
 #    driver: syslog
 #    options:
@@ -118,7 +118,7 @@ services:
         limits:
           memory: ${DISCORD_STICKY_BOT_RAM:-90M}
         reservations:
-          memory: 30M
+          memory: ${DISCORD_STICKY_BOT_RAM_RESERVE:-30M}
     blkio_config:
       weight: 50
       device_write_bps:
@@ -212,12 +212,6 @@ services:
     #      #  condition: service_started
     #      #hl2dm_bravo_1_development:
     #      #  condition: service_started
-    #      #svencoop_1_development:
-    #      #  condition: service_started
-    #      #svencoop_2_development:
-    #      #  condition: service_started
-    #      #synergy_development:
-    #      #  condition: service_started
     #        
     #discord_server_status_production:
     #  profiles:
@@ -240,12 +234,6 @@ services:
     #      #hl2dm_alpha_1_production:
     #      #  condition: service_started
     #      #hl2dm_bravo_1_production:
-    #      #  condition: service_started
-    #      #svencoop_1_production:
-    #      #  condition: service_started
-    #      #svencoop_2_production:
-    #      #  condition: service_started
-    #      #synergy_production:
     #      #  condition: service_started
 
 networks:    

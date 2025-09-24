@@ -20,9 +20,7 @@ services:
       chown root:root "/mnt/$$d" 
       chmod 750 "/mnt/$$d"; 
       done
-      && mkdir -p /mnt/game_servers/gmod/alpha /mnt/game_servers/gmod/bravo /mnt/game_servers/gmod/charlie
-      && mkdir -p /mnt/game_servers/svencoop/shared /mnt/game_servers/svencoop/1 /mnt/game_servers/svencoop/2
-      && mkdir -p /mnt/game_servers/synergy'
+      && mkdir -p /mnt/game_servers/gmod/alpha /mnt/game_servers/gmod/bravo /mnt/game_servers/gmod/charlie'
     cap_drop:
       - ALL 
     cap_add:
@@ -79,10 +77,6 @@ services:
       - ./data/configs/ssh/sshd_config:/etc/ssh/sshd_config
       - sftp:/mnt
       - mysql_backups:/mnt/mysql_backups
-      - svencoop_shared:/mnt/game_servers/svencoop/shared
-      - svencoop_1:/mnt/game_servers/svencoop/1
-      - svencoop_2:/mnt/game_servers/svencoop/2
-      - synergy:/mnt/game_servers/synergy
       - gmod_alpha_shared:/mnt/game_servers/gmod/alpha/shared
       - gmod_bravo_shared:/mnt/game_servers/gmod/bravo/shared
       - gmod_charlie_shared:/mnt/game_servers/gmod/charlie/shared
@@ -119,7 +113,7 @@ services:
         limits:
           memory: ${SSH_RAM:-352M}
         reservations:
-          memory: 128M  
+          memory: ${SSH_RAM_RESERVE:-128M}
     blkio_config:
       weight: 450
       device_write_bps:
@@ -147,10 +141,6 @@ volumes:
   phpmyadmin:
   portainer_data:
   discord_sticky_bot:
-  svencoop_shared:
-  svencoop_1:
-  svencoop_2:
-  synergy:
   gmod_alpha_shared:
   gmod_bravo_shared:
   gmod_charlie_shared:

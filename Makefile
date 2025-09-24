@@ -73,7 +73,7 @@ command_base := set -a && source <(cat .*env "$(config_dir)/users/env") > /dev/n
 				MOUNT_PROC_UPTIME="$(MOUNT_PROC_UPTIME)" \
 				MOUNT_SYS_DEVICES_SYSTEM_CPU="$(MOUNT_SYS_DEVICES_SYSTEM_CPU)" \
 				MOUNT_GUEST_STEAMCMD_GAMES="$(MOUNT_GUEST_STEAMCMD_GAMES)" \
-				docker-compose --profile $(profile) -p $(CONTAINER_NAME_PREFIX)
+				docker compose --profile $(profile) -p $(CONTAINER_NAME_PREFIX)
 command_update := $(command_base) --profile update -f $(compose_dir)/update.yml up
 command_setup_users := $(command_base) --profile setup_users -f $(compose_dir)/users_and_groups.yml up
 command_build := $(command_base) --profile setup_users $(yml_files_build) build --progress plain
@@ -119,7 +119,7 @@ setup:
 	check_cmd df; \
 	check_cmd lsblk; \
 	check_cmd curl; \
-	check_cmd docker-compose; \
+	check_cmd docker; \
 	check_cmd envsubst; \
 	check_cmd openssl; \
 	check_cmd find; \
@@ -194,7 +194,7 @@ Makefile: a wrapper script created to overcome Docker Compose limitations. Due t
       - Lists a bunch of random and very secure passwords to choose from.
 
    make args='Docker compose command' cmd 
-      - Runs a docker-compose command with all the necessary environment variables set
+      - Runs a docker compose command with all the necessary environment variables set
 	Examples:
 	    make args='up' cmd
 	    nofiles=1 make args='-f ./compose/nginx.yml down' cmd

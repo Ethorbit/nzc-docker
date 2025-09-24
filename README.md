@@ -2,30 +2,19 @@
 Docker infrastructure used by the nZC game community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
 
 ## Prerequisites
-* a Linux install (outside of a container) with at least 4 CPU threads (for best performance), NVMe storage (For best performance) with 20GB of free disk space, and approximately 5GB of RAM available.
+* a Linux install (outside of a container) with at least 2 CPU threads (for best performance), NVMe storage (For best performance) with 20GB of free disk space, and approximately 2GB of RAM available.
 * a domain
-* a Steam account you are willing to login with that owns:
-    * Half-Life
-    * Half-Life: Opposing Force
-    * Half-Life: Blue Shift
-    * Half-Life 2
-
-Note: you can choose not to host some game servers to avoid having to own all of the games.
 
 Packages:
-* docker with a version of 24.0.0, build 98fdcd769b
-* docker-compose with a version of 2.18.1
+* docker with a version of 27.5.1 (or later)
 * lxcfs (optional)
 * envsubst
 * iptables
 * make
 * openssl
 
-Check your versions:
+Check your version:
 * `docker -v`
-* `docker-compose -v`
-
-You can possibly use later versions, but if things don't work as expected - that's why.
 
 Make sure lxcfs is running (optional):
 * `sudo systemctl enable lxcfs --now`

@@ -33,10 +33,6 @@ groups:
     id: 1813
   serverstatus:
     id: 1814
-  svencoop:
-    id: 1820
-  synergy:
-    id: 1850
   gmod_alpha:
     id: 1910
   gmod_bravo:
@@ -58,8 +54,6 @@ x-admin-defaults: &admin-defaults
     - nginx
     - dns
     - ssh
-    - svencoop
-    - synergy
     - gmod_alpha
     - gmod_bravo
     - gmod_charlie
@@ -97,8 +91,6 @@ users:
       - php
       - fastdl
       - websites
-      - svencoop
-      - synergy
       - gmod_alpha
       - gmod_bravo
       - gmod_charlie
@@ -110,8 +102,6 @@ users:
       - gmod_alpha
       - gmod_bravo
       - gmod_charlie
-      - svencoop
-      - synergy
   serverstatus:
     id: 1814
     home: false
