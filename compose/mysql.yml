@@ -2,13 +2,9 @@ version: "3.9"
 
 x-limits: &limits
   cpuset: ${MYSQL_CPU}
+  cpus: ${MYSQL_CPU_FRACTION:-1}
   cpu_shares: 1024
-  deploy:
-    resources:
-      limits:
-        memory: ${MYSQL_RAM:-2048M}
-      reservations:
-        memory: ${MYSQL_RAM_RESERVE:-512M}
+  mem_limit: ${MYSQL_RAM:-2048M}
   blkio_config:
     weight: 1000
     device_write_bps:

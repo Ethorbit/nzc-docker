@@ -47,13 +47,9 @@ x-portainer: &portainer
       - path: ${DISK}
         rate: 220
   cpuset: ${PORTAINER_CPU}
+  cpus: ${PORTAINER_CPU_FRACTION:-1}
   cpu_shares: 60
-  deploy:
-    resources:
-      limits:
-        memory: ${PORTAINER_RAM:-312M}
-      reservations:
-        memory: ${PORTAINER_RAM_RESERVE:-128M}
+  mem_limit: ${PORTAINER_RAM:-312M}
   restart: always
 x-portainer-depends: &portainer_depends
   portainer_envsubst:

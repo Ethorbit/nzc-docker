@@ -86,12 +86,7 @@ x-gmod-alpha: &gmod_alpha
   tty: true
   cpu_count: 1
   cpu_shares: 1024
-  deploy:
-    resources:
-      limits:
-        memory: ${GMOD_ALPHA_RAM:-660M}
-      reservations:
-        memory: ${GMOD_ALPHA_RAM_RESERVE:-256M}
+  mem_limit: ${GMOD_ALPHA_RAM:-660M}
   hostname: gmod_alpha
   labels:
     - "com.docker-tc.enabled=1"
@@ -109,12 +104,7 @@ x-gmod-bravo: &gmod_bravo
   tty: true
   cpu_count: 1
   cpu_shares: 1024
-  deploy:
-    resources:
-      limits:
-        memory: ${GMOD_BRAVO_RAM:-660M}
-      reservations:
-        memory: ${GMOD_BRAVO_RAM_RESERVE:-256M}
+  mem_limit: ${GMOD_BRAVO_RAM:-660M}
   hostname: gmod_bravo
   labels:
     - "com.docker-tc.enabled=1"
@@ -132,12 +122,7 @@ x-gmod-charlie: &gmod_charlie
   tty: true
   cpu_count: 1
   cpu_shares: 1024
-  deploy:
-    resources:
-      limits:
-        memory: ${GMOD_CHARLIE_RAM:-660M}
-      reservations:
-        memory: ${GMOD_CHARLIE_RAM_RESERVE:-256M}
+  mem_limit: ${GMOD_CHARLIE_RAM:-660M}
   hostname: gmod_charlie
   labels:
     - "com.docker-tc.enabled=1"
@@ -174,7 +159,8 @@ x-gmod_alpha_1: &gmod_alpha_1
     gmod:
       ipv4_address: 172.150.1.1
     <<: [ *gmod_networks ]
-  cpuset: "${GMOD_ALPHA_1_CPU}"
+  cpuset: ${GMOD_ALPHA_1_CPU}
+  cpus: ${GMOD_ALPHA_1_CPU_FRACTION:-1}
   cpu_shares: 1024
   environment:
     <<: [ *gmod_alpha_env ]
@@ -212,7 +198,8 @@ x-gmod_alpha_2: &gmod_alpha_2
     gmod:
       ipv4_address: 172.150.1.2
     <<: [ *gmod_networks ]
-  cpuset: "${GMOD_ALPHA_2_CPU}"
+  cpuset: ${GMOD_ALPHA_2_CPU}
+  cpus: ${GMOD_ALPHA_2_CPU_FRACTION:-1}
   cpu_shares: 1024
   environment:
     <<: [ *gmod_alpha_env ]
@@ -250,7 +237,8 @@ x-gmod_alpha_3: &gmod_alpha_3
     gmod:
       ipv4_address: 172.150.1.3
     <<: [ *gmod_networks ]
-  cpuset: "${GMOD_ALPHA_3_CPU}"
+  cpuset: ${GMOD_ALPHA_3_CPU}
+  cpus: ${GMOD_ALPHA_3_CPU_FRACTION:-1}
   cpu_shares: 1024
   environment:
     <<: [ *gmod_alpha_env ]
@@ -288,7 +276,8 @@ x-gmod_bravo_1: &gmod_bravo_1
     gmod:
       ipv4_address: 172.150.1.10
     <<: [ *gmod_networks ]
-  cpuset: "${GMOD_BRAVO_1_CPU}"
+  cpuset: ${GMOD_BRAVO_1_CPU}
+  cpus: ${GMOD_BRAVO_1_CPU_FRACTION:-1}
   cpu_shares: 1024
   environment:
     <<: [ *gmod_bravo_env ]
@@ -326,7 +315,8 @@ x-gmod_charlie_1: &gmod_charlie_1
     gmod:
       ipv4_address: 172.150.1.20
     <<: [ *gmod_networks ]
-  cpuset: "${GMOD_CHARLIE_1_CPU}"
+  cpuset: ${GMOD_CHARLIE_1_CPU}
+  cpus: ${GMOD_CHARLIE_1_CPU_FRACTION:-1}
   cpu_shares: 1024
   environment:
     <<: [ *gmod_charlie_env ]

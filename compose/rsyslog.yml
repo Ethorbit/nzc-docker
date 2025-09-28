@@ -62,12 +62,8 @@ services:
           rate: 150
     cpu_shares: 512
     cpuset: ${RSYSLOG_CPU}
-    deploy:
-      resources:
-        limits:
-          memory: ${RSYSLOG_RAM:-32M}
-        reservations:
-          memory: ${RSYSLOG_RAM_RESERVE:-32M}
+    cpus: ${RSYSLOG_CPU_FRACTION:-1}
+    mem_limit: ${RSYSLOG_RAM:-32M}
     restart: always
 volumes:
   rsyslog_logs:

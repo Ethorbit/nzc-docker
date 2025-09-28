@@ -107,13 +107,9 @@ services:
       rsyslog:
         condition: service_healthy
     cpuset: ${SSH_CPU}
+    cpus: ${SSH_CPU_FRACTION:-1}
     cpu_shares: 256
-    deploy:
-      resources:
-        limits:
-          memory: ${SSH_RAM:-352M}
-        reservations:
-          memory: ${SSH_RAM_RESERVE:-128M}
+    mem_limit: ${SSH_RAM:-352M}
     blkio_config:
       weight: 450
       device_write_bps:

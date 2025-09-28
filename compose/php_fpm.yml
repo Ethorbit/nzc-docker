@@ -51,14 +51,10 @@ x-php_fpm: &php_fpm
     && chown ${php_u}:${php_g} /var/run/php-fpm/sock
     && chmod 770 /var/run/php-fpm/sock
     && php-fpm"
-  deploy:
-    resources:
-      limits:
-        memory: ${PHP_FPM_RAM:-4096M}
-      reservations:
-        memory: ${PHP_FPM_RAM_RESERVE:-24M}
-  cpuset: ${NGINX_CPU} # Since we handle the workloads of php (which is closely tied to webserver), we might as well use the same cores..
+  cpuset: ${PHP_CPU}
+  cpus: ${PHP_CPU_FRACTION:-1}
   cpu_shares: 1024
+  mem_limit: ${PHP_FPM_RAM:-4096M}
   logging:
     driver: syslog
     options:
