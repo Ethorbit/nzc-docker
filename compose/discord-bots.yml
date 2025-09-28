@@ -1,3 +1,11 @@
+# You should consider commenting out discord-server-status
+# and running it on a completely separate server
+#
+# My reasoning is that you should NOT report the status of services 
+# on the same machine you are running them on
+#
+# if the machine goes offline, the bot won't be reporting anything
+
 version: "3.9"
 
 x-labels: &labels
@@ -6,62 +14,50 @@ x-labels: &labels
     - "com.docker-tc.limit=${DISCORD_BANDWIDTH:-5mbps}"
     - "io.portainer.accesscontrol.teams=discord"
 
-# I've decided to comment out server-status
-# My reasoning is that you should NOT report the status of services 
-# on the same machine you are running the services on
-# because if the machine goes offline, the bot won't be reporting anything
-#
-# You can uncomment, but I recommend running any status monitoring tools
-# on a reliable VPS instead for maximum accuracy.
-# 
-#x-discord-server-status-depends: &discord_server_status_depends
-#  discord_server_status_envsubst:
-#    condition: service_completed_successfully 
-#  discord_server_status_permissions:
-#    condition: service_completed_successfully
-#  
-#x-discord-server-status: &discord_server_status
-#  profiles:
-#    - optional
-#  build:
-#    context: ./build/discord-server-status
-#    args:
-#      UID: ${serverstatus_u}
-#      GID: ${discord_g}
-#  volumes:
-#    - ./data/configs/discord_server_status/config.json:/server-status/config.json
-#    - /etc/localtime:/etc/localtime:ro
-#    - /etc/timezone:/etc/timezone:ro
-#    - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
-#    - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
-#    - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
-#    - ${MOUNT_PROC_STAT}:/proc/stat:rw
-#    - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
-#    - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
-#    - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
-#    - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-#    - ./data/configs/users/passwd:/etc/passwd:ro
-#    - ./data/configs/users/group:/etc/group:ro
-#    - ./data/configs/users/shadow:/etc/shadow:ro
-#    - ./data/configs/users/gshadow:/etc/gshadow:ro
-#  hostname: discord_server_status
-#  network_mode: host
-#  <<: [ *labels ]
-#  cpuset: ${DISCORD_CPU}
-#  cpu_shares: 128
-#  deploy:
-#    resources:
-#      limits:
-#        memory: ${DISCORD_SERVER_STATUS_RAM:-90M}
-#      reservations:
-#        memory: ${DISCORD_SERVER_STATUS_RAM_RESERVE:-30M}
-#  logging:
-#    driver: syslog
-#    options:
-#      mode: non-blocking
-#      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-#      tag: "discord_server_status"
-#  restart: always
+x-discord-server-status-depends: &discord_server_status_depends
+  discord_server_status_envsubst:
+    condition: service_completed_successfully 
+  discord_server_status_permissions:
+    condition: service_completed_successfully
+
+x-discord-server-status: &discord_server_status
+  profiles:
+    - optional
+  build:
+    context: ./build/discord-server-status
+    args:
+      UID: ${serverstatus_u}
+      GID: ${discord_g}
+  volumes:
+    - ./data/configs/discord_server_status/config.json:/server-status/config.json
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+    - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
+    - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
+    - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
+    - ${MOUNT_PROC_STAT}:/proc/stat:rw
+    - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
+    - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
+    - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
+    - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
+    - ./data/configs/users/passwd:/etc/passwd:ro
+    - ./data/configs/users/group:/etc/group:ro
+    - ./data/configs/users/shadow:/etc/shadow:ro
+    - ./data/configs/users/gshadow:/etc/gshadow:ro
+  hostname: discord_server_status
+  network_mode: host
+  <<: [ *labels ]
+  cpuset: ${DISCORD_CPU}
+  cpus: ${DISCORD_CPU_FRACTION:-1}
+  cpu_shares: 128
+  mem_limit: ${DISCORD_SERVER_STATUS_RAM:-90M}
+  logging:
+    driver: syslog
+    options:
+      mode: non-blocking
+      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
+      tag: "discord_server_status"
+  restart: always
 
 services:
   discord_sticky_bot_permissions:
@@ -111,14 +107,9 @@ services:
       - ./data/configs/users/gshadow:/etc/gshadow:ro
       - discord_sticky_bot:/botdb
     cpuset: ${DISCORD_CPU}
+    cpus: ${DISCORD_CPU_FRACTION:-0.1}
     cpu_shares: 256
-    #cpu_percent: 10
-    deploy:
-      resources:
-        limits:
-          memory: ${DISCORD_STICKY_BOT_RAM:-90M}
-        reservations:
-          memory: ${DISCORD_STICKY_BOT_RAM_RESERVE:-30M}
+    mem_limit: ${DISCORD_STICKY_BOT_RAM:-90M}
     blkio_config:
       weight: 50
       device_write_bps:
@@ -147,86 +138,86 @@ services:
     restart: always
     networks:
       - discord
-  
-    #discord_server_status_envsubst:
-    #  build:
-    #    context: ./build/input_output_envsubst
-    #    args:
-    #      FILE_EXTENSION: "json"
-    #  environment:
-    #    - DISCORD_SERVER_STATUS_BOT_TOKEN=${DISCORD_SERVER_STATUS_BOT_TOKEN}
-    #    - DISCORD_SERVER_STATUS_CHANNEL=${DISCORD_SERVER_STATUS_CHANNEL}
-    #    - DISCORD_SERVER_STATUS_BOT_COMMAND_PREFIX=${DISCORD_SERVER_STATUS_BOT_COMMAND_PREFIX:-/}
-    #    - DISCORD_SERVER_STATUS_POLLING_RATE=${DISCORD_SERVER_STATUS_POLLING_RATE:-5}
-    #  env_file:
-    #    - ../.ports.env
-    #    - ../.domain.env
-    #  volumes:
-    #    - ./data/configs/discord_server_status/template:/mnt/input
-    #    - ./data/configs/discord_server_status:/mnt/output
-    #  network_mode: none
-    #  cap_drop:
-    #    - ALL
-    #  cap_add:
-    #    - CAP_DAC_OVERRIDE
-    #    - CAP_FOWNER
-    #  restart: on-failure
-    #discord_server_status_permissions:
-    #  build:
-    #    context: ./build/permissions
-    #  volumes:
-    #    - /etc/localtime:/etc/localtime:ro
-    #    - /etc/timezone:/etc/timezone:ro
-    #    - ./data/configs/discord_server_status:/mnt
-    #  command: >
-    #    /bin/sh -c 'chown ${serverstatus_u}:${discord_g} /mnt/config.json
-    #    && chmod 0644 /mnt/config.json'
-    #  cap_drop:
-    #    - ALL 
-    #  cap_add:
-    #    - CAP_DAC_OVERRIDE
-    #    - CAP_CHOWN
-    #    - CAP_FOWNER
-    #    - CAP_FSETID
-    #  network_mode: none
-    #  restart: on-failure
-    #discord_server_status_development:
-    #  profiles:
-    #    - development
-    #  <<: [ *discord_server_status ]
-    #  depends_on:
-    #    <<: [ *discord_server_status_depends ]
-    #      #nginx_development:
-    #      #  condition: service_started
-    #      #gmod_alpha_1_development:
-    #      #  condition: service_started
-    #      #gmod_alpha_2_development:
-    #      #  condition: service_started
-    #      #gmod_alpha_3_development:
-    #      #  condition: service_started
-    #      #gmod_bravo_1_development:
-    #      #  condition: service_started
-    #      #gmod_charlie_1_development:
-    #      #  condition: service_started
-    #        
-    #discord_server_status_production:
-    #  profiles:
-    #    - production
-    #  <<: [ *discord_server_status ]
-    #  depends_on:
-    #    <<: [ *discord_server_status_depends ]
-    #      #nginx_production:
-    #      #  condition: service_started
-    #      #gmod_alpha_1_production:
-    #      #  condition: service_started
-    #      #gmod_alpha_2_production:
-    #      #  condition: service_started
-    #      #gmod_alpha_3_production:
-    #      #  condition: service_started
-    #      #gmod_bravo_1_production:
-    #      #  condition: service_started
-    #      #gmod_charlie_1_production:
-    #      #  condition: service_started
+
+  discord_server_status_envsubst:
+    build:
+      context: ./build/input_output_envsubst
+      args:
+        FILE_EXTENSION: "json"
+    environment:
+      - DISCORD_SERVER_STATUS_BOT_TOKEN=${DISCORD_SERVER_STATUS_BOT_TOKEN}
+      - DISCORD_SERVER_STATUS_CHANNEL=${DISCORD_SERVER_STATUS_CHANNEL}
+      - DISCORD_SERVER_STATUS_BOT_COMMAND_PREFIX=${DISCORD_SERVER_STATUS_BOT_COMMAND_PREFIX:-/}
+      - DISCORD_SERVER_STATUS_POLLING_RATE=${DISCORD_SERVER_STATUS_POLLING_RATE:-5}
+    env_file:
+      - ../.ports.env
+      - ../.domain.env
+    volumes:
+      - ./data/configs/discord_server_status/template:/mnt/input
+      - ./data/configs/discord_server_status:/mnt/output
+    network_mode: none
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_FOWNER
+    restart: on-failure
+  discord_server_status_permissions:
+    build:
+      context: ./build/permissions
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./data/configs/discord_server_status:/mnt
+    command: >
+      /bin/sh -c 'chown ${serverstatus_u}:${discord_g} /mnt/config.json
+      && chmod 0644 /mnt/config.json'
+    cap_drop:
+      - ALL 
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_CHOWN
+      - CAP_FOWNER
+      - CAP_FSETID
+    network_mode: none
+    restart: on-failure
+  discord_server_status_development:
+    profiles:
+      - development
+    <<: [ *discord_server_status ]
+    depends_on:
+      <<: [ *discord_server_status_depends ]
+        #nginx_development:
+        #  condition: service_started
+        #gmod_alpha_1_development:
+        #  condition: service_started
+        #gmod_alpha_2_development:
+        #  condition: service_started
+        #gmod_alpha_3_development:
+        #  condition: service_started
+        #gmod_bravo_1_development:
+        #  condition: service_started
+        #gmod_charlie_1_development:
+        #  condition: service_started
+          
+  discord_server_status_production:
+    profiles:
+      - production
+    <<: [ *discord_server_status ]
+    depends_on:
+      <<: [ *discord_server_status_depends ]
+        #nginx_production:
+        #  condition: service_started
+        #gmod_alpha_1_production:
+        #  condition: service_started
+        #gmod_alpha_2_production:
+        #  condition: service_started
+        #gmod_alpha_3_production:
+        #  condition: service_started
+        #gmod_bravo_1_production:
+        #  condition: service_started
+        #gmod_charlie_1_production:
+        #  condition: service_started
 
 networks:    
   discord:
