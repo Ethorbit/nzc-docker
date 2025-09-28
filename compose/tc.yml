@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   tc:
-    image: lukaszlach/docker-tc
+    image: ethorbit/docker-tc:latest
     cap_add:
       - NET_ADMIN
     volumes:
