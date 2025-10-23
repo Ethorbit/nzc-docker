@@ -10,9 +10,6 @@ x-php_fpm: &php_fpm
   # This should allow PHP scripts to do things like display game server stats and whatnot
   #   External network -> Public IP:Port #
   #   Internal network -> gameserver container's IP:Port #
-  depends_on:
-    rsyslog:
-      condition: service_healthy
   extra_hosts:
     - "${DOMAIN_NAME}:172.10.1.2"
     - "${WEBSITE_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
@@ -55,12 +52,6 @@ x-php_fpm: &php_fpm
   cpus: ${PHP_CPU_FRACTION:-1}
   cpu_shares: 1024
   mem_limit: ${PHP_FPM_RAM:-4096M}
-  logging:
-    driver: syslog
-    options:
-      mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "php_fpm"
   restart: always
 services:
   php_fpm_development:

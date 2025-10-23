@@ -19,7 +19,7 @@ groups:
     id: 1806
   discord:
     id: 1807
-  rsyslog:
+  log:
     id: 1808
   cert:
     id: 1809
@@ -58,7 +58,7 @@ x-admin-defaults: &admin-defaults
     - gmod_bravo
     - gmod_charlie
     - discord
-    - rsyslog
+    - log
     - php
     - mysql
     - discord
@@ -114,10 +114,10 @@ users:
     primarygroup: stickybot
     groups:
       - discord
-  rsyslog:
+  log:
     id: 1804
     home: false
-    primarygroup: rsyslog
+    primarygroup: log
   cert:
     id: 1805
     home: false

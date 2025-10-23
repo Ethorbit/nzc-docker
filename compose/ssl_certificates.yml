@@ -97,14 +97,6 @@ services:
     depends_on:
       acme_dns_envsubst:
         condition: service_completed_successfully
-      rsyslog:
-        condition: service_healthy
-    logging:
-      driver: syslog
-      options:
-        mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-        tag: "acme_dns"
     healthcheck:
       test: 'curl -f -X GET http://acme_dns/health || exit 1'
       interval: 10s
@@ -172,14 +164,6 @@ services:
         condition: service_completed_successfully
       acme_dns:
         condition: service_healthy
-      rsyslog:
-        condition: service_healthy
-    logging:
-      driver: syslog
-      options:
-        mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-        tag: "certbot"
     restart: always
 volumes:
   dhparam:

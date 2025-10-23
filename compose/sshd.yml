@@ -52,12 +52,6 @@ services:
     ports:
       - ${SSH_PORT:-22}:${SSH_PORT:-22}
     hostname: sshd
-    logging:
-      driver: syslog
-      options:
-        mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-        tag: "sshd"
     volumes:
       - home:/home
       - /etc/localtime:/etc/localtime:ro
@@ -90,7 +84,6 @@ services:
       - discord_sticky_bot:/mnt/discord_bots/stickies
       - phpmyadmin:/mnt/admin_websites/phpmyadmin
       - portainer_data:/mnt/admin_websites/portainer
-      - rsyslog_logs:/mnt/logs
     healthcheck:
       test: netstat -ltn | grep -c ":${SSH_PORT:-22}"
       start_period: 5s
@@ -104,8 +97,6 @@ services:
       sshd_envsubst:
         condition: 
           service_completed_successfully
-      rsyslog:
-        condition: service_healthy
     cpuset: ${SSH_CPU}
     cpus: ${SSH_CPU_FRACTION:-1}
     cpu_shares: 256
@@ -130,7 +121,6 @@ networks:
   ssh:
 volumes:
   sftp:
-  rsyslog_logs:
   mysql_backups:
   nginx_websites:
   nginx_fastdl:

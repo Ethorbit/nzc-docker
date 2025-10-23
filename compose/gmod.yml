@@ -25,16 +25,10 @@ x-defaults: &defaults
       - path: ${DISK}
         rate: 1000
 
-x-defaults-depends: &defaults_depends
-  rsyslog:
-    condition: service_healthy
-
 x-defaults_development_depends: &defaults_development_depends
-  <<: [ *defaults_depends ]
   nginx_development:
     condition: service_healthy
 x-defaults_production_depends: &defaults_production_depends
-  <<: [ *defaults_depends ]
   nginx_production: 
     condition: service_healthy
 
@@ -186,12 +180,6 @@ x-gmod_alpha_1: &gmod_alpha_1
   ports:
     - ${GMOD_ALPHA_1_PORT:-27015}:${GMOD_ALPHA_1_PORT:-27015}/udp
     - ${GMOD_ALPHA_1_PORT:-27015}:${GMOD_ALPHA_1_PORT:-27015}/tcp
-  logging:
-    driver: syslog
-    options:
-      mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "gmod_alpha_1"
 
 x-gmod_alpha_2: &gmod_alpha_2
   networks:
@@ -225,12 +213,6 @@ x-gmod_alpha_2: &gmod_alpha_2
   ports:
     - ${GMOD_ALPHA_2_PORT:-27016}:${GMOD_ALPHA_2_PORT:-27016}/udp
     - ${GMOD_ALPHA_2_PORT:-27016}:${GMOD_ALPHA_2_PORT:-27016}/tcp
-  logging:
-    driver: syslog
-    options:
-      mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "gmod_alpha_2"
 
 x-gmod_alpha_3: &gmod_alpha_3
   networks:
@@ -264,12 +246,6 @@ x-gmod_alpha_3: &gmod_alpha_3
   ports:
     - ${GMOD_ALPHA_3_PORT:-27017}:${GMOD_ALPHA_3_PORT:-27017}/udp
     - ${GMOD_ALPHA_3_PORT:-27017}:${GMOD_ALPHA_3_PORT:-27017}/tcp
-  logging:
-    driver: syslog
-    options:
-      mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "gmod_alpha_3"
 
 x-gmod_bravo_1: &gmod_bravo_1
   networks:
@@ -303,12 +279,6 @@ x-gmod_bravo_1: &gmod_bravo_1
   ports:
     - ${GMOD_BRAVO_1_PORT:-27025}:${GMOD_BRAVO_1_PORT:-27025}/udp
     - ${GMOD_BRAVO_1_PORT:-27025}:${GMOD_BRAVO_1_PORT:-27025}/tcp
-  logging:
-    driver: syslog
-    options:
-      mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "gmod_bravo_1"
 
 x-gmod_charlie_1: &gmod_charlie_1
   networks:
@@ -342,12 +312,6 @@ x-gmod_charlie_1: &gmod_charlie_1
   ports:
     - ${GMOD_CHARLIE_1_PORT:-27035}:${GMOD_CHARLIE_1_PORT:-27035}/udp
     - ${GMOD_CHARLIE_1_PORT:-27035}:${GMOD_CHARLIE_1_PORT:-27035}/tcp
-  logging:
-    driver: syslog
-    options:
-      mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "gmod_charlie_1"
 
 services:
   gmod_alpha_permissions:

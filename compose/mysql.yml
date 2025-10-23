@@ -80,14 +80,6 @@ services:
     depends_on:
       mysql_envsubst:
         condition: service_completed_successfully
-      rsyslog:
-        condition: service_healthy
-    logging:
-      driver: syslog
-      options:
-        mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-        tag: "mysql"
     ulimits:
       nproc: 65535
       nofile:
@@ -128,16 +120,8 @@ services:
       - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
       - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
       - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    logging:
-      driver: syslog
-      options:
-        mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-        tag: "mysql_backups"
     depends_on:
       mysql:
-        condition: service_healthy
-      rsyslog:
         condition: service_healthy
     <<: [ *limits ]
     restart: always

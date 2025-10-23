@@ -51,12 +51,6 @@ x-discord-server-status: &discord_server_status
   cpus: ${DISCORD_CPU_FRACTION:-1}
   cpu_shares: 128
   mem_limit: ${DISCORD_SERVER_STATUS_RAM:-90M}
-  logging:
-    driver: syslog
-    options:
-      mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "discord_server_status"
   restart: always
 
 services:
@@ -127,14 +121,6 @@ services:
     depends_on:
       discord_sticky_bot_permissions:
         condition: service_completed_successfully
-      rsyslog:
-        condition: service_healthy
-    logging:
-      driver: syslog
-      options:
-        mode: non-blocking
-        syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-        tag: "discord_sticky_bot"
     restart: always
     networks:
       - discord

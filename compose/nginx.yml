@@ -8,8 +8,6 @@ x-labels: &labels
 x-nginx_dependencies: &nginx_dependencies
   dhparam:
     condition: service_completed_successfully
-  rsyslog:
-    condition: service_healthy
 
 x-nginx: &nginx
   #container_name: ${CONTAINER_NAME_PREFIX}-nginx-${CONTAINER_NAME_SUFFIX}
@@ -58,12 +56,6 @@ x-nginx: &nginx
       - path: ${DISK}
         rate: 2000
   <<: [*labels]
-  logging:
-    driver: syslog
-    options:
-      mode: non-blocking
-      syslog-address: "tcp://localhost:${RSYSLOG_PORT}"
-      tag: "nginx"
   restart: always    
 x-nginx_networks: &nginx_networks
   nginx:
