@@ -4,6 +4,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;
 CREATE DATABASE gmod_alpha;
 CREATE DATABASE gmod_bravo;
 CREATE DATABASE gmod_charlie;
+CREATE DATABASE gmod_shared;
 
 CREATE ROLE gmod_alpha;
 CREATE ROLE gmod_bravo;
@@ -11,6 +12,9 @@ CREATE ROLE gmod_charlie;
 GRANT ALL ON `gmod_alpha%`.* TO gmod_alpha;
 GRANT ALL ON `gmod_bravo%`.* TO gmod_bravo;
 GRANT ALL ON `gmod_charlie%`.* TO gmod_charlie;
+GRANT ALL ON `gmod_shared`.* TO gmod_alpha;
+GRANT ALL ON `gmod_shared`.* TO gmod_bravo;
+GRANT ALL ON `gmod_shared`.* TO gmod_charlie;
 
 /* Internal users */
 CREATE USER 'php'@'${MYSQL_HOST}' IDENTIFIED BY '${PHP_PASSWORD}';
