@@ -41,20 +41,6 @@ x-nginx: &nginx
   cpus: ${NGINX_CPU_FRACTION:-1}
   cpu_shares: 1024
   mem_limit: ${NGINX_RAM:-1024M}
-  blkio_config:
-    weight: 800
-    device_write_bps:
-      - path: ${DISK}
-        rate: '300m'
-    device_read_bps:
-      - path: ${DISK}
-        rate: '300m'
-    device_read_iops:
-      - path: ${DISK}
-        rate: 2000
-    device_write_iops:
-      - path: ${DISK}
-        rate: 2000
   <<: [*labels]
   restart: always    
 x-nginx_networks: &nginx_networks

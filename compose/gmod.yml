@@ -10,20 +10,6 @@ x-defaults: &defaults
     - "${DOMAIN_NAME}:172.10.1.2"
     - "${WEBSITE_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
     - "${FASTDL_SUBDOMAIN}.${DOMAIN_NAME}:172.10.1.2"
-  blkio_config:
-    weight: 500
-    device_write_bps:
-      - path: ${DISK}
-        rate: '60m'
-    device_read_bps:
-      - path: ${DISK}
-        rate: '60m'
-    device_read_iops:
-      - path: ${DISK}
-        rate: 1000
-    device_write_iops:
-      - path: ${DISK}
-        rate: 1000
 
 x-defaults_development_depends: &defaults_development_depends
   nginx_development:

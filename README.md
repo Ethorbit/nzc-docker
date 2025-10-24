@@ -3,7 +3,6 @@ Docker infrastructure used by the nZC game community. Runs a database, various w
 
 ## Prerequisites
 * a Linux install (outside of a container) with at least 2 CPU threads (for best performance), NVMe storage (For best performance) with 20GB of free disk space, and approximately 2GB of RAM available.
-* cgroups v1 (not v2, otherwise you'll need to remove all blkio lines from compose files)
 * a domain
 
 Packages:
@@ -16,7 +15,6 @@ Packages:
 
 Check your versions:
 * `docker -v`
-* `[ -f /sys/fs/cgroup/cgroup.controllers ] && echo "Cgroups v2" || echo "Cgroups v1"`
 
 Make sure lxcfs is running (optional):
 * `sudo systemctl enable lxcfs --now`
@@ -37,10 +35,6 @@ Open them and change their values as needed.
 
 ## Optimizing
 Everything runs on a single machine, so edit: `.limits.env` 
-
-**Warning: if Docker stores volumes on a partition, you need to set the DISK manually or containers can't start/stop**
-
-IO limits are applied only to the disk device set by `DISK`. This is because all IO heavy operations take place in volumes, and there is (or should only be) one disk for volumes.
 
 Change which CPU threads each service runs off of.
 Keep in mind that the games are single-threaded, so there is no point assigning them more than one thread.
@@ -176,10 +170,6 @@ If you're running the project in the foreground, you'll be able to see which gam
 You can enter a password in games that need it by 'attaching' to the game. After attaching you should see nothing, but if you type your password and hit enter, the game will login. If you mistype your password, the login will fail and you'll need to delete the game's files from inside SFTP and restart the container so you can try again.
 
 ## Troubleshooting
-* When starting the project a big error shows up: _Error response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: error setting cgroup config for procHooks process: failed to write "8:2 rbps=10485760": write /sys/fs/cgroup/system.slice/docker_
-
-This is because you didn't set the DISK in the .limits.env file. The Makefile is defaulting the DISK to a partition or volume which Docker cannot use for applying cgroups limits and thus it refuses to start the containers.
-
 * When starting the project, I get _max depth exceeded_
 
 You need to remove all the docker images:

@@ -104,20 +104,6 @@ services:
     cpus: ${DISCORD_CPU_FRACTION:-0.1}
     cpu_shares: 256
     mem_limit: ${DISCORD_STICKY_BOT_RAM:-90M}
-    blkio_config:
-      weight: 50
-      device_write_bps:
-        - path: ${DISK}
-          rate: '10m'
-      device_read_bps:
-        - path: ${DISK}
-          rate: '20m'
-      device_read_iops:
-        - path: ${DISK}
-          rate: 120
-      device_write_iops:
-        - path: ${DISK}
-          rate: 100
     depends_on:
       discord_sticky_bot_permissions:
         condition: service_completed_successfully
