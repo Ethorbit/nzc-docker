@@ -3,6 +3,7 @@ Docker infrastructure used by the nZC game community. Runs a database, various w
 
 ## Prerequisites
 * a Linux install (outside of a container) with at least 2 CPU threads (for best performance), NVMe storage (For best performance) with 20GB of free disk space, and approximately 2GB of RAM available.
+* cgroups v1 (not v2, otherwise you'll need to remove all blkio lines from compose files)
 * a domain
 
 Packages:
@@ -13,8 +14,9 @@ Packages:
 * make
 * openssl
 
-Check your version:
+Check your versions:
 * `docker -v`
+* `[ -f /sys/fs/cgroup/cgroup.controllers ] && echo "Cgroups v2" || echo "Cgroups v1"`
 
 Make sure lxcfs is running (optional):
 * `sudo systemctl enable lxcfs --now`
