@@ -119,7 +119,6 @@ x-nginx_envsubst_development: &nginx_envsubst_development
   restart: on-failure
 services:
   nginx_permissions:
-    image: alpine:3.17.2
     build:
       context: ./build/permissions
     volumes: 
