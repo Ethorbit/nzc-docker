@@ -62,7 +62,7 @@ services:
       - ./data/configs/mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       #- /dev/null:/etc/mysql/conf.d/docker.cnf
     ports:
-      - 127.0.0.1:${MYSQL_PORT:-3306}:3306/tcp
+      - ${MYSQL_PORT:-3306}:3306/tcp
     depends_on:
       mysql_envsubst:
         condition: service_completed_successfully
