@@ -6,6 +6,11 @@
     "PollingInterval": ${DISCORD_SERVER_STATUS_POLLING_RATE},
     "Servers": [
         {
+            "Name": "Gmod :${GMOD_ALPHA_1_PORT}",
+            "Address": "localhost",
+            "Port": ${GMOD_ALPHA_1_PORT}
+        },
+        {
             "Name": "Web Server",
             "Address": "localhost",
             "Port": 80
@@ -19,56 +24,6 @@
             "Name": "File Sharing",
             "Address": "localhost",
             "Port": ${SSH_PORT}
-        },
-        {
-            "Name": "Gmod :${GMOD_ALPHA_1_PORT}",
-            "Address": "localhost",
-            "Port": ${GMOD_ALPHA_1_PORT}
-        },
-        {
-            "Name": "Gmod :${GMOD_ALPHA_2_PORT}",
-            "Address": "localhost",
-            "Port": ${GMOD_ALPHA_2_PORT}
-        },
-        {
-            "Name": "Gmod :${GMOD_ALPHA_3_PORT}",
-            "Address": "localhost",
-            "Port": ${GMOD_ALPHA_3_PORT}
-        },
-        {
-            "Name": "Gmod :${GMOD_BRAVO_1_PORT}",
-            "Address": "localhost",
-            "Port": ${GMOD_BRAVO_1_PORT}
-        },
-        {
-            "Name": "Gmod :${GMOD_CHARLIE_1_PORT}",
-            "Address": "localhost",
-            "Port": ${GMOD_CHARLIE_1_PORT}
-        },
-        {
-            "Name": "HL2:DM :${HL2DM_ALPHA_1_PORT}",
-            "Address": "localhost",
-            "Port": ${HL2DM_ALPHA_1_PORT}
-        },
-        {
-            "Name": "HL2:DM :${HL2DM_BRAVO_1_PORT}",
-            "Address": "localhost",
-            "Port": ${HL2DM_BRAVO_1_PORT}
-        },
-        {
-            "Name": "Sven Co-op :${SVENCOOP_1_PORT}",
-            "Address": "localhost",
-            "Port": ${SVENCOOP_1_PORT}
-        },
-        {
-            "Name": "Sven Co-op :${SVENCOOP_2_PORT}",
-            "Address": "localhost",
-            "Port": ${SVENCOOP_2_PORT}
-        },
-        {
-            "Name": "Synergy :${SYNERGY_PORT}",
-            "Address": "localhost",
-            "Port": ${SYNERGY_PORT}
         }
     ]
 }
