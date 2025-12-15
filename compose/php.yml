@@ -59,9 +59,9 @@ services:
     profiles: 
       - development 
     build:
-      target: development
       context:
-        ./build/php_fpm
+        ./build/php
+      target: php-fpm-development
       args:
         - UID=${php_u}
         - GID=${php_g}
@@ -70,9 +70,9 @@ services:
     profiles: 
       - production
     build:
-      target: production
       context:
-        ./build/php_fpm
+        ./build/php
+      target: php-fpm-production
       args:
         - UID=${php_u}
         - GID=${php_g}
