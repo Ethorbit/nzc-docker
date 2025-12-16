@@ -1,0 +1,9 @@
+mysqli
+mbstring
+zip
+simplexml
+xmlwriter
+xml
+bcmath
+pdo
+pdo_mysql

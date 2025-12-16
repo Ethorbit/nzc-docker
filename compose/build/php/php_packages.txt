@@ -1,0 +1,6 @@
+php-openssl
+php-curl
+php-tokenizer
+oniguruma-dev
+libzip-dev
+libxml2-dev
