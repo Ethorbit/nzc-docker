@@ -124,11 +124,11 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - php_cron:/mnt/php_cron
-      - php_scripts:/mnt/php_scripts
+      - php_cron:/mnt/cron
+      - php_scripts:/mnt/scripts
     command: >
-      /bin/sh -c 'touch /mnt/php_cron/crontab
-      && for d in php_scripts php_cron; do 
+      /bin/sh -c 'touch /mnt/cron/crontab
+      && for d in scripts cron; do 
       chown -R ${php_u}:${php_g} "/mnt/$$d/";
       chmod 2770 -R "/mnt/$$d/";
       setfacl -d -m u::rwx,g::rwx,o::- "/mnt/$$d/";

@@ -19,7 +19,6 @@ RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/conf.d/php.ini &&\
     echo "fastcgi.logging = On" >> $PHP_INI_DIR/conf.d/php.ini
 
 
-
 FROM php:cli-alpine3.17 AS php-cron
 ARG UID 
 ARG GID
