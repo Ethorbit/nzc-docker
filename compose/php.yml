@@ -1,12 +1,16 @@
 version: "3.9"
-x-php_fpm: &php_fpm
-  #container_name: ${CONTAINER_NAME_PREFIX}-php_fpm-${CONTAINER_NAME_SUFFIX}
-  networks:
-    php:
-      ipv4_address: 172.119.1.1
-    mysql:
-    nginx:
-    gmod:
+
+x-networks: &networks
+  mysql:
+  nginx:
+  gmod:
+
+x-php: &php
+  cpuset: ${PHP_CPU}
+  cpus: ${PHP_CPU_FRACTION:-1}
+  cpu_shares: 1024
+  mem_limit: ${PHP_FPM_RAM:-4096M}
+  restart: always
   # This should allow PHP scripts to do things like display game server stats and whatnot
   #   External network -> Public IP:Port #
   #   Internal network -> gameserver container's IP:Port #
@@ -19,6 +23,14 @@ x-php_fpm: &php_fpm
     - "gmod-alpha-3.${DOMAIN_NAME}:172.150.1.3"
     - "gmod-bravo-1.${DOMAIN_NAME}:172.150.1.10"
     - "gmod-charlie-1.${DOMAIN_NAME}:172.150.1.20"
+
+x-php_fpm: &php_fpm
+  <<: [ *php ]
+  #container_name: ${CONTAINER_NAME_PREFIX}-php_fpm-${CONTAINER_NAME_SUFFIX}
+  networks:
+    <<: [ *networks ]
+    php:
+      ipv4_address: 172.119.1.1
   hostname: php_fpm
   volumes:
     - /etc/localtime:/etc/localtime:ro
@@ -36,8 +48,10 @@ x-php_fpm: &php_fpm
     - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
     - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
     - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
-    - ./data/configs/php_fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
+    - ./data/configs/php/overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini:ro
+    - ./data/configs/php/fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
     - php_fpm_run:/var/run/php-fpm
+    - php_scripts:/mnt/scripts
     - nginx_websites:/mnt/websites
     - phpmyadmin:/mnt/admin/phpmyadmin
   command: >
@@ -48,11 +62,38 @@ x-php_fpm: &php_fpm
     && chown ${php_u}:${php_g} /var/run/php-fpm/sock
     && chmod 770 /var/run/php-fpm/sock
     && php-fpm"
-  cpuset: ${PHP_CPU}
-  cpus: ${PHP_CPU_FRACTION:-1}
-  cpu_shares: 1024
-  mem_limit: ${PHP_FPM_RAM:-4096M}
-  restart: always
+
+x-php_cron: &php_cron
+  <<: [ *php ]
+  networks:
+    <<: [ *networks ]
+    php:
+      ipv4_address: 172.119.1.2
+  hostname: php_cron  
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+    - ./data/configs/users/passwd:/etc/passwd:ro
+    - ./data/configs/users/group:/etc/group:ro
+    - ./data/configs/users/shadow:/etc/shadow:ro 
+    - ./data/configs/users/gshadow:/etc/gshadow:ro
+    - ${MOUNT_PROC_CPUINFO}:/proc/cpuinfo:rw
+    - ${MOUNT_PROC_MEMINFO}:/proc/meminfo:rw
+    - ${MOUNT_PROC_SWAPS}:/proc/swaps:rw
+    - ${MOUNT_PROC_STAT}:/proc/stat:rw
+    - ${MOUNT_PROC_DISKSTATS}:/proc/diskstats:rw
+    - ${MOUNT_PROC_UPTIME}:/proc/uptime:rw
+    - ${MOUNT_PROC_SLABINFO}:/proc/slabinfo:rw
+    - ${MOUNT_SYS_DEVICES_SYSTEM_CPU}:/sys/devices/system/cpu:rw
+    - ./data/configs/php/overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini:ro
+    - php_cron:/mnt/cron
+    - php_scripts:/mnt/scripts
+    - nginx_websites:/mnt/websites
+  command: ["supercronic", "/mnt/cron/crontab"]
+  depends_on:
+    php_cron_permissions:
+      condition: service_completed_successfully
+
 services:
   php_fpm_development:
     <<: [ *php_fpm ]
@@ -77,8 +118,58 @@ services:
         - UID=${php_u}
         - GID=${php_g}
 
+  php_cron_permissions:
+    build:
+      context: ./build/permissions
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - php_cron:/mnt/php_cron
+      - php_scripts:/mnt/php_scripts
+    command: >
+      /bin/sh -c 'touch /mnt/php_cron/crontab
+      && for d in php_scripts php_cron; do 
+      chown -R ${php_u}:${php_g} "/mnt/$$d/";
+      chmod 2770 -R "/mnt/$$d/";
+      setfacl -d -m u::rwx,g::rwx,o::- "/mnt/$$d/";
+      done'
+    cap_drop:
+      - ALL 
+    cap_add:
+      - CAP_DAC_OVERRIDE
+      - CAP_CHOWN
+      - CAP_FOWNER
+      - CAP_FSETID
+    network_mode: none
+    restart: on-failure
+  php_cron_development:
+    <<: [ *php_cron ]
+    profiles:
+      - development
+    build:
+      context:
+        ./build/php
+      target: php-cron-development
+      args:
+        - UID=${php_u}
+        - GID=${php_g}
+  php_cron_production:
+    <<: [ *php_cron ]
+    profiles:
+      - production
+    build:
+      context:
+        ./build/php
+      target: php-cron-production
+      args:
+        - UID=${php_u}
+        - GID=${php_g}
+
 volumes:
   php_fpm_run:
+  php_cron:
+  php_scripts:
+
 networks:
   php:
     ipam:
