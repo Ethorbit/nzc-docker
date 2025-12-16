@@ -11,8 +11,8 @@ services:
       chown root:root "/mnt/$$d" 
       chmod 751 "/mnt/$$d"; 
       done
-      && mkdir -p /mnt/php_cron
-      && chmod 755 /mnt/php_cron
+      && mkdir -p /mnt/php
+      && chmod 755 /mnt/php
       && for d in admin_websites/phpmyadmin admin_websites/portainer; do 
       mkdir -p "/mnt/$$d" 
       chmod 750 "/mnt/$$d"; 
@@ -83,8 +83,8 @@ services:
       - gmod_charlie_1:/mnt/game_servers/gmod/charlie/1
       - nginx_fastdl:/mnt/fastdl
       - nginx_websites:/mnt/websites
-      - php_cron:/mnt/php_cron/cron
-      - php_scripts:/mnt/php_cron/scripts
+      - php_cron:/mnt/php/cron
+      - php_scripts:/mnt/php/scripts
       - discord_sticky_bot:/mnt/discord_bots/stickies
       - phpmyadmin:/mnt/admin_websites/phpmyadmin
       - portainer_data:/mnt/admin_websites/portainer
