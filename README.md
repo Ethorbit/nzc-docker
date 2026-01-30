@@ -1,3 +1,15 @@
+# Deprecated
+This project violates the Docker philosophy by using a brittle centralized configuration model.
+* A Makefile script for deploying the containers is unintuitive and **may not work on all systems**
+* If the user breaks the configuration, **none of the containers can be deployed!**
+* Adding more containers dramatically increases complexity
+
+These issues shouldn't exist in a Docker project, yet they do here.
+
+[nzc-docker is being redeveloped from the ground up to use strict, reproducible, and decentralized configuration to overcome these issues](https://github.com/Ethorbit/nzc-nix-docker)
+<br>
+<br>
+<br>
 # nZC Docker
 Docker infrastructure used by the nZC game community. Runs a database, various web apps and a few game servers. Intended to run on a single host, but nothing's stopping you from using thirdparty tools to set it up on multiple hosts.
 
