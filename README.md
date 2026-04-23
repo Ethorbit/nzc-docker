@@ -1,4 +1,4 @@
-# Deprecated
+# Deprecated: [USE NIX INSTEAD](https://github.com/Ethorbit/nzc-nix-docker)!
 This project violates the Docker philosophy by using a brittle centralized configuration model.
 * A Makefile script for deploying the containers is unintuitive and **may not work on all systems**
 * If the user breaks the configuration, **none of the containers can be deployed!**
@@ -6,7 +6,7 @@ This project violates the Docker philosophy by using a brittle centralized confi
 
 These issues shouldn't exist in a Docker project, yet they do here.
 
-[nzc-docker is being redeveloped from the ground up to use strict, reproducible, and decentralized configuration to overcome these issues](https://github.com/Ethorbit/nzc-nix-docker)
+[nzc-docker has been redeveloped from the ground up to use strict, reproducible, and decentralized configuration to overcome these issues](https://github.com/Ethorbit/nzc-nix-docker)
 <br>
 <br>
 <br>
